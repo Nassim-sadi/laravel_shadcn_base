@@ -13,7 +13,7 @@ export function useApiFetch() {
 
   const apiFetch = ofetch.create({
     baseURL: API_BASE_URL,
-    timeout: API_TIMEOUT ?? false,
+    timeout: API_TIMEOUT ?? 0,
     async onRequest(_request) {
       const currentToken = cookies.get(AUTH_TOKEN_NAME)
       if (currentToken) {

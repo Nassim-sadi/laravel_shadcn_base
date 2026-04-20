@@ -78,9 +78,16 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         $user = $request->user();
-        $user->load('roles', 'permissions');
+        $user->makeHidden('password');
 
-        return response()->json($user);
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'is_active' => $user->is_active,
+            'locale' => $user->locale,
+        ]);
     }
 
     public function updateProfile(Request $request)

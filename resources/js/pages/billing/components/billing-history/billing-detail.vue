@@ -3,13 +3,16 @@ import { VisuallyHidden } from 'reka-ui'
 
 import { ModalDescription, ModalHeader, ModalTitle } from '@/components/prop-ui/modal'
 
+import type { PayState } from '../billing-history/data/data'
 import type { Billing } from './data/schema'
 
 import TransactionCard from '../transaction-card/index.vue'
 
-defineProps<{
+const props = defineProps<{
   billing: Billing
 }>()
+
+const state = computed(() => props.billing.status as PayState)
 </script>
 
 <template>
@@ -28,7 +31,7 @@ defineProps<{
       :order-id="billing.orderId || ''"
       :price="billing.amount"
       currency="$"
-      :state="billing.status"
+      :state="state"
       :updated-at="billing.date"
       :invoice-no="`${billing.id}`"
       :description="billing.description"

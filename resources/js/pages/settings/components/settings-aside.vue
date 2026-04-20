@@ -1,13 +1,21 @@
 <script setup lang="ts">
-import { ChevronsUpDownIcon } from '@lucide/vue'
+import { ChevronsUpDownIcon, UserIcon } from '@lucide/vue'
 
-import { useSidebar } from '@/composables/use-sidebar'
+import { useRouter, useRoute } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const currentPath = computed(() => route.path)
 const activeClass = 'text-primary font-semibold bg-primary/5'
 
-const { settingsNavItems } = useSidebar()
+const settingsNavItems = [
+  { title: 'Profile', url: '/adminDashboard/settings', icon: UserIcon },
+  { title: 'Account', url: '/adminDashboard/settings/account', icon: UserIcon },
+  { title: 'Appearance', url: '/adminDashboard/settings/appearance', icon: UserIcon },
+  { title: 'Notifications', url: '/adminDashboard/settings/notifications', icon: UserIcon },
+  { title: 'Display', url: '/adminDashboard/settings/display', icon: UserIcon },
+]
+
 const currentLink = computed(() => settingsNavItems.find(link => link.url === currentPath.value))
 </script>
 
@@ -34,7 +42,7 @@ const currentLink = computed(() => settingsNavItems.find(link => link.url === cu
       <UiDropdownMenuContent class="w-48" align="start">
         <UiDropdownMenuItem
           v-for="link in settingsNavItems" :key="link.url"
-          @click="$router.push(link.url)"
+          @click="router.push(link.url)"
         >
           <component :is="link.icon" class="size-4 mr-1" />
           {{ link.title }}

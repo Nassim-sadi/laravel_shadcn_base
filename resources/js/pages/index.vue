@@ -37,7 +37,7 @@ const router = useRouter()
             <Button size="lg" @click="router.push('/auth/sign-up')">
               Start Building
             </Button>
-            <Button size="lg" variant="outline" @click="router.push('/dashboard')">
+            <Button size="lg" variant="outline" @click="router.push('/admin')">
               View Demo
             </Button>
           </div>
@@ -83,8 +83,3 @@ const router = useRouter()
     </footer>
   </div>
 </template>
-
-<route lang="yaml">
-meta:
-  layout: false
-</route>

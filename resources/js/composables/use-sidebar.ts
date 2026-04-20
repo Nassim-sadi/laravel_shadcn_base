@@ -1,83 +1,47 @@
-import { BadgeHelpIcon, BellDotIcon, BoxesIcon, BugIcon, ComponentIcon, CreditCardIcon, LayoutDashboardIcon, ListTodoIcon, PaletteIcon, PictureInPicture2Icon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, SquareUserRoundIcon, UserIcon, UsersIcon, WrenchIcon } from '@lucide/vue'
+import { CreditCardIcon, LayoutDashboardIcon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, UserIcon, UsersIcon } from '@lucide/vue'
 
 import type { NavGroup } from '@/components/app-sidebar/types'
 
 export function useSidebar() {
   const settingsNavItems = [
-    { title: 'Profile', url: '/settings/', icon: UserIcon },
-    { title: 'Account', url: '/settings/account', icon: WrenchIcon },
-    { title: 'Appearance', url: '/settings/appearance', icon: PaletteIcon },
-    { title: 'Notifications', url: '/settings/notifications', icon: BellDotIcon },
-    { title: 'Display', url: '/settings/display', icon: PictureInPicture2Icon },
+    { title: 'Profile', url: '/adminDashboard/settings', icon: UserIcon },
+    { title: 'Account', url: '/adminDashboard/settings/account', icon: UserIcon },
+    { title: 'Appearance', url: '/adminDashboard/settings/appearance', icon: UserIcon },
+    { title: 'Notifications', url: '/adminDashboard/settings/notifications', icon: UserIcon },
+    { title: 'Display', url: '/adminDashboard/settings/display', icon: UserIcon },
   ]
 
-  const navData = ref<NavGroup[]>([
+  const navData: NavGroup[] = [
     {
-      title: 'General',
+      title: 'Main',
       items: [
-        { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboardIcon },
-        { title: 'Tasks', url: '/tasks', icon: ListTodoIcon },
-        { title: 'Apps', url: '/apps', icon: BoxesIcon },
+        { title: 'Dashboard', url: '/adminDashboard', icon: LayoutDashboardIcon },
+        { title: 'Users', url: '/adminDashboard/users', icon: UsersIcon },
+        { title: 'Roles', url: '/adminDashboard/roles', icon: ShieldCheckIcon },
+        { title: 'Permissions', url: '/adminDashboard/permissions', icon: ScrollTextIcon },
       ],
     },
     {
-      title: 'Admin',
+      title: 'Settings',
       items: [
-        { title: 'Users', url: '/admin/users', icon: UsersIcon },
-        { title: 'Roles', url: '/admin/roles', icon: ShieldCheckIcon },
-        { title: 'Permissions', url: '/admin/permissions', icon: ScrollTextIcon },
+        { title: 'Billing', url: '/adminDashboard/billing', icon: CreditCardIcon },
+        { title: 'Settings', url: '/adminDashboard/settings', icon: SettingsIcon },
       ],
     },
-    {
-      title: 'Pages',
-      items: [
-        {
-          title: 'Auth',
-          icon: SquareUserRoundIcon,
-          items: [
-            { title: 'Sign In', url: '/auth/sign-in' },
-            { title: 'Sign In(2 Col)', url: '/auth/sign-in-2' },
-            { title: 'Sign Up', url: '/auth/sign-up' },
-            { title: 'Forgot Password', url: '/auth/forgot-password' },
-            { title: 'OTP', url: '/auth/otp' },
-          ],
-        },
-        {
-          title: 'Errors',
-          icon: BugIcon,
-          items: [
-            { title: '401 | Unauthorized', url: '/errors/401' },
-            { title: '403 | Forbidden', url: '/errors/403' },
-            { title: '404 | Not Found', url: '/errors/404' },
-            { title: '500 | Internal Server Error', url: '/errors/500' },
-            { title: '503 | Maintenance Error', url: '/errors/503' },
-          ],
-        },
-      ],
-    },
-    {
-      title: 'Other',
-      items: [
-        { title: 'Settings', items: settingsNavItems, icon: SettingsIcon },
-        { title: 'Prop Components', url: '/prop-components', icon: ComponentIcon },
-        { title: 'Help Center', url: '/help-center', icon: BadgeHelpIcon },
-        { title: 'Outside Page(GitHub)', url: 'https://www.github.com/Whbbit1999/shadcn-vue-admin' },
-      ],
-    },
-  ])
+  ]
 
-  const otherPages = ref<NavGroup[]>([
+  const otherPages: NavGroup[] = [
     {
       title: 'Other',
       items: [
-        { title: 'Plans & Pricing', icon: CreditCardIcon, url: '/billing' },
+        { title: 'Billing', url: '/adminDashboard/billing', icon: CreditCardIcon },
       ],
     },
-  ])
+  ]
 
   return {
-    navData,
-    otherPages,
-    settingsNavItems,
+    navData: ref(navData),
+    otherPages: ref(otherPages),
+    settingsNavItems: ref(settingsNavItems),
   }
 }

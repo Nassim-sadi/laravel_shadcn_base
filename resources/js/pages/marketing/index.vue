@@ -33,8 +33,3 @@ import Setup from '@/components/marketing/setup.vue'
     </main>
   </div>
 </template>
-
-<route lang="yaml">
-meta:
-  layout: marketing
-</route>

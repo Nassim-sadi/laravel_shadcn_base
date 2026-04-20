@@ -1,4 +1,4 @@
-import type { z } from 'zod'
+import type { ZodType } from 'zod'
 
 import { toTypedSchema } from '@vee-validate/zod'
 import { useStorage } from '@vueuse/core'
@@ -7,18 +7,18 @@ import { toast } from 'vue-sonner'
 
 import { useCreateSystemMutation, useGetSystemConfigByKeyQuery, useUpdateSystemConfigByKeyMutation } from '@/services/api/example-system-config.api'
 
-export function useSystemConfig<S extends z.ZodObject<z.ZodRawShape>>({
+export function useSystemConfig<S extends ZodType<any>>({
   key,
   defaultValue,
   description,
   schema,
 }: {
   key: string
-  defaultValue: Readonly<z.input<S>>
+  defaultValue: Readonly<any>
   description: string
   schema: S
 }) {
-  const initialConfig = { ...defaultValue } as z.input<S>
+  const initialConfig = { ...defaultValue } as any
   const formSchema = toTypedSchema(schema)
 
   const { handleSubmit, resetForm } = useForm({
@@ -26,7 +26,7 @@ export function useSystemConfig<S extends z.ZodObject<z.ZodRawShape>>({
     initialValues: initialConfig,
   })
 
-  const localCacheConfig = useStorage<z.input<S>>(key, initialConfig)
+  const localCacheConfig = useStorage<any>(key, initialConfig)
 
   const { data: systemConfigData, isPending: isGetSystemConfigByKeyQueryPending } = useGetSystemConfigByKeyQuery(key)
   const { mutate: createSystemConfigMutate, isPending: isCreateSystemConfigPending } = useCreateSystemMutation()
@@ -51,7 +51,7 @@ export function useSystemConfig<S extends z.ZodObject<z.ZodRawShape>>({
       return
     }
 
-    const configValue: z.input<S> = systemConfigData.value?.data?.value
+    const configValue: any = systemConfigData.value?.data?.value
       ? JSON.parse(systemConfigData.value.data.value)
       : initialConfig
     localCacheConfig.value = configValue
@@ -67,7 +67,7 @@ export function useSystemConfig<S extends z.ZodObject<z.ZodRawShape>>({
       description,
     }
     // 1. local cache
-    localCacheConfig.value = values as z.input<S>
+    localCacheConfig.value = values as any
 
     // 2. sync to server
     updateSystemConfigMutate({

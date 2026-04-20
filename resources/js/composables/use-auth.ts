@@ -1,4 +1,5 @@
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import { useLoginMutation, useLogoutMutation, useUserQuery } from '@/services/api/auth.api'
 import { useAuthStore } from '@/stores/auth'
@@ -29,7 +30,7 @@ export function useAuth() {
   }
 
   function toHome() {
-    router.push({ path: '/' })
+    router.push({ path: '/adminDashboard' })
   }
 
   async function login(credentials: { email: string, password: string }) {

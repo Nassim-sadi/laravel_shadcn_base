@@ -1,20 +1,13 @@
 import { h } from 'vue'
 import { toast } from 'vue-sonner'
-import { z } from 'zod'
 
 import { EnvSchema } from '@/validators/env.validator'
-
-/**
- * Load .env file and validate it against the schema
- * Has this file, it will be loaded automatically by vite and we will be have environment variables available type
- * If EnvSchema Object has Key but not in .env file, it will be have a error in page
- */
 
 const { data: env, error } = EnvSchema.safeParse(import.meta.env)
 
 if (error) {
   console.error('❌ Invalid env')
-  const flattenError = z.flattenError(error)
+  const flattenError = error.flatten()
   console.error(flattenError)
 
   setTimeout(() => {

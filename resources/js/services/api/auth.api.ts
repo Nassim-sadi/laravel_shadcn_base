@@ -97,14 +97,15 @@ export function useLogoutMutation() {
   })
 }
 
-export function useUserQuery() {
-  const { apiFetch } = useApiFetch()
+export function useUserQuery(enabled = true) {
+  const { apiFetch, getToken } = useApiFetch()
 
   return useQuery<IResponse<IUser>, Error>({
     queryKey: ['useUserQuery'],
     queryFn: async () => await apiFetch<IResponse<IUser>>('/user', {
       method: 'get',
     }),
+    enabled: enabled && !!getToken(),
   })
 }
 

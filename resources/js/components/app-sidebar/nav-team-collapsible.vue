@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useRoute } from 'vue-router'
 import { ChevronRightIcon, ExternalLinkIcon } from '@lucide/vue'
 
 import { useSidebar } from '@/components/ui/sidebar'

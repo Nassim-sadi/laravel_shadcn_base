@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const userInviteValidator = z.object({
-  email: z.email(),
+  email: z.string().email(),
   role: z.enum(['superadmin', 'admin', 'cashier', 'manager']),
   description: z.string().optional(),
 })
