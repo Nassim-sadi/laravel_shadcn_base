@@ -7,16 +7,16 @@ import { API_BASE_URL, API_TIMEOUT } from '@/constants/app-config'
 const AUTH_TOKEN_NAME = 'auth_token'
 
 export function useApiFetch() {
-  const cookies = useCookies([AUTH_TOKEN_NAME])
+  const cookies = useCookies(['auth_token'])
   const router = useRouter()
 
   const apiFetch = ofetch.create({
     baseURL: API_BASE_URL,
     timeout: API_TIMEOUT ?? 0,
-    async onRequest({ request }) {
+    async onRequest({ request, options }) {
       const currentToken = cookies.get(AUTH_TOKEN_NAME)
-      if (currentToken && request.headers) {
-        request.headers.set('Authorization', `Bearer ${currentToken}`)
+      if (currentToken) {
+        options.headers.set('Authorization', `Bearer ${currentToken}`)
       }
     },
     onResponseError({ response }) {

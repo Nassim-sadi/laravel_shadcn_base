@@ -46,8 +46,10 @@ export function useLoginMutation() {
         method: 'post',
         body: data,
       })
+      console.log('Login response:', response)
       if (response.token) {
         setToken(response.token)
+        console.log('Token set:', response.token)
       }
       return response
     },

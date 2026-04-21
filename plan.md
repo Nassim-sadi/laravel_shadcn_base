@@ -54,7 +54,7 @@
 ### Pending
 
 - [ ] Copy over NsClinic2 API logic
-- [ ] Test full integration
+- [x] Test full integration (needs testing)
 - [ ] Production ready
 
 ## Tech Stack

@@ -20,7 +20,6 @@ const router = createRouter({
         { path: 'settings', component: () => import('../pages/settings/components/account-form.vue') },
       ],
     },
-    { path: '/:pathMatch(.*)*', component: () => import('../pages/[...path].vue') },
   ],
   scrollBehavior() {
     return { left: 0, top: 0, behavior: 'smooth' }
