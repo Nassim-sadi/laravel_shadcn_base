@@ -30,7 +30,7 @@ export function useAuth() {
   }
 
   function toHome() {
-    router.push({ path: '/adminDashboard' })
+    router.push({ path: '/admin' })
   }
 
   async function login(credentials: { email: string, password: string }) {

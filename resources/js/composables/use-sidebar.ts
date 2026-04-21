@@ -4,28 +4,28 @@ import type { NavGroup } from '@/components/app-sidebar/types'
 
 export function useSidebar() {
   const settingsNavItems = [
-    { title: 'Profile', url: '/adminDashboard/settings', icon: UserIcon },
-    { title: 'Account', url: '/adminDashboard/settings/account', icon: UserIcon },
-    { title: 'Appearance', url: '/adminDashboard/settings/appearance', icon: UserIcon },
-    { title: 'Notifications', url: '/adminDashboard/settings/notifications', icon: UserIcon },
-    { title: 'Display', url: '/adminDashboard/settings/display', icon: UserIcon },
+    { title: 'Profile', url: '/admin/settings', icon: UserIcon },
+    { title: 'Account', url: '/admin/settings/account', icon: UserIcon },
+    { title: 'Appearance', url: '/admin/settings/appearance', icon: UserIcon },
+    { title: 'Notifications', url: '/admin/settings/notifications', icon: UserIcon },
+    { title: 'Display', url: '/admin/settings/display', icon: UserIcon },
   ]
 
   const navData: NavGroup[] = [
     {
       title: 'Main',
       items: [
-        { title: 'Dashboard', url: '/adminDashboard', icon: LayoutDashboardIcon },
-        { title: 'Users', url: '/adminDashboard/users', icon: UsersIcon },
-        { title: 'Roles', url: '/adminDashboard/roles', icon: ShieldCheckIcon },
-        { title: 'Permissions', url: '/adminDashboard/permissions', icon: ScrollTextIcon },
+        { title: 'Dashboard', url: '/admin', icon: LayoutDashboardIcon },
+        { title: 'Users', url: '/admin/users', icon: UsersIcon },
+        { title: 'Roles', url: '/admin/roles', icon: ShieldCheckIcon },
+        { title: 'Permissions', url: '/admin/permissions', icon: ScrollTextIcon },
       ],
     },
     {
       title: 'Settings',
       items: [
-        { title: 'Billing', url: '/adminDashboard/billing', icon: CreditCardIcon },
-        { title: 'Settings', url: '/adminDashboard/settings', icon: SettingsIcon },
+        { title: 'Billing', url: '/admin/billing', icon: CreditCardIcon },
+        { title: 'Settings', url: '/admin/settings', icon: SettingsIcon },
       ],
     },
   ]
@@ -34,7 +34,7 @@ export function useSidebar() {
     {
       title: 'Other',
       items: [
-        { title: 'Billing', url: '/adminDashboard/billing', icon: CreditCardIcon },
+        { title: 'Billing', url: '/admin/billing', icon: CreditCardIcon },
       ],
     },
   ]

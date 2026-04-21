@@ -2,11 +2,11 @@
 import { BasicPage, TwoColAside, TwoColLayout } from '@/components/global-layout'
 
 const settingsNavItems = [
-  { title: 'Profile', url: '/adminDashboard/settings' },
-  { title: 'Account', url: '/adminDashboard/settings/account' },
-  { title: 'Appearance', url: '/adminDashboard/settings/appearance' },
-  { title: 'Notifications', url: '/adminDashboard/settings/notifications' },
-  { title: 'Display', url: '/adminDashboard/settings/display' },
+  { title: 'Profile', url: '/admin/settings' },
+  { title: 'Account', url: '/admin/settings/account' },
+  { title: 'Appearance', url: '/admin/settings/appearance' },
+  { title: 'Notifications', url: '/admin/settings/notifications' },
+  { title: 'Display', url: '/admin/settings/display' },
 ]
 </script>
 

@@ -8,9 +8,8 @@ const router = createRouter({
     { path: '/', component: () => import('../pages/index.vue') },
     { path: '/auth/sign-in', component: () => import('../pages/auth/sign-in.vue') },
     { path: '/auth/sign-up', component: () => import('../pages/auth/sign-up.vue') },
-    { path: '/admin', redirect: '/adminDashboard' },
     {
-      path: '/adminDashboard',
+      path: '/admin',
       component: () => import('../layouts/default.vue'),
       children: [
         { path: '', component: () => import('../pages/admin/dashboard/index.vue') },

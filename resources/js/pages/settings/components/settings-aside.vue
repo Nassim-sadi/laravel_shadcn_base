@@ -9,11 +9,11 @@ const currentPath = computed(() => route.path)
 const activeClass = 'text-primary font-semibold bg-primary/5'
 
 const settingsNavItems = [
-  { title: 'Profile', url: '/adminDashboard/settings', icon: UserIcon },
-  { title: 'Account', url: '/adminDashboard/settings/account', icon: UserIcon },
-  { title: 'Appearance', url: '/adminDashboard/settings/appearance', icon: UserIcon },
-  { title: 'Notifications', url: '/adminDashboard/settings/notifications', icon: UserIcon },
-  { title: 'Display', url: '/adminDashboard/settings/display', icon: UserIcon },
+  { title: 'Profile', url: '/admin/settings', icon: UserIcon },
+  { title: 'Account', url: '/admin/settings/account', icon: UserIcon },
+  { title: 'Appearance', url: '/admin/settings/appearance', icon: UserIcon },
+  { title: 'Notifications', url: '/admin/settings/notifications', icon: UserIcon },
+  { title: 'Display', url: '/admin/settings/display', icon: UserIcon },
 ]
 
 const currentLink = computed(() => settingsNavItems.find(link => link.url === currentPath.value))
