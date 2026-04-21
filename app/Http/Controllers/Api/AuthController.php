@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -38,12 +42,18 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        Log::info('AuthController: login() called', ['email' => $request->email]);
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
+        Log::info('AuthController: validating user');
+
         $user = User::where('email', $request->email)->first();
+
+        Log::info('AuthController: user found', ['user_id' => $user?->id]);
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -57,8 +67,11 @@ class AuthController extends Controller
             ]);
         }
 
+        Log::info('AuthController: creating token');
         $token = $user->createToken('auth-token')->plainTextToken;
+        Log::info('AuthController: token created');
 
+        Log::info('AuthController: returning response');
         return response()->json([
             'user' => $user,
             'token' => $token,
@@ -77,17 +90,9 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
-        $user = $request->user();
-        $user->makeHidden('password');
+        $user = $request->user()->load(['roles', 'permissions']);
 
-        return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role' => $user->role,
-            'is_active' => $user->is_active,
-            'locale' => $user->locale,
-        ]);
+        return new UserResource($user);
     }
 
     public function updateProfile(Request $request)
@@ -100,6 +105,47 @@ class AuthController extends Controller
         $request->user()->update($validated);
 
         return response()->json($request->user());
+    }
+
+    public function uploadAvatar(Request $request)
+    {
+        $validated = $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $user = $request->user();
+
+            if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+                \Storage::disk('public')->delete($user->avatar);
+            }
+
+            $file = $validated['avatar'];
+            $filename = 'avatar_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('avatars', $filename, 'public');
+
+            $user->update(['avatar' => $path]);
+
+            return response()->json([
+                'message' => 'Avatar uploaded successfully',
+                'avatar' => $path,
+            ]);
+        }
+
+        return response()->json(['message' => 'No file uploaded'], 400);
+    }
+
+    public function deleteAvatar(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+            \Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->update(['avatar' => null]);
+
+        return response()->json(['message' => 'Avatar deleted successfully']);
     }
 
     public function changePassword(Request $request)

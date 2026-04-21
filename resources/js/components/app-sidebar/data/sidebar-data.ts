@@ -1,30 +1,24 @@
-import { AudioWaveformIcon, CommandIcon, GalleryVerticalEndIcon } from '@lucide/vue'
+import { FolderIcon } from '@lucide/vue'
 
 import { useSidebar } from '@/composables/use-sidebar'
+import { useAuthStore } from '@/stores/auth'
 
 import type { SidebarData, Team, User } from '../types'
 
+const authStore = useAuthStore()
+const currentUser = authStore.user
+
 const user: User = {
-  name: 'shadcn',
-  email: 'm@example.com',
-  avatar: '/avatars/shadcn.jpg',
+  name: currentUser?.name ?? 'Admin',
+  email: currentUser?.email ?? 'admin@test.com',
+  avatar: currentUser?.avatar ?? '',
 }
 
 const teams: Team[] = [
   {
-    name: 'Acme Inc',
-    logo: GalleryVerticalEndIcon,
-    plan: 'Enterprise',
-  },
-  {
-    name: 'Acme Corp.',
-    logo: AudioWaveformIcon,
-    plan: 'Startup',
-  },
-  {
-    name: 'Evil Corp.',
-    logo: CommandIcon,
-    plan: 'Free',
+    name: 'Admin',
+    logo: FolderIcon,
+    plan: 'Admin',
   },
 ]
 

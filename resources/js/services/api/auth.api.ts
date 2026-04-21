@@ -11,8 +11,9 @@ export interface IUser {
   role: string
   is_active: boolean
   locale: string
-  created_at: string
-  updated_at: string
+  avatar: string | null
+  roles: string[]
+  permissions: string[]
 }
 
 export interface ILoginRequest {
@@ -145,5 +146,35 @@ export function useChangePasswordMutation() {
       method: 'post',
       body: data,
     }),
+  })
+}
+
+export function useUploadAvatarMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+
+  return useMutation<IResponse<{ message: string; avatar: string }>, Error, File>({
+    mutationKey: ['useUploadAvatarMutation'],
+    mutationFn: async (file: File) => {
+      const formData = new FormData()
+      formData.append('avatar', file)
+      return apiFetch<IResponse<{ message: string; avatar: string }>>('/profile/avatar', { method: 'post', body: formData })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
+    },
+  })
+}
+
+export function useDeleteAvatarMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+
+  return useMutation<IResponse<string>, Error>({
+    mutationKey: ['useDeleteAvatarMutation'],
+    mutationFn: async () => apiFetch<IResponse<string>>('/profile/avatar', { method: 'delete' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
+    },
   })
 }

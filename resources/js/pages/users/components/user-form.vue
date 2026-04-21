@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, minLength, helpers } from '@vuelidate/validators'
 import { toast } from 'vue-sonner'
 
 import { Button } from '@/components/ui/button'
@@ -9,132 +9,131 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import type { User } from '../data/schema'
-import type { UserValidator } from '../validators/user.validator'
+import { useCreateUserMutation, useUpdateUserMutation } from '@/services/api/users.api'
 
-import { userValidator } from '../validators/user.validator'
-
-const { user } = defineProps<{
+const props = defineProps<{
   user?: User
 }>()
 
-const emits = defineEmits<{
+const emit = defineEmits<{
   (e: 'close'): void
+  (e: 'success'): void
 }>()
 
-const roles = ['superadmin', 'admin', 'cashier', 'manager'] as const
-const status = ['active', 'inactive', 'invited', 'suspended'] as const
+const roles = ['super_admin', 'admin', 'user', 'guest'] as const
 
-const initialValues = reactive<UserValidator>({
-  firstName: user?.firstName || '',
-  lastName: user?.lastName || '',
-  username: user?.username || '',
-  email: user?.email || '',
-  phoneNumber: user?.phoneNumber || '',
-  status: user?.status || 'active',
-  role: user?.role || 'cashier',
+const createUserMutation = useCreateUserMutation()
+const updateUserMutation = useUpdateUserMutation(props.user?.id ?? 0)
+
+const isEditing = computed(() => !!props.user?.id)
+
+const formData = reactive({
+  name: props.user?.name ?? '',
+  email: props.user?.email ?? '',
+  password: '',
+  role: props.user?.role ?? 'user',
+  is_active: props.user?.is_active ?? true,
 })
 
-const userFormSchema = toTypedSchema(userValidator)
-const { handleSubmit } = useForm({
-  validationSchema: userFormSchema,
-  initialValues,
-})
+const rules = computed(() => ({
+  name: { required: helpers.withMessage('Name is required', required) },
+  email: { required: helpers.withMessage('Email is required', required), email: helpers.withMessage('Invalid email', email) },
+  password: {
+    required: !isEditing.value ? helpers.withMessage('Password is required', required) : {},
+    minLength: minLength(8),
+  },
+  role: { required },
+}))
 
-const onSubmit = handleSubmit((values) => {
-  const submitUser = { ...values }
-  if (user) {
-    submitUser.id = user.id
+const v$ = useVuelidate(rules, formData)
+
+const onSubmit = async () => {
+  const isValid = await v$.value.$validate()
+  if (!isValid) return
+
+  try {
+    if (isEditing.value && props.user?.id) {
+      await updateUserMutation.mutateAsync({
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        is_active: formData.is_active,
+        ...(formData.password ? { password: formData.password } : {}),
+      })
+      toast.success('User updated successfully')
+    }
+    else {
+      await createUserMutation.mutateAsync({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+        is_active: formData.is_active,
+      })
+      toast.success('User created successfully')
+    }
+    emit('success')
+    emit('close')
   }
-  toast('You submitted the following values:', {
-    description: h(
-      'pre',
-      { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' },
-      h('code', { class: 'text-white' }, JSON.stringify(submitUser, null, 2)),
-    ),
-  })
-
-  emits('close')
-})
+  catch (error: any) {
+    toast.error(error.message ?? 'Failed to save user')
+  }
+}
 </script>
 
 <template>
   <div class="max-h-[500px] overflow-y-auto">
-    <form class="space-y-8" @submit="onSubmit">
-      <FormField v-slot="{ componentField }" name="firstName">
+    <form class="space-y-6" @submit.prevent="onSubmit">
+      <FormField v-slot="{ componentField }" name="name" :error="v$.name.$error">
         <FormItem>
-          <FormLabel>First Name</FormLabel>
+          <FormLabel>Name</FormLabel>
           <FormControl>
-            <Input type="text" v-bind="componentField" />
+            <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = $event" :model-value="formData.name" />
           </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ componentField }" name="lastName">
-        <FormItem>
-          <FormLabel>Last Name</FormLabel>
-          <FormControl>
-            <Input type="text" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ componentField }" name="username">
-        <FormItem>
-          <FormLabel>User Name</FormLabel>
-          <FormControl>
-            <Input type="text" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
+          <FormMessage v-if="v$.name.$error">
+            {{ v$.name.$errors[0]?.$message }}
+          </FormMessage>
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="email">
+      <FormField v-slot="{ componentField }" name="email" :error="v$.email.$error">
         <FormItem>
-          <FormLabel>Email address</FormLabel>
+          <FormLabel>Email</FormLabel>
           <FormControl>
-            <Input type="text" v-bind="componentField" />
+            <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = $event" :model-value="formData.email" />
           </FormControl>
-          <FormMessage />
+          <FormMessage v-if="v$.email.$error">
+            {{ v$.email.$errors[0]?.$message }}
+          </FormMessage>
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="phoneNumber">
+      <FormField v-if="!isEditing" v-slot="{ componentField }" name="password" :error="v$.password.$error">
         <FormItem>
-          <FormLabel>Phone Number</FormLabel>
+          <FormLabel>Password</FormLabel>
           <FormControl>
-            <Input type="text" v-bind="componentField" />
+            <Input type="password" v-bind="componentField" @blur="v$.password.$touch" @update:model-value="formData.password = $event" :model-value="formData.password" />
           </FormControl>
-          <FormMessage />
+          <FormMessage v-if="v$.password.$error">
+            {{ v$.password.$errors[0]?.$message }}
+          </FormMessage>
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="status">
+      <FormField v-if="isEditing" v-slot="{ componentField }" name="password">
         <FormItem>
-          <FormLabel>Status</FormLabel>
+          <FormLabel>New Password (optional)</FormLabel>
           <FormControl>
-            <Select v-bind="componentField">
-              <FormControl>
-                <SelectTrigger class="w-full">
-                  <SelectValue placeholder="Select a status" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem v-for="state in status" :key="state" :value="state">
-                    {{ state }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Input type="password" v-bind="componentField" @update:model-value="formData.password = $event" :model-value="formData.password" />
           </FormControl>
-          <FormMessage />
         </FormItem>
       </FormField>
-      <FormField v-slot="{ componentField }" name="role">
+
+      <FormField v-slot="{ componentField }" name="role" :error="v$.role.$error">
         <FormItem>
           <FormLabel>Role</FormLabel>
           <FormControl>
-            <Select v-bind="componentField">
+            <Select v-bind="componentField" @update:model-value="formData.role = $event" :model-value="formData.role">
               <FormControl>
                 <SelectTrigger class="w-full">
                   <SelectValue placeholder="Select a role" />
@@ -149,12 +148,14 @@ const onSubmit = handleSubmit((values) => {
               </SelectContent>
             </Select>
           </FormControl>
-          <FormMessage />
+          <FormMessage v-if="v$.role.$error">
+            {{ v$.role.$errors[0]?.$message }}
+          </FormMessage>
         </FormItem>
       </FormField>
 
-      <Button type="submit" class="w-full">
-        SaveChanges
+      <Button type="submit" class="w-full" :disabled="createUserMutation.isPending.value || updateUserMutation.isPending.value">
+        {{ createUserMutation.isPending.value || updateUserMutation.isPending.value ? 'Saving...' : (isEditing ? 'Update User' : 'Create User') }}
       </Button>
     </form>
   </div>

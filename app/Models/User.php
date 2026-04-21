@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasRoles, LogsActivity, Notifiable;
+    use HasApiTokens, HasRoles, Notifiable;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'name',
@@ -19,6 +21,7 @@ class User extends Authenticatable
         'role',
         'is_active',
         'locale',
+        'avatar',
     ];
 
     protected $hidden = [
@@ -43,12 +46,5 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return in_array($this->role, ['super_admin', 'admin']);
-    }
-
-    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
-    {
-        return \Spatie\Activitylog\LogOptions::defaults()
-            ->logOnly(['name', 'email', 'role', 'is_active'])
-            ->logOnlyDirty();
     }
 }

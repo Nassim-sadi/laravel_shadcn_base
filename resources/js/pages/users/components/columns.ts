@@ -7,17 +7,15 @@ import { Copy } from '@/components/prop-ui/copy'
 import Badge from '@/components/ui/badge/Badge.vue'
 
 import type { User } from '../data/schema'
-
-import { callTypes, userTypes } from '../data/data'
 import DataTableRowActions from './data-table-row-actions.vue'
 
 export const columns: ColumnDef<User>[] = [
   SelectColumn as ColumnDef<User>,
   {
-    accessorKey: 'username',
-    header: ({ column }) => h(DataTableColumnHeader<User>, { column, title: 'username' }),
-    cell: ({ row }) => h('div', { }, row.getValue('username')),
-    enableSorting: false,
+    accessorKey: 'name',
+    header: ({ column }) => h(DataTableColumnHeader<User>, { column, title: 'Name' }),
+    cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('name')),
+    enableSorting: true,
     enableHiding: false,
     enableResizing: true,
   },
@@ -25,37 +23,11 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'email',
     header: ({ column }) => h(DataTableColumnHeader<User>, { column, title: 'Email' }),
-    cell: ({ row }) => h('div', { }, [
+    cell: ({ row }) => h('div', { class: 'flex items-center' }, [
       h('span', {}, row.getValue('email')),
       h(Copy, { class: 'ml-2', size: 'sm', content: (row.getValue('email') || '') as string }),
     ]),
-    enableSorting: false,
-    enableResizing: true,
-  },
-
-  {
-    accessorKey: 'phoneNumber',
-    header: ({ column }) => h(DataTableColumnHeader<User>, { column, title: 'PhoneNumber' }),
-    cell: ({ row }) => h('div', { }, row.getValue('phoneNumber')),
-    enableSorting: false,
-    enableResizing: true,
-  },
-
-  {
-    accessorKey: 'status',
-    header: ({ column }) => h(DataTableColumnHeader<User>, { column, title: 'Status' }),
-
-    cell: ({ row }) => {
-      const callType = callTypes.find(callType => callType.value === row.getValue('status'))
-
-      if (!callType)
-        return null
-
-      return h(Badge, { class: `${callType.style || ''}`, variant: 'outline' }, () => callType.label)
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
+    enableSorting: true,
     enableResizing: true,
   },
 
@@ -63,19 +35,24 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: 'role',
     header: ({ column }) => h(DataTableColumnHeader<User>, { column, title: 'Role' }),
     cell: ({ row }) => {
-      const priority = userTypes.find(
-        priority => priority.value === row.getValue('role'),
-      )
-
-      if (!priority)
-        return null
-
-      return h('div', { class: 'flex items-center' }, [
-        priority.icon && h(priority.icon, { class: 'mr-2 h-4 w-4 text-muted-foreground' }),
-        h('span', {}, priority.label),
-      ])
+      const role = row.getValue('role') as string
+      return h(Badge, { variant: 'outline' }, () => role)
     },
-    enableSorting: false,
+    enableSorting: true,
+    enableResizing: true,
+  },
+
+  {
+    accessorKey: 'is_active',
+    header: ({ column }) => h(DataTableColumnHeader<User>, { column, title: 'Status' }),
+    cell: ({ row }) => {
+      const isActive = row.getValue('is_active') as boolean
+      return h(Badge, {
+        class: isActive ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500',
+        variant: 'outline',
+      }, () => isActive ? 'Active' : 'Inactive')
+    },
+    enableSorting: true,
     enableResizing: true,
   },
 

@@ -1,63 +1,96 @@
 <script setup lang="ts">
-import { SendIcon } from '@lucide/vue'
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, helpers } from '@vuelidate/validators'
+import { Send as SendIcon } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 import Button from '@/components/ui/button/Button.vue'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 
-import type { UserInviteValidator } from '../validators/user-invite.validator'
+import { useInviteUserMutation } from '@/services/api/users.api'
+import type { User } from '../data/schema'
 
-import { userInviteValidator } from '../validators/user-invite.validator'
+const props = defineProps<{
+  user?: User
+}>()
 
-const roles = ['superadmin', 'admin', 'cashier', 'manager'] as const
+const emit = defineEmits<{
+  (e: 'success'): void
+  (e: 'close'): void
+}>()
 
-const initialValues = reactive<UserInviteValidator>({
-  email: '',
-  role: 'cashier',
-  description: '',
+const roles = ['super_admin', 'admin', 'user', 'guest'] as const
+
+const formData = reactive({
+  email: props.user?.email ?? '',
+  name: props.user?.name ?? '',
+  role: props.user?.role ?? 'user',
 })
-const userInviteFormSchema = toTypedSchema(userInviteValidator)
-const { handleSubmit } = useForm({
-  validationSchema: userInviteFormSchema,
-  initialValues,
-})
 
-const onSubmit = handleSubmit((values) => {
-  toast('You submitted the following values:', {
-    description: h(
-      'pre',
-      { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' },
-      h('code', { class: 'text-white' }, JSON.stringify(values, null, 2)),
-    ),
-  })
-})
+const rules = {
+  email: { required: helpers.withMessage('Email is required', required), email: helpers.withMessage('Invalid email', email) },
+  name: { required: helpers.withMessage('Name is required', required) },
+  role: { required },
+}
+
+const v$ = useVuelidate(rules, formData)
+const inviteUserMutation = useInviteUserMutation()
+
+const isEditing = computed(() => !!props.user?.id)
+
+async function onSubmit() {
+  const isValid = await v$.value.$validate()
+  if (!isValid) return
+
+  try {
+    const result = await inviteUserMutation.mutateAsync({
+      email: formData.email,
+      name: formData.name,
+      role: formData.role,
+    })
+    toast.success(`User invited! Temporary password: ${result.temporary_password}`)
+    emit('success')
+    emit('close')
+  }
+  catch (error: any) {
+    toast.error(error.message ?? 'Failed to invite user')
+  }
+}
 </script>
 
 <template>
-  <form class="space-y-8" @submit="onSubmit">
-    <FormField v-slot="{ componentField }" name="email">
+  <form class="space-y-6" @submit.prevent="onSubmit">
+    <FormField v-slot="{ componentField }" name="name" :error="v$.name.$error">
+      <FormItem>
+        <FormLabel>Name</FormLabel>
+        <FormControl>
+          <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = $event" :model-value="formData.name" />
+        </FormControl>
+        <FormMessage v-if="v$.name.$error">
+          {{ v$.name.$errors[0]?.$message }}
+        </FormMessage>
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="email" :error="v$.email.$error">
       <FormItem>
         <FormLabel>Email address</FormLabel>
         <FormControl>
-          <Input type="text" v-bind="componentField" />
+          <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = $event" :model-value="formData.email" />
         </FormControl>
-        <FormMessage />
+        <FormMessage v-if="v$.email.$error">
+          {{ v$.email.$errors[0]?.$message }}
+        </FormMessage>
       </FormItem>
     </FormField>
 
     <FormField v-slot="{ componentField }" name="role">
       <FormItem>
-        <FormLabel>
-          Role
-          <span class="text-destructive"> *</span>
-        </FormLabel>
+        <FormLabel>Role</FormLabel>
         <FormControl>
-          <Select v-bind="componentField">
+          <Select v-bind="componentField" @update:model-value="formData.role = $event" :model-value="formData.role">
             <FormControl>
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select a role" />
@@ -72,23 +105,12 @@ const onSubmit = handleSubmit((values) => {
             </SelectContent>
           </Select>
         </FormControl>
-        <FormMessage />
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ componentField }" name="description">
-      <FormItem>
-        <FormLabel>Description(Optional)</FormLabel>
-        <FormControl>
-          <Textarea v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
-    <Button type="submit" class="w-full">
-      Invite
-      <SendIcon />
+    <Button type="submit" class="w-full" :disabled="inviteUserMutation.isPending.value">
+      {{ inviteUserMutation.isPending.value ? 'Inviting...' : 'Invite' }}
+      <SendIcon class="ml-2 size-4" />
     </Button>
   </form>
 </template>

@@ -1,39 +1,35 @@
 <script setup lang="ts">
-import { LoaderIcon } from '@lucide/vue'
-
+import { computed } from 'vue'
 import { BasicPage } from '@/components/global-layout'
+import { useGetUsersQuery } from '@/services/api/users.api'
 
 import { columns } from './components/columns'
 import DataTable from './components/data-table.vue'
 import UserCreate from './components/user-create.vue'
 import UserInvite from './components/user-invite.vue'
-import { users } from './data/users'
 
-const loading = ref(false)
+const { data, isLoading, error, refetch } = useGetUsersQuery()
 
-function mockLoading() {
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-  }, 2000)
-}
+const users = computed(() => {
+  console.log('FULL RESPONSE:', data.value)
+  const d = data.value as any
+  return d?.data ?? []
+})
+const loading = isLoading
 </script>
 
 <template>
   <BasicPage
     title="Users"
-    description="Users description"
+    description="Manage your team members and their account permissions"
     sticky
   >
     <template #actions>
       <UserInvite />
       <UserCreate />
-      <UiButton variant="outline" @click="mockLoading">
-        <LoaderIcon />Mock Loading
-      </UiButton>
     </template>
     <div class="overflow-x-auto">
-      <DataTable :loading :data="users" :columns="columns" />
+      <DataTable :loading="loading" :data="users" :columns="columns" @refresh="refetch" />
     </div>
   </BasicPage>
 </template>

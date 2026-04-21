@@ -2,23 +2,32 @@
 import { toast } from 'vue-sonner'
 
 import { ModalClose, ModalDescription, ModalFooter, ModalHeader, ModalTitle } from '@/components/prop-ui/modal'
+import { Button } from '@/components/ui/button'
 
 import type { User } from '../data/schema'
+import { useDeleteUserMutation } from '@/services/api/users.api'
 
-const { user } = defineProps<{
+const props = defineProps<{
   user: User
 }>()
 
-const emits = defineEmits<{
+const emit = defineEmits<{
   (e: 'remove'): void
+  (e: 'close'): void
 }>()
 
-function handleRemove() {
-  toast(`The following task has been deleted:`, {
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(user, null, 2))),
-  })
+const deleteUserMutation = useDeleteUserMutation()
 
-  emits('remove')
+async function handleRemove() {
+  try {
+    await deleteUserMutation.mutateAsync(props.user.id)
+    toast.success('User deleted successfully')
+    emit('remove')
+    emit('close')
+  }
+  catch (error: any) {
+    toast.error(error.message ?? 'Failed to delete user')
+  }
 }
 </script>
 
@@ -26,7 +35,7 @@ function handleRemove() {
   <div>
     <ModalHeader>
       <ModalTitle>
-        Delete this user: {{ user.username }} ?
+        Delete this user: {{ user.name }} ?
       </ModalTitle>
 
       <ModalDescription>
@@ -36,16 +45,14 @@ function handleRemove() {
 
     <ModalFooter>
       <ModalClose as-child>
-        <UiButton variant="outline">
+        <Button variant="outline">
           Cancel
-        </UiButton>
+        </Button>
       </ModalClose>
 
-      <ModalClose as-child>
-        <UiButton variant="destructive" @click="handleRemove">
-          Delete
-        </UiButton>
-      </ModalClose>
+      <Button variant="destructive" @click="handleRemove" :disabled="deleteUserMutation.isPending.value">
+        {{ deleteUserMutation.isPending.value ? 'Deleting...' : 'Delete' }}
+      </Button>
     </ModalFooter>
   </div>
 </template>

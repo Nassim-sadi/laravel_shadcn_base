@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { BadgeCheckIcon, BellIcon, ChevronsUpDownIcon, CreditCardIcon, LogOutIcon, SparklesIcon, UserRoundCogIcon } from '@lucide/vue'
+import { BadgeCheckIcon, BellIcon, ChevronsUpDownIcon, LogOutIcon, UserRoundCogIcon } from '@lucide/vue'
 
 import { useSidebar } from '@/components/ui/sidebar'
+import { useAuth } from '@/composables/use-auth'
 
 import type { User } from './types'
 
@@ -25,7 +26,7 @@ const { isMobile, open } = useSidebar()
             <UiAvatar class="size-8 rounded-lg">
               <UiAvatarImage :src="user.avatar" :alt="user.name" />
               <UiAvatarFallback class="rounded-lg">
-                CN
+                {{ user.name?.charAt(0) ?? 'A' }}
               </UiAvatarFallback>
             </UiAvatar>
             <div class="grid flex-1 text-sm leading-tight text-left">
@@ -46,7 +47,7 @@ const { isMobile, open } = useSidebar()
               <UiAvatar class="size-8 rounded-lg">
                 <UiAvatarImage :src="user.avatar" :alt="user.name" />
                 <UiAvatarFallback class="rounded-lg">
-                  CN
+                  {{ user.name?.charAt(0) ?? 'A' }}
                 </UiAvatarFallback>
               </UiAvatar>
               <div class="grid flex-1 text-sm leading-tight text-left">
@@ -58,31 +59,15 @@ const { isMobile, open } = useSidebar()
 
           <UiDropdownMenuSeparator />
           <UiDropdownMenuGroup>
-            <UiDropdownMenuItem @click="$router.push('/billing/')">
-              <SparklesIcon />
-              Upgrade to Pro
-            </UiDropdownMenuItem>
-          </UiDropdownMenuGroup>
-
-          <UiDropdownMenuSeparator />
-          <UiDropdownMenuGroup>
-            <UiDropdownMenuItem @click="$router.push('/billing?type=billing')">
-              <CreditCardIcon />
-              Billing
-            </UiDropdownMenuItem>
-          </UiDropdownMenuGroup>
-
-          <UiDropdownMenuSeparator />
-          <UiDropdownMenuGroup>
-            <UiDropdownMenuItem @click="$router.push('/settings/')">
+            <UiDropdownMenuItem @click="$router.push('/admin/settings')">
               <UserRoundCogIcon />
               Profile
             </UiDropdownMenuItem>
-            <UiDropdownMenuItem @click="$router.push('/settings/account')">
+            <UiDropdownMenuItem @click="$router.push('/admin/settings/account')">
               <BadgeCheckIcon />
               Account
             </UiDropdownMenuItem>
-            <UiDropdownMenuItem @click="$router.push('/settings/notifications')">
+            <UiDropdownMenuItem @click="$router.push('/admin/settings/notifications')">
               <BellIcon />
               Notifications
             </UiDropdownMenuItem>
@@ -91,7 +76,7 @@ const { isMobile, open } = useSidebar()
           <UiDropdownMenuSeparator />
           <UiDropdownMenuItem @click="logout">
             <LogOutIcon />
-            {{ $t('logout') }}
+            Logout
           </UiDropdownMenuItem>
         </UiDropdownMenuContent>
       </UiDropdownMenu>

@@ -17,6 +17,9 @@ declare global {
   const THEMES: typeof import('../constants/themes').THEMES
   const THEMES_COLOR: typeof import('../constants/themes')['THEMES_COLOR']
   const THEME_PRIMARY_COLORS: typeof import('../constants/themes').THEME_PRIMARY_COLORS
+  const canAccessRoute: typeof import('../composables/use-role').canAccessRoute
+  const canAllPermissions: typeof import('../composables/use-role').canAllPermissions
+  const canAnyPermission: typeof import('../composables/use-role').canAnyPermission
   const computed: typeof import('vue').computed
   const createApp: typeof import('vue').createApp
   const customRef: typeof import('vue').customRef
@@ -28,12 +31,16 @@ declare global {
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const h: typeof import('vue').h
+  const hasPermission: typeof import('../composables/use-role').hasPermission
+  const hasRole: typeof import('../composables/use-role').hasRole
   const inject: typeof import('vue').inject
+  const isAdmin: typeof import('../composables/use-role').isAdmin
   const isProxy: typeof import('vue').isProxy
   const isReactive: typeof import('vue').isReactive
   const isReadonly: typeof import('vue').isReadonly
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
+  const isSuperAdmin: typeof import('../composables/use-role').isSuperAdmin
   const logout: typeof import('../composables/use-auth')['logout']
   const markRaw: typeof import('vue').markRaw
   const nextTick: typeof import('vue').nextTick

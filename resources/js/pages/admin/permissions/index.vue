@@ -1,37 +1,11 @@
 <script lang="ts" setup>
-import { faker } from '@faker-js/faker'
-
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
+import { useGetPermissionsQuery } from '@/services/api/permissions.api'
 
-interface Permission {
-  id: number
-  name: string
-  guard_name: string
-  description: string
-  created_at: string
-}
+const { data: permissionsResponse, isLoading, refetch } = useGetPermissionsQuery()
 
-const permissions = ref<Permission[]>(Array.from({ length: 30 }, (_, i) => ({
-  id: i + 1,
-  name: faker.helpers.arrayElement([
-    'view_any_role',
-    'view_role',
-    'create_role',
-    'update_role',
-    'delete_role',
-    'view_any_user',
-    'view_user',
-    'create_user',
-    'update_user',
-    'delete_user',
-    'view_dashboard',
-    'manage_settings',
-  ]),
-  guard_name: 'web',
-  description: faker.lorem.sentence(),
-  created_at: faker.date.past().toISOString(),
-})))
+const permissions = computed(() => permissionsResponse.value?.data?.data ?? [])
 
 const columns = [
   {
@@ -43,8 +17,8 @@ const columns = [
     header: 'Guard',
   },
   {
-    accessorKey: 'description',
-    header: 'Description',
+    accessorKey: 'group',
+    header: 'Group',
   },
   {
     accessorKey: 'created_at',
@@ -56,7 +30,7 @@ const columns = [
 <template>
   <BasicPage title="Permissions" description="Manage system permissions" sticky>
     <template #actions>
-      <Button>Sync Permissions</Button>
+      <Button @click="refetch">Refresh</Button>
     </template>
     <div class="overflow-x-auto">
       <div class="rounded-md border">
@@ -80,10 +54,10 @@ const columns = [
                 <span class="text-muted-foreground text-sm">{{ permission.guard_name }}</span>
               </td>
               <td class="px-4 py-3">
-                <span class="text-muted-foreground text-sm">{{ permission.description }}</span>
+                <span class="text-muted-foreground text-sm">{{ permission.group ?? '-' }}</span>
               </td>
               <td class="px-4 py-3">
-                <span class="text-muted-foreground text-sm">{{ new Date(permission.created_at).toLocaleDateString() }}</span>
+                <span class="text-muted-foreground text-sm">{{ permission.created_at ? new Date(permission.created_at).toLocaleDateString() : '-' }}</span>
               </td>
               <td class="px-4 py-3 text-right">
                 <Button variant="ghost" size="sm">

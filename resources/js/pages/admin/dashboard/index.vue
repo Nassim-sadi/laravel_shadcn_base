@@ -1,16 +1,50 @@
 <script lang="ts" setup>
+import { toast } from 'vue-sonner'
+
 import { BasicPage } from '@/components/global-layout'
+import { Button } from '@/components/ui/button'
+
+import OverviewContent from './components/overview-content.vue'
+
+const tabs = ref([
+  { name: 'Overview', value: 'overview' },
+  { name: 'Analytics', value: 'analytics', disabled: true },
+  { name: 'Reports', value: 'reports', disabled: true },
+  { name: 'Notifications', value: 'notifications', disabled: true },
+])
+
+const activeTab = ref(tabs.value[0].value)
 </script>
 
 <template>
   <BasicPage
-    title="Dashboard"
-    description="Welcome back!"
+    title="workspace"
+    description="workspace description"
     sticky
   >
-    <div class="p-4">
-      <h1 class="text-2xl font-bold">Welcome back!</h1>
-      <p class="text-muted-foreground mt-2">This is your admin dashboard.</p>
-    </div>
+    <template #actions>
+      <Button
+        @click="() => toast('hello', {
+          position: 'top-center',
+        })"
+      >
+        {{ $t('download') }}
+      </Button>
+    </template>
+
+    <UiTabs :default-value="activeTab" class="w-full">
+      <UiTabsList>
+        <UiTabsTrigger
+          v-for="tab in tabs" :key="tab.value"
+          :value="tab.value"
+          :disabled="tab.disabled"
+        >
+          {{ tab.name }}
+        </UiTabsTrigger>
+      </UiTabsList>
+      <UiTabsContent value="overview" class="space-y-4">
+        <OverviewContent />
+      </UiTabsContent>
+    </UiTabs>
   </BasicPage>
 </template>

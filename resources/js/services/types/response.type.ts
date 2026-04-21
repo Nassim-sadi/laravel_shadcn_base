@@ -1,9 +1,9 @@
 export interface IResponse<T, E = Record<string, any>> {
-  data: T
-  extra: E
-  code: number
-  message: string
-  success: boolean
+  data?: T
+  extra?: E
+  code?: number
+  message?: string
+  success?: boolean
 }
 
 export interface IPaginationRequestQuery {

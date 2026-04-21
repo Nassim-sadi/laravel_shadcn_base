@@ -1,26 +1,11 @@
 <script lang="ts" setup>
-import { faker } from '@faker-js/faker'
-
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
+import { useGetRolesQuery } from '@/services/api/roles.api'
 
-interface Role {
-  id: number
-  name: string
-  guard_name: string
-  description: string
-  permissions_count: number
-  created_at: string
-}
+const { data: rolesResponse, isLoading, refetch } = useGetRolesQuery()
 
-const roles = ref<Role[]>(Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  name: faker.helpers.arrayElement(['super_admin', 'admin', 'manager', 'editor', 'viewer']),
-  guard_name: 'web',
-  description: faker.lorem.sentence(),
-  permissions_count: faker.number.int({ min: 1, max: 20 }),
-  created_at: faker.date.past().toISOString(),
-})))
+const roles = computed(() => rolesResponse.value?.data?.data ?? [])
 
 const columns = [
   {
@@ -36,8 +21,9 @@ const columns = [
     header: 'Description',
   },
   {
-    accessorKey: 'permissions_count',
+    accessorKey: 'permissions',
     header: 'Permissions',
+    cell: (row: any) => row.permissions?.length ?? 0,
   },
   {
     accessorKey: 'created_at',
@@ -49,10 +35,10 @@ const columns = [
 <template>
   <BasicPage title="Roles" description="Manage user roles and permissions" sticky>
     <template #actions>
+      <Button @click="refetch">Refresh</Button>
       <Button>Create Role</Button>
     </template>
     <div class="overflow-x-auto">
-      <!-- <DataTable :columns :data :loading :table /> -->
       <div class="rounded-md border">
         <table class="w-full">
           <thead>
@@ -77,10 +63,10 @@ const columns = [
                 <span class="text-muted-foreground text-sm">{{ role.description }}</span>
               </td>
               <td class="px-4 py-3">
-                <span class="text-muted-foreground text-sm">{{ role.permissions_count }}</span>
+                <span class="text-muted-foreground text-sm">{{ role.permissions?.length ?? 0 }}</span>
               </td>
               <td class="px-4 py-3">
-                <span class="text-muted-foreground text-sm">{{ new Date(role.created_at).toLocaleDateString() }}</span>
+                <span class="text-muted-foreground text-sm">{{ role.created_at ? new Date(role.created_at).toLocaleDateString() : '-' }}</span>
               </td>
               <td class="px-4 py-3 text-right">
                 <Button variant="ghost" size="sm">

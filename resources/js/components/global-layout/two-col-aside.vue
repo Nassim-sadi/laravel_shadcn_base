@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ChevronsUpDownIcon } from '@lucide/vue'
+import { useRoute } from 'vue-router'
 
 import type { TwoColAsideNavItem } from './types'
 

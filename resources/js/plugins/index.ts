@@ -8,6 +8,8 @@ import { setupPinia } from './pinia/setup'
 import { setupRouter } from './router/setup'
 import { setupTanstackVueQuery } from './tanstack-vue-query/setup'
 
+import { vPermission } from '@/directives/permission'
+
 export function setupPlugins(app: App) {
   setupDayjs()
   setupNProgress()
@@ -16,4 +18,6 @@ export function setupPlugins(app: App) {
   setupI18n(app)
   setupPinia(app)
   setupRouter(app)
+
+  app.directive('permission', vPermission)
 }

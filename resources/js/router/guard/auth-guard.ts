@@ -3,6 +3,7 @@ import type { Router } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import pinia from '@/plugins/pinia/setup'
+import { hasPermission, hasRole } from '@/composables/use-role'
 import { useAuthStore } from '@/stores/auth'
 
 export function setupAuthGuard(router: Router) {
@@ -27,9 +28,19 @@ export function setupAuthGuard(router: Router) {
 
     if (isAdminPage && !isLogin.value) {
       return {
-        path: '/auth/sign-in',
+        path: '/auth/login',
         query: { redirect: to.fullPath },
       }
+    }
+
+    const requiredRole = to.meta.requiredRole as string | undefined
+    if (requiredRole && !hasRole(requiredRole)) {
+      return { path: '/admin' }
+    }
+
+    const requiredPermission = to.meta.requiredPermission as string | undefined
+    if (requiredPermission && !hasPermission(requiredPermission)) {
+      return { path: '/admin' }
     }
   })
 }

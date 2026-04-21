@@ -1,46 +1,20 @@
 <script lang="ts" setup>
-import { faker } from '@faker-js/faker'
-
 import { BasicPage } from '@/components/global-layout'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useGetActivityLogsQuery } from '@/services/api/activity-log.api'
 
-interface ActivityLog {
-  id: number
-  log_name: string
-  description: string
-  event: string
-  subject_type?: string
-  causer_name?: string
-  properties?: Record<string, unknown>
-  created_at: string
-}
+const { data: logsResponse, isLoading, refetch } = useGetActivityLogsQuery()
 
-const logs = ref<ActivityLog[]>(Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  log_name: faker.helpers.arrayElement(['default', 'admin', 'auth']),
-  description: faker.helpers.arrayElement([
-    'created a new user',
-    'updated role permissions',
-    'deleted a task',
-    'logged in',
-    'changed settings',
-    'exported data',
-  ]),
-  event: faker.helpers.arrayElement(['created', 'updated', 'deleted', 'restored']),
-  subject_type: faker.helpers.arrayElement(['App\\Models\\User', 'App\\Models\\Role', 'App\\Models\\Task']),
-  causer_name: faker.person.fullName(),
-  properties: { ip: faker.internet.ipv4() },
-  created_at: faker.date.recent().toISOString(),
-})))
+const logs = computed(() => logsResponse.value?.data?.data ?? [])
 
-function getEventColor(event: string) {
+function getEventColor(event: string | null) {
   switch (event) {
     case 'created': return 'default'
     case 'updated': return 'secondary'
     case 'deleted': return 'destructive'
     case 'restored': return 'outline'
-    default: return 'default'
+    default: return 'outline'
   }
 }
 </script>
@@ -48,8 +22,8 @@ function getEventColor(event: string) {
 <template>
   <BasicPage title="Activity Logs" description="View system activity history" sticky>
     <template #actions>
-      <Button variant="outline">
-        Export
+      <Button variant="outline" @click="refetch">
+        Refresh
       </Button>
     </template>
     <div class="space-y-4">
@@ -58,13 +32,18 @@ function getEventColor(event: string) {
           <div class="flex items-center gap-2">
             <span class="font-medium">{{ log.description }}</span>
             <Badge :variant="getEventColor(log.event)">
-              {{ log.event }}
+              {{ log.event ?? 'action' }}
             </Badge>
           </div>
           <p class="text-sm text-muted-foreground">
-            {{ log.subject_type }} • by {{ log.causer_name }} • {{ new Date(log.created_at).toLocaleString() }}
+            {{ log.subject_type ?? 'N/A' }}
+            <span v-if="log.causer"> • by {{ (log.causer as any).name ?? (log.causer as any).email }}</span>
+            • {{ new Date(log.created_at).toLocaleString() }}
           </p>
         </div>
+      </div>
+      <div v-if="logs.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">
+        No activity logs found
       </div>
     </div>
   </BasicPage>

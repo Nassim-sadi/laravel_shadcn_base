@@ -7,6 +7,17 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value)
   const isLogin = computed(() => !!user.value)
 
+  const roles = computed(() => user.value?.roles ?? [])
+  const permissions = computed(() => user.value?.permissions ?? [])
+
+  function hasRole(role: string): boolean {
+    return roles.value.includes(role)
+  }
+
+  function hasPermission(permission: string): boolean {
+    return permissions.value.includes(permission)
+  }
+
   const setUser = (newUser: IUser | null) => {
     user.value = newUser
   }
@@ -19,6 +30,10 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     isAuthenticated,
     isLogin,
+    roles,
+    permissions,
+    hasRole,
+    hasPermission,
     setUser,
     clearUser,
   }

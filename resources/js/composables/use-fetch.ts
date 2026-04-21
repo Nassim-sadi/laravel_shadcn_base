@@ -1,7 +1,5 @@
 import { useCookies } from '@vueuse/integrations/useCookies'
-/**
- * ofetch: https://github.com/unjs/ofetch
- */
+import { useRouter } from 'vue-router'
 import { ofetch } from 'ofetch'
 
 import { API_BASE_URL, API_TIMEOUT } from '@/constants/app-config'
@@ -10,19 +8,23 @@ const AUTH_TOKEN_NAME = 'auth_token'
 
 export function useApiFetch() {
   const cookies = useCookies([AUTH_TOKEN_NAME])
+  const router = useRouter()
 
   const apiFetch = ofetch.create({
     baseURL: API_BASE_URL,
     timeout: API_TIMEOUT ?? 0,
-    async onRequest(_request) {
+    async onRequest({ request }) {
       const currentToken = cookies.get(AUTH_TOKEN_NAME)
-      if (currentToken) {
-        // Token will be added via cookie header on server side
+      if (currentToken && request.headers) {
+        request.headers.set('Authorization', `Bearer ${currentToken}`)
       }
     },
-    onRequestError: (_error) => {},
-    onResponse: (_response) => {},
-    onResponseError: (_error) => {},
+    onResponseError({ response }) {
+      if (response.status === 401) {
+        cookies.remove(AUTH_TOKEN_NAME)
+        router.push('/auth/login')
+      }
+    },
   })
 
   const setToken = (newToken: string) => {
@@ -37,10 +39,15 @@ export function useApiFetch() {
     return cookies.get(AUTH_TOKEN_NAME)
   }
 
+  const isAuthenticated = () => {
+    return !!getToken()
+  }
+
   return {
     apiFetch,
     setToken,
     clearToken,
     getToken,
+    isAuthenticated,
   }
 }
