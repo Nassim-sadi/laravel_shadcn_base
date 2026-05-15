@@ -1,10 +1,11 @@
 import { useStorage } from '@vueuse/core'
 
-export type Language = 'en' | 'zh'
+export type Language = 'en' | 'fr' | 'ar'
 
 export const SUPPORTED_LOCALES = new Set<Language>([
   'en',
-  'zh',
+  'fr',
+  'ar',
 ])
 
 export const DEFAULT_LOCALE: Language = 'en'

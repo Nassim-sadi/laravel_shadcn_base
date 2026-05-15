@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { sidebarData } from './data/sidebar-data'
+import AppIdentity from './app-identity.vue'
 import NavFooter from './nav-footer.vue'
 import NavTeam from './nav-team.vue'
-import TeamSwitcher from './team-switcher.vue'
 </script>
 
 <template>
   <UiSidebar collapsible="icon" class="z-50">
     <UiSidebarHeader>
-      <TeamSwitcher :teams="sidebarData.teams" />
+      <AppIdentity />
     </UiSidebarHeader>
 
     <UiSidebarContent>

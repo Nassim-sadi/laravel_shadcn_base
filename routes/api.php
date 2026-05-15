@@ -5,6 +5,11 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\ContactMessageController;
+use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\TestimonialController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('json.response')->group(function () {
@@ -50,5 +55,20 @@ Route::middleware('json.response')->group(function () {
         Route::get('/activity-logs/{activity}', [ActivityLogController::class, 'show']);
         Route::get('/activity-logs/log-names', [ActivityLogController::class, 'getLogNames']);
         Route::get('/activity-logs/events', [ActivityLogController::class, 'getEvents']);
+        
+        // Services
+        Route::apiResource('services', ServiceController::class);
+        
+        // Projects
+        Route::apiResource('projects', ProjectController::class);
+        
+        // Testimonials
+        Route::apiResource('testimonials', TestimonialController::class);
+        
+        // FAQs
+        Route::apiResource('faqs', FaqController::class);
+        
+        // Contact Messages
+        Route::apiResource('contact-messages', ContactMessageController::class);
     });
 });

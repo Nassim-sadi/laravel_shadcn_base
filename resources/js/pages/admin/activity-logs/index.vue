@@ -37,7 +37,7 @@ function getEventColor(event: string | null) {
           </div>
           <p class="text-sm text-muted-foreground">
             {{ log.subject_type ?? 'N/A' }}
-            <span v-if="log.causer"> • by {{ (log.causer as any).name ?? (log.causer as any).email }}</span>
+            <span v-if="log.user"> • by {{ log.user.name ?? log.user.email }}</span>
             • {{ new Date(log.created_at).toLocaleString() }}
           </p>
         </div>

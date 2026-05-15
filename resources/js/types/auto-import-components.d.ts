@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AppSidebar: typeof import('./../components/app-sidebar/index.vue')['default']
+    AppSidebarAppIdentity: typeof import('./../components/app-sidebar/app-identity.vue')['default']
     AppSidebarMenuButton: typeof import('./../components/app-sidebar/menu-button.vue')['default']
     AppSidebarNavFooter: typeof import('./../components/app-sidebar/nav-footer.vue')['default']
     AppSidebarNavTeam: typeof import('./../components/app-sidebar/nav-team.vue')['default']

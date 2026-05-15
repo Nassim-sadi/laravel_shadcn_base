@@ -11,7 +11,7 @@ const currentUser = authStore.user
 const user: User = {
   name: currentUser?.name ?? 'Admin',
   email: currentUser?.email ?? 'admin@test.com',
-  avatar: currentUser?.avatar ?? '',
+  avatar: currentUser?.avatar_url ?? '',
 }
 
 const teams: Team[] = [

@@ -45,9 +45,13 @@ function handleLocaleChange(val: AcceptableValue) {
           <Icon icon="flag:us-4x3" />
           <span class="ml-2">English</span>
         </UiDropdownMenuRadioItem>
-        <UiDropdownMenuRadioItem value="zh">
-          <Icon icon="flag:cn-4x3" />
-          <span class="ml-2">中文</span>
+        <UiDropdownMenuRadioItem value="fr">
+          <Icon icon="flag:fr-4x3" />
+          <span class="ml-2">Français</span>
+        </UiDropdownMenuRadioItem>
+        <UiDropdownMenuRadioItem value="ar">
+          <Icon icon="flag:dz-4x3" />
+          <span class="ml-2">العربية</span>
         </UiDropdownMenuRadioItem>
       </UiDropdownMenuRadioGroup>
     </UiDropdownMenuContent>

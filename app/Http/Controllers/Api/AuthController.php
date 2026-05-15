@@ -134,6 +134,8 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Avatar uploaded successfully',
                 'avatar' => $path,
+                'avatar_url' => Storage::url($path),
+                'data' => new UserResource($user->fresh()->load(['roles', 'permissions'])),
             ]);
         }
 
@@ -150,7 +152,12 @@ class AuthController extends Controller
 
         $user->update(['avatar' => null]);
 
-        return response()->json(['message' => 'Avatar deleted successfully']);
+        return response()->json([
+            'message' => 'Avatar deleted successfully',
+            'avatar' => null,
+            'avatar_url' => null,
+            'data' => new UserResource($user->fresh()->load(['roles', 'permissions'])),
+        ]);
     }
 
     public function changePassword(Request $request)

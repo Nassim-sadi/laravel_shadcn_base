@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserResource extends JsonResource
 {
@@ -17,10 +19,22 @@ class UserResource extends JsonResource
             'is_active' => $this->is_active,
             'locale' => $this->locale,
             'avatar' => $this->avatar,
+            'avatar_url' => $this->avatar ? Storage::url($this->avatar) : null,
             'roles' => $this->getRoleNames(),
             'permissions' => $this->getPermissionNames(),
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
         ];
+    }
+
+    private function formatDate(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return $value instanceof Carbon
+            ? $value->toIso8601String()
+            : Carbon::parse($value)->toIso8601String();
     }
 }

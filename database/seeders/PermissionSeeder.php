@@ -34,6 +34,42 @@ class PermissionSeeder extends Seeder
             'logs' => [
                 'logs.view',
             ],
+            'services' => [
+                'services.view',
+                'services.create',
+                'services.edit',
+                'services.delete',
+            ],
+            'projects' => [
+                'projects.view',
+                'projects.create',
+                'projects.edit',
+                'projects.delete',
+            ],
+            'testimonials' => [
+                'testimonials.view',
+                'testimonials.create',
+                'testimonials.edit',
+                'testimonials.delete',
+            ],
+            'faqs' => [
+                'faqs.view',
+                'faqs.create',
+                'faqs.edit',
+                'faqs.delete',
+            ],
+            'contact-messages' => [
+                'contact-messages.view',
+                'contact-messages.create',
+                'contact-messages.edit',
+                'contact-messages.delete',
+            ],
+            'email-templates' => [
+                'email-templates.view',
+                'email-templates.create',
+                'email-templates.edit',
+                'email-templates.delete',
+            ],
         ];
 
         foreach ($permissions as $group => $perms) {
@@ -61,6 +97,12 @@ class PermissionSeeder extends Seeder
             'permissions.view',
             'settings.view', 'settings.edit',
             'logs.view',
+            'services.view', 'services.create', 'services.edit',
+            'projects.view', 'projects.create', 'projects.edit',
+            'testimonials.view', 'testimonials.create', 'testimonials.edit',
+            'faqs.view', 'faqs.create', 'faqs.edit',
+            'contact-messages.view', 'contact-messages.create', 'contact-messages.edit',
+            'email-templates.view', 'email-templates.create', 'email-templates.edit',
         ]);
 
         $user = Role::firstOrCreate([

@@ -11,7 +11,6 @@ import UserInvite from './components/user-invite.vue'
 const { data, isLoading, error, refetch } = useGetUsersQuery()
 
 const users = computed(() => {
-  console.log('FULL RESPONSE:', data.value)
   const d = data.value as any
   return d?.data ?? []
 })

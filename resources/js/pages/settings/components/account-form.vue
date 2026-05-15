@@ -11,10 +11,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import { useUserQuery, useUpdateProfileMutation, useChangePasswordMutation, useUploadAvatarMutation } from '@/services/api/auth.api'
+import { useAuthStore } from '@/stores/auth'
 import { cn } from '@/lib/utils'
 import { compressImage, formatFileSize } from '@/lib/image-utils'
 
 const { data: userResponse } = useUserQuery()
+const authStore = useAuthStore()
 const updateProfileMutation = useUpdateProfileMutation()
 const changePasswordMutation = useChangePasswordMutation()
 const uploadAvatarMutation = useUploadAvatarMutation()
@@ -102,7 +104,10 @@ async function onAvatarChange(event: Event) {
     const compressedFile = new File([compressed.blob], file.name, { type: 'image/jpeg' })
     console.log(`Compressed from ${formatFileSize(file.size)} to ${formatFileSize(compressedFile.size)}`)
 
-    await uploadAvatarMutation.mutateAsync(compressedFile)
+    const response = await uploadAvatarMutation.mutateAsync(compressedFile)
+    if (response.data) {
+      authStore.setUser(response.data)
+    }
     toast.success('Avatar uploaded successfully')
 
     uploadProgress.value = 100
@@ -128,7 +133,7 @@ async function onAvatarChange(event: Event) {
     <!-- Avatar -->
     <div class="flex items-center gap-4 mb-6">
       <img
-        :src="user?.avatar ? `/storage/${user.avatar}` : '/placeholder-avatar.png'"
+        :src="user?.avatar_url ?? '/placeholder-avatar.png'"
         alt="Avatar"
         class="w-20 h-20 rounded-full object-cover bg-muted"
       />

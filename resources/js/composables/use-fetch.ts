@@ -10,33 +10,44 @@ export function useApiFetch() {
   const cookies = useCookies(['auth_token'])
   const router = useRouter()
 
+  const getStoredToken = () => {
+    return localStorage.getItem(AUTH_TOKEN_NAME) || cookies.get(AUTH_TOKEN_NAME)
+  }
+
   const apiFetch = ofetch.create({
     baseURL: API_BASE_URL,
     timeout: API_TIMEOUT ?? 0,
     async onRequest({ request, options }) {
-      const currentToken = cookies.get(AUTH_TOKEN_NAME)
+      const currentToken = getStoredToken()
       if (currentToken) {
         options.headers.set('Authorization', `Bearer ${currentToken}`)
       }
     },
     onResponseError({ response }) {
       if (response.status === 401) {
-        cookies.remove(AUTH_TOKEN_NAME)
+        localStorage.removeItem(AUTH_TOKEN_NAME)
+        cookies.remove(AUTH_TOKEN_NAME, { path: '/' })
         router.push('/auth/login')
       }
     },
   })
 
   const setToken = (newToken: string) => {
-    cookies.set(AUTH_TOKEN_NAME, newToken, { expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) })
+    localStorage.setItem(AUTH_TOKEN_NAME, newToken)
+    cookies.set(AUTH_TOKEN_NAME, newToken, {
+      expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      path: '/',
+      sameSite: 'lax',
+    })
   }
 
   const clearToken = () => {
-    cookies.remove(AUTH_TOKEN_NAME)
+    localStorage.removeItem(AUTH_TOKEN_NAME)
+    cookies.remove(AUTH_TOKEN_NAME, { path: '/' })
   }
 
   const getToken = () => {
-    return cookies.get(AUTH_TOKEN_NAME)
+    return getStoredToken()
   }
 
   const isAuthenticated = () => {

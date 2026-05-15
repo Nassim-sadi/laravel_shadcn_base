@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::view('/', 'pages.home')->name('home');
+
 Route::get('/auth/login', function () {
     return view('app');
 })->name('login');

@@ -21,19 +21,19 @@ const { isMobile, open } = useSidebar()
         <UiDropdownMenuTrigger as-child>
           <UiSidebarMenuButton
             size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            class="justify-start data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center"
           >
-            <UiAvatar class="size-8 rounded-lg">
+            <UiAvatar class="size-8 shrink-0 rounded-lg">
               <UiAvatarImage :src="user.avatar" :alt="user.name" />
               <UiAvatarFallback class="rounded-lg">
                 {{ user.name?.charAt(0) ?? 'A' }}
               </UiAvatarFallback>
             </UiAvatar>
-            <div class="grid flex-1 text-sm leading-tight text-left">
+            <div class="grid flex-1 text-sm leading-tight text-left group-data-[collapsible=icon]:hidden">
               <span class="font-semibold truncate">{{ user.name }}</span>
               <span class="text-xs truncate">{{ user.email }}</span>
             </div>
-            <ChevronsUpDownIcon class="ml-auto size-4" />
+            <ChevronsUpDownIcon class="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
           </UiSidebarMenuButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent

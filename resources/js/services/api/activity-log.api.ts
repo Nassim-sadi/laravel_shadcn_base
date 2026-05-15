@@ -6,13 +6,15 @@ import type { IResponse } from '../types/response.type'
 
 export interface IActivityLog {
   id: number
-  log_name: string
-  description: string
+  user_id?: number
+  event: string | null
   subject_type?: string
   subject_id?: number
-  event: string | null
+  description: string
   properties?: Record<string, unknown>
-  causer?: {
+  ip_address?: string
+  user_agent?: string
+  user?: {
     id: number
     name: string
     email: string
@@ -30,9 +32,8 @@ export interface IActivityLogsResponse {
 }
 
 export function useGetActivityLogsQuery(options?: {
-  log_name?: string
   event?: string
-  causer_id?: number
+  user_id?: number
   search?: string
 }) {
   const { apiFetch } = useApiFetch()
@@ -41,9 +42,8 @@ export function useGetActivityLogsQuery(options?: {
     queryKey: ['useGetActivityLogsQuery', options],
     queryFn: async () => {
       const params = new URLSearchParams()
-      if (options?.log_name) params.append('log_name', options.log_name)
       if (options?.event) params.append('event', options.event)
-      if (options?.causer_id) params.append('causer_id', String(options.causer_id))
+      if (options?.user_id) params.append('user_id', String(options.user_id))
       if (options?.search) params.append('search', options.search)
 
       const queryString = params.toString()
@@ -59,23 +59,5 @@ export function useGetActivityLogByIdQuery(id: number) {
   return useQuery<IResponse<IActivityLog>, Error>({
     queryKey: ['useGetActivityLogByIdQuery', id],
     queryFn: async () => apiFetch<IResponse<IActivityLog>>(`/activity-logs/${id}`, { method: 'get' }),
-  })
-}
-
-export function useGetLogNamesQuery() {
-  const { apiFetch } = useApiFetch()
-
-  return useQuery<IResponse<string[]>, Error>({
-    queryKey: ['useGetLogNamesQuery'],
-    queryFn: async () => apiFetch<IResponse<string[]>>('/activity-logs/log-names', { method: 'get' }),
-  })
-}
-
-export function useGetEventsQuery() {
-  const { apiFetch } = useApiFetch()
-
-  return useQuery<IResponse<string[]>, Error>({
-    queryKey: ['useGetEventsQuery'],
-    queryFn: async () => apiFetch<IResponse<string[]>>('/activity-logs/events', { method: 'get' }),
   })
 }

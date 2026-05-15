@@ -43,30 +43,52 @@ const size = computed(() => {
 
 const source = computed(() => props.content)
 
-const { copy, copied, isSupported } = useClipboard({ source })
+const { copy, copied } = useClipboard({ source })
+
+const fallbackCopied = ref(false)
+const isCopied = computed(() => copied.value || fallbackCopied.value)
+
+async function copyContent() {
+  if (navigator.clipboard?.writeText) {
+    await copy(source.value)
+    return
+  }
+
+  const input = document.createElement('textarea')
+  input.value = source.value
+  input.setAttribute('readonly', '')
+  input.style.position = 'fixed'
+  input.style.opacity = '0'
+  document.body.appendChild(input)
+  input.select()
+  document.execCommand('copy')
+  document.body.removeChild(input)
+
+  fallbackCopied.value = true
+  window.setTimeout(() => {
+    fallbackCopied.value = false
+  }, 1500)
+}
 </script>
 
 <template>
-  <span v-if="isSupported">
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <Button
-            :variant="props.variant"
-            :size="size"
-            :class="cn(props.class)"
-            @click="copy(source)"
-          >
-            <CopyIcon v-if="!copied" :class="cn(copyVariants({ iconSize }))" />
-            <CopyCheckIcon v-else :class="cn(copyVariants({ iconSize }))" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p v-if="!copied">{{ props.copyTooltipText }}: {{ props.content }}</p>
-          <p v-else>{{ props.copiedTooltipText }}: {{ props.content }}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  </span>
-  <span v-else>Your browser does not support Clipboard API</span>
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger as-child>
+        <Button
+          :variant="props.variant"
+          :size="size"
+          :class="cn(props.class)"
+          @click="copyContent"
+        >
+          <CopyIcon v-if="!isCopied" :class="cn(copyVariants({ iconSize }))" />
+          <CopyCheckIcon v-else :class="cn(copyVariants({ iconSize }))" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p v-if="!isCopied">{{ props.copyTooltipText }}: {{ props.content }}</p>
+        <p v-else>{{ props.copiedTooltipText }}: {{ props.content }}</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
 </template>

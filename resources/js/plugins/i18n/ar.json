@@ -1,0 +1,42 @@
+{
+  "login": "تسجيل الدخول",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "download": "تحميل",
+  "logout": "تسجيل الخروج",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "register": "تسجيل",
+  "language": "العربية",
+  "forgotPasswordPage": {
+    "continue": "متابعة"
+  },
+  "homePage": {
+    "searchKeyWords": "البحث في القائمة"
+  },
+  "changeLanguage": "تغيير اللغة",
+  "admin": {
+    "dashboard": "لوحة التحكم",
+    "users": "المستخدمين",
+    "roles": "الأدوار",
+    "permissions": "الصلاحيات",
+    "activityLogs": "سجل النشاطات",
+    "settings": "الإعدادات",
+    "services": "الخدمات",
+    "projects": "المشاريع",
+    "testimonials": "الشهادات",
+    "faqs": "الأسئلة الشائعة",
+    "contactMessages": "رسائل الاتصال",
+    "emailTemplates": "قوالب البريد الإلكتروني",
+    "create": "إنشاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "refresh": "تحديث",
+    "search": "بحث",
+    "noData": "لا توجد بيانات",
+    "created": "تم الإنشاء بنجاح",
+    "updated": "تم التحديث بنجاح",
+    "deleted": "تم الحذف بنجاح"
+  }
+}

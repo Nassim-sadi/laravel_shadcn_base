@@ -23,18 +23,18 @@ const activeTeam = computed(() => teams[0] ?? { name: 'Admin', logo: FolderIcon,
         <UiDropdownMenuTrigger as-child>
           <UiSidebarMenuButton
             size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            class="justify-start data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center"
           >
             <div
-              class="flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground"
+              class="flex items-center justify-center rounded-lg aspect-square size-8 shrink-0 bg-sidebar-primary text-sidebar-primary-foreground"
             >
               <component :is="activeTeam.logo" class="size-4" />
             </div>
-            <div class="grid flex-1 text-sm leading-tight text-left">
+            <div class="grid flex-1 text-sm leading-tight text-left group-data-[collapsible=icon]:hidden">
               <span class="font-semibold truncate">{{ activeTeam.name }}</span>
               <span class="text-xs truncate">{{ activeTeam.plan }}</span>
             </div>
-            <ChevronsUpDownIcon v-if="teams.length > 1" class="ml-auto" />
+            <ChevronsUpDownIcon v-if="teams.length > 1" class="ml-auto group-data-[collapsible=icon]:hidden" />
           </UiSidebarMenuButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent
