@@ -2,6 +2,8 @@
 
 @section('title', __('contact.meta_title') . ' - ' . config('app.name', 'NsBase'))
 @section('meta_description', __('contact.meta_description'))
+@section('og_title', __('contact.meta_title') . ' - ' . config('app.name', 'NsBase'))
+@section('og_description', __('contact.meta_description'))
 
 @section('content')
     <section class="bg-base-200/60 py-16">

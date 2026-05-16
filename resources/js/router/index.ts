@@ -27,6 +27,11 @@ const router = createRouter({
         { path: 'contact-messages', component: () => import('../pages/admin/contact-messages/index.vue') },
         { path: 'email-templates', component: () => import('../pages/admin/email-templates/index.vue') },
         { path: 'media', component: () => import('../admin/views/media/Index.vue') },
+
+        // Optional modules — add routes here when the module is built.
+        // Sidebar items auto-appear when the module is enabled in config/modules.php.
+        // Example:
+        // ...(isEnabled('catalog') ? [{ path: 'catalog', component: () => import('../pages/admin/catalog/index.vue') }] : []),
       ],
     },
   ],

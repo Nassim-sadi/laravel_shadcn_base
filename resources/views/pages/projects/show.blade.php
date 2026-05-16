@@ -2,6 +2,8 @@
 
 @section('title', $project->translated('title') . ' - ' . config('app.name', 'NsBase'))
 @section('meta_description', $project->translated('seo_description') ?? Str::limit($project->translated('description'), 160))
+@section('og_title', $project->translated('title') . ' - ' . config('app.name', 'NsBase'))
+@section('og_description', $project->translated('seo_description') ?? Str::limit($project->translated('description'), 160))
 
 @section('content')
     <section class="bg-base-200/60 py-16">

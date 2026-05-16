@@ -2,6 +2,8 @@
 
 @section('title', 'Projects - ' . config('app.name', 'NsBase'))
 @section('meta_description', 'Browse our portfolio of web development and digital projects.')
+@section('og_title', 'Projects - ' . config('app.name', 'NsBase'))
+@section('og_description', 'Browse our portfolio of web development and digital projects.')
 
 @section('content')
     <section class="bg-base-200/60 py-16">

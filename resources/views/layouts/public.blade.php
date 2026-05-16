@@ -15,11 +15,27 @@
         <meta property="og:url" content="{{ url()->current() }}" />
         <meta property="og:type" content="@yield('og_type', 'website')" />
         <meta property="og:site_name" content="{{ config('app.name', 'NsBase') }}" />
-        <meta property="og:image" content="@yield('og_image', asset('images/og-default.png'))" />
+        <meta property="og:image" content="@yield('og_image', (file_exists(public_path('images/og-default.png')) ? asset('images/og-default.png') : ''))" />
 
+        <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="@yield('og_title', config('app.name', 'NsBase'))" />
         <meta name="twitter:description" content="@yield('og_description', 'Structured Laravel business websites with clear Blade frontends and maintainable backend logic.')" />
+
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "{{ config('app.name', 'NsBase') }}",
+            "url": "{{ url('/') }}",
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "email": "{{ setting('email', 'contact@example.com') }}",
+                "telephone": "{{ setting('phone', '') }}",
+                "contactType": "customer service"
+            }
+        }
+        </script>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />

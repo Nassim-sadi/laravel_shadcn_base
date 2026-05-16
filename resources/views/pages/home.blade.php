@@ -2,6 +2,8 @@
 
 @section('title', config('app.name', 'NsBase') . ' - Business Websites and Digital Systems')
 @section('meta_description', 'Explore services, projects, testimonials, and FAQs powered by Laravel structured content.')
+@section('og_title', config('app.name', 'NsBase') . ' - Business Websites and Digital Systems')
+@section('og_description', 'Explore services, projects, testimonials, and FAQs powered by Laravel structured content.')
 
 @section('content')
     <section class="bg-base-200/60">

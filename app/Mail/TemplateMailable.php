@@ -13,29 +13,29 @@ class TemplateMailable extends Mailable
 {
     use Queueable, SerializesModels;
 
+    protected array $rendered;
+
     public function __construct(
         protected string $templateKey,
         protected array $data = [],
         protected ?string $locale = null,
-    ) {}
+    ) {
+        $template = EmailTemplate::where('key', $this->templateKey)->first();
+        $this->rendered = $template?->render($this->data, $this->locale)
+            ?? ['subject' => 'Notification', 'body' => ''];
+    }
 
     public function envelope(): Envelope
     {
-        $template = EmailTemplate::where('key', $this->templateKey)->first();
-        $rendered = $template?->render($this->data, $this->locale);
-
         return new Envelope(
-            subject: $rendered['subject'] ?? 'Notification',
+            subject: $this->rendered['subject'],
         );
     }
 
     public function content(): Content
     {
-        $template = EmailTemplate::where('key', $this->templateKey)->first();
-        $rendered = $template?->render($this->data, $this->locale);
-
         return new Content(
-            htmlString: $rendered['body'] ?? '',
+            htmlString: $this->rendered['body'],
         );
     }
 }
