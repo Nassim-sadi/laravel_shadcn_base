@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { PencilIcon, Trash2Icon } from '@lucide/vue'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
@@ -144,9 +146,27 @@ const systemRoles = ['super_admin', 'admin', 'user']
               <td class="px-4 py-3">
                 <span class="text-muted-foreground text-sm">{{ role.permissions?.length ?? 0 }}</span>
               </td>
-              <td class="px-4 py-3 text-right space-x-2">
-                <Button variant="ghost" size="sm" @click="openEdit(role)">{{ $t('admin.btn.edit') }}</Button>
-                <Button v-if="!systemRoles.includes(role.name)" variant="destructive" size="sm" @click="confirmDelete(role.id)">{{ $t('admin.btn.delete') }}</Button>
+              <td class="px-4 py-3 text-right">
+                <TooltipProvider>
+                  <div class="flex gap-1 justify-end">
+                    <Tooltip>
+                      <TooltipTrigger as-child>
+                        <Button variant="ghost" size="icon" class="size-8" @click="openEdit(role)">
+                          <PencilIcon class="size-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent><p>{{ $t('admin.btn.edit') }}</p></TooltipContent>
+                    </Tooltip>
+                    <Tooltip v-if="!systemRoles.includes(role.name)">
+                      <TooltipTrigger as-child>
+                        <Button variant="destructive" size="icon" class="size-8" @click="confirmDelete(role.id)">
+                          <Trash2Icon class="size-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent><p>{{ $t('admin.btn.delete') }}</p></TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TooltipProvider>
               </td>
             </tr>
           </tbody>

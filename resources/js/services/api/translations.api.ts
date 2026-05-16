@@ -6,6 +6,7 @@ export interface LocalizationPayload {
   languages: LanguageMeta[]
   default_locale: string
   fallback_locale: string
+  enabled_translation_namespaces: string[] | null
 }
 
 export function useTranslationsApi() {

@@ -1,0 +1,14 @@
+{
+    "admin.empty.activityLogs": "لم يتم العثور على سجلات نشاط",
+    "admin.empty.faqs": "لم يتم العثور على أسئلة شائعة",
+    "admin.empty.languages": "لا تتوفر لغات.",
+    "admin.empty.messages": "لم يتم العثور على رسائل",
+    "admin.empty.permissions": "لم يتم العثور على صلاحيات. قم بتشغيل php artisan db:seed --class=PermissionSeeder.",
+    "admin.empty.permissionsList": "لا تتوفر صلاحيات. قم بتشغيل php artisan db:seed --class=PermissionSeeder أولًا.",
+    "admin.empty.projects": "لم يتم العثور على مشاريع",
+    "admin.empty.roles": "لم يتم العثور على أدوار.",
+    "admin.empty.services": "لم يتم العثور على خدمات",
+    "admin.empty.templates": "لم يتم العثور على قوالب",
+    "admin.empty.testimonials": "لم يتم العثور على شهادات",
+    "admin.empty.translations": "لم يتم العثور على ترجمات مطابقة."
+}

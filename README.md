@@ -1,263 +1,360 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NsBase
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+NsBase is the reusable Laravel + Vue foundation for custom business projects.
 
-## About Laravel Business Kit
+It is intended to become the shared core used by project-specific apps such as booking systems, catalog sites, clinic dashboards, and other structured business tools. The core stays boring and explicit: Laravel owns backend logic and APIs, Vue owns admin/client app screens, and Blade owns public SEO pages.
 
-This is a Laravel Business Kit implementation following the specifications in PLAN.md. It provides a premium structured business website system with:
+The current roadmap is documented in:
 
-### ✅ Core Features Implemented
+- [Plans/nsbase_project_architecture.html](Plans/nsbase_project_architecture.html)
+- [Plans/nsbase_git_subtree_setup.html](Plans/nsbase_git_subtree_setup.html)
 
-- **Authentication**: Laravel Sanctum-based API authentication
-- **Users**: Complete CRUD with role/permission management
-- **Roles & Permissions**: Using spatie/laravel-permission with seeders
-- **Custom Activity Log**: Queue-based system (replaced Spatie Activitylog per PLAN.md)
-- **Settings**: Centralized system with groups (general, seo, mail, notifications, business, appearance, social, integrations)
-- **Email Templates**: Customizable template system with variables
-- **Services CRUD**: Full create, read, update, delete operations
-- **Projects CRUD**: Full create, read, update, delete operations
-- **Testimonials CRUD**: Full create, read, update, delete operations
-- **FAQ CRUD**: Full create, read, update, delete operations
-- **Contact Messages**: Full management system
-- **SEO Fields**: Per item/page SEO fields (title, description, keywords)
-- **Media Uploads**: Integrated with avatar/system upload handling
-- **API Resources**: Consistent JSON responses using Laravel API Resources
+## Direction
 
-### 📋 Implementation Details
+The target architecture is:
 
-#### Activity Log System (Custom)
-- Queue-based to not slow down requests
-- Stores useful metadata (user_id, event, subject, properties, IP, user_agent)
-- Simple usage: `activity_log('event.name', [context])`
+1. NsBase lives as its own reusable core.
+2. Each client or product project installs or vendors NsBase.
+3. Core fixes are pulled into each project through one controlled update path.
+4. Project-specific modules stay outside the core unless they are truly reusable.
 
-#### Settings System
-- Groups: general, seo, mail, notifications, business, appearance, social, integrations
-- Type safety (string, integer, boolean, json, array)
-- Public/private setting distinction
-- Caching ready
+The preferred long-term approach is a private Composer package:
 
-#### Email Templates
-- Subject and body customization
-- Variable placeholder support ({name}, {email}, etc.)
-- Preview functionality
-- Active/inactive toggling
-
-#### Business Modules (Services, Projects, Testimonials, FAQs)
-- Full CRUD operations
-- SEO fields per item
-- Media upload handling
-- Soft deletes
-- Ordering capabilities
-- API resources for consistent responses
-- Activity logging on create/update/delete
-
-#### Contact Messages
-- Read/unread status
-- Reply tracking
-- Timestamping
-- Filtering capabilities
-
-### 🔧 Technical Implementation
-
-#### Backend Conventions Followed
-- Controllers for API endpoints
-- FormRequest-style validation (in controllers for simplicity)
-- API Resources for response shaping
-- Services for reusable logic (MediaUploadService planned)
-- Jobs for background processing (Activity logging)
-- Proper model relationships and scopes
-- Database indexes for performance
-- Soft deletes where appropriate
-- Proper foreign key constraints
-
-#### API Response Format
-Consistent JSON responses:
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "title": "Service Name",
-      // ... other fields
-    }
-  ]
-}
+```bash
+composer require nassim/nsbase
+composer update nassim/nsbase
 ```
 
-Single item responses:
+The practical fallback while the package is still taking shape is `git subtree`:
+
+```bash
+git subtree add --prefix=packages/nsbase nsbase main --squash
+git subtree pull --prefix=packages/nsbase nsbase main --squash
+composer update nassim/nsbase
+php artisan migrate
+```
+
+Do not modify NsBase core files inside a downstream project. Extend behavior with config, published views, project-level models/controllers, events/listeners, or by fixing NsBase in the NsBase repo itself.
+
+## Core Scope
+
+NsBase core should contain reusable foundation features:
+
+- Auth, registration, login, profile, and API authentication.
+- Users, roles, and permissions.
+- Admin layout and shared Vue admin components.
+- Settings grouped by domain.
+- Media manager and uploads.
+- Email templates with variables and preview support.
+- Contact messages.
+- Custom queue-based activity logging.
+- Public Blade layout and basic SEO pages.
+- Translation infrastructure for static UI text.
+- Reusable model traits such as translated attributes and SEO fields.
+- Module flags for turning built-in or optional groups on and off.
+
+Project-specific features should live in the project:
+
+- Booking business rules.
+- Clinic appointment logic.
+- Catalog product logic.
+- Custom public pages.
+- Custom migrations, routes, controllers, and Vue screens.
+- Client-specific integrations.
+
+## Current Built-In Modules
+
+These modules are controlled by `.env` flags through `config/modules.php`.
+
+Built-in content and system modules:
+
+- `services`
+- `projects`
+- `testimonials`
+- `faqs`
+- `media`
+- `contact`
+- `email_templates`
+- `activity_logs`
+- `translations`
+
+Optional add-on modules:
+
+- `catalog`
+- `booking`
+- `blog`
+
+Example:
+
+```env
+MODULE_SERVICES=false
+MODULE_PROJECTS=true
+MODULE_TESTIMONIALS=true
+MODULE_FAQS=true
+MODULE_MEDIA=true
+MODULE_CONTACT=true
+MODULE_EMAIL_TEMPLATES=true
+MODULE_ACTIVITY_LOGS=true
+MODULE_TRANSLATIONS=true
+MODULE_CATALOG=false
+MODULE_BOOKING=false
+MODULE_BLOG=false
+```
+
+When adding or changing a module flag, keep these three places in sync:
+
+- Sidebar: `resources/js/composables/use-sidebar.ts`
+- Vue router: `resources/js/router/index.ts`
+- API routes: `routes/api.php`
+
+Public Blade routes should also be guarded in `routes/web.php` when the module has public pages.
+
+## Module Roadmap
+
+### Booking
+
+Booking adds appointment scheduling on top of the core.
+
+Tables planned:
+
+- `staff`
+- `availability_rules`
+- `time_slots`
+- `bookings`
+- `booking_extras`
+- `booking_status_logs`
+
+Statuses:
+
+- `pending`
+- `confirmed`
+- `rescheduled`
+- `cancelled`
+- `completed`
+- `no_show`
+
+Build phases:
+
+1. Service and staff setup.
+2. Availability rules and exception dates.
+3. Public Blade booking form.
+4. Admin Vue booking management.
+5. Calendar view.
+6. Optional client portal.
+
+Core principle: generate slots from availability rules on demand. Do not pre-generate unnecessary slot rows unless the project truly needs it.
+
+### Catalog
+
+Catalog is a display and quote-request module, not e-commerce.
+
+Tables planned:
+
+- `catalog_categories`
+- `catalog_products`
+- `catalog_product_images`
+- `catalog_attributes`
+- `catalog_attribute_values`
+- `catalog_brands` optional
+- `quote_requests`
+
+Public pages planned:
+
+- `/catalog`
+- `/catalog/{category}`
+- `/catalog/product/{slug}`
+- `/quote`
+
+Build phases:
+
+1. Categories and products CRUD.
+2. Attribute system.
+3. Public catalog with query-param filters.
+4. Quote request flow.
+
+Boundary: no cart and no payment. If checkout becomes required, treat it as a separate scope upgrade or use WooCommerce.
+
+### Clinic
+
+Clinic is a project-specific module built from the same booking ideas, with medical roles and appointment flow.
+
+Tables planned:
+
+- `doctors`
+- `doctor_services`
+- `patients`
+- `appointments`
+- `appointment_status_logs`
+- `schedules`
+- `schedule_exceptions`
+
+Roles:
+
+- `admin`
+- `doctor`
+- `receptionist`
+- `patient` optional
+
+Appointment lifecycle:
+
+- `requested`
+- `scheduled`
+- `confirmed`
+- `in_progress`
+- `completed`
+- `cancelled`
+- `no_show`
+
+Build phases:
+
+1. Doctors and services CRUD.
+2. Patients CRUD.
+3. Schedule and appointments.
+4. Doctor dashboard.
+5. Optional public booking page.
+
+Core principle: patients are not system users by default. Create patient user accounts only if a portal is required.
+
+## Public Pages
+
+Public SEO pages use Blade under `resources/views`.
+
+Use Blade for:
+
+- Landing pages.
+- About/contact pages.
+- Public service/project/catalog pages.
+- Static or mostly static business pages.
+
+Use Vue only as an island when a public section genuinely needs richer interaction.
+
+Static public text currently uses namespace JSON files:
+
+```text
+lang/fr/about.json
+lang/en/about.json
+lang/ar/about.json
+lang/fr/contact.json
+lang/en/contact.json
+lang/ar/contact.json
+```
+
+Public controllers that render these namespace JSON files should use:
+
+```php
+App\Support\Localization\TranslationNamespace
+```
+
+This keeps the admin translation files and Blade pages speaking the same format.
+
+See [docs/PUBLIC_TRANSLATIONS.md](docs/PUBLIC_TRANSLATIONS.md) for the exact pattern.
+
+## Admin Vue Structure
+
+Admin Vue modules should be organized by feature.
+
+Preferred shape:
+
+```text
+resources/js/admin/views/services/Index.vue
+resources/js/admin/views/services/partials/Create.vue
+resources/js/admin/views/services/partials/Edit.vue
+resources/js/admin/views/services/partials/Form.vue
+```
+
+Shared components belong in:
+
+```text
+resources/js/admin/components/
+```
+
+Do not place feature-specific components in a global shared folder.
+
+## Activity Logging
+
+NsBase uses a custom activity log, not Spatie Activity Log.
+
+Preferred usage:
+
+```php
+activity_log('product.created', [
+    'product_id' => $product->id,
+    'user_id' => auth()->id(),
+]);
+```
+
+The logger should remain reusable and queue-based so it does not slow down the main request.
+
+## Development
+
+Install dependencies:
+
+```bash
+composer install
+npm install
+```
+
+Create the environment file and app key:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+Start local development:
+
+```bash
+php artisan serve
+npm run dev
+```
+
+Build frontend assets:
+
+```bash
+npm run build
+```
+
+Run tests:
+
+```bash
+php artisan test
+```
+
+If a module is disabled through `.env`, tests that expect that module's routes may need module-specific setup or expectations.
+
+## Design Rules
+
+- Prefer explicit Laravel patterns.
+- Use FormRequest classes for backend validation when adding new backend features.
+- Use API Resources when shaping complex JSON responses.
+- Keep public SEO pages in Blade.
+- Keep admin/client app experiences in Vue.
+- Use Tailwind CSS.
+- Avoid Filament, Livewire, Inertia, and Spatie Activity Log unless explicitly requested.
+- Avoid building a custom CMS or page builder.
+- Prefer small, maintainable patches over large rewrites.
+
+## Versioning Roadmap
+
+When NsBase becomes a Composer package, use semantic versioning:
+
+- `1.x`: stable, no breaking changes.
+- `2.x`: breaking changes such as schema changes or renamed APIs.
+
+Downstream projects should pin by major version:
+
 ```json
 {
-  "data": {
-    // item data
+  "require": {
+    "nassim/nsbase": "^1.0"
   }
 }
 ```
 
-### 🚀 Getting Started
-
-1. Install dependencies:
-   ```bash
-   composer install
-   npm install
-   ```
-
-2. Copy environment file:
-   ```bash
-   cp .env.example .env
-   ```
-
-3. Generate application key:
-   ```bash
-   php artisan key:generate
-   ```
-
-4. Run migrations:
-   ```bash
-   php artisan migrate
-   ```
-
-5. Seed permissions:
-   ```bash
-   php artisan db:seed --class=PermissionSeeder
-   ```
-
-6. Start development servers:
-   ```bash
-   php artisan serve
-   npm run dev
-   ```
-
-### 📚 API Documentation
-
-#### Authentication
-- `POST /api/register` - Register new user
-- `POST /api/login` - Login user
-- `GET /api/user` - Get current user (authenticated)
-- `POST /api/logout` - Logout user
-
-#### Users
-- `GET /api/users` - List users
-- `POST /api/users` - Create user
-- `GET /api/users/{user}` - Get user
-- `PUT /api/users/{user}` - Update user
-- `DELETE /api/users/{user}` - Delete user
-- `POST /api/users/invite` - Invite user
-- `POST /api/users/{user}/assign-role` - Assign role
-- `POST /api/users/{user}/give-permission` - Give permission
-- `POST /api/users/{user}/revoke-permission` - Revoke permission
-- `POST /api/users/{user}/avatar` - Upload avatar
-- `DELETE /api/users/{user}/avatar` - Delete avatar
-
-#### Roles & Permissions
-- `GET /api/roles` - List roles
-- `POST /api/roles` - Create role
-- `GET /api/roles/{role}` - Get role
-- `PUT /api/roles/{role}` - Update role
-- `DELETE /api/roles/{role}` - Delete role
-- `POST /api/roles/{role}/assign-permissions` - Assign permissions
-
-- `GET /api/permissions` - List permissions
-- `POST /api/permissions` - Create permission
-- `GET /api/permissions/{permission}` - Get permission
-- `PUT /api/permissions/{permission}` - Update permission
-- `DELETE /api/permissions/{permission}` - Delete permission
-
-#### Activity Log
-- `GET /api/activity-logs` - List activity logs
-- `GET /api/activity-logs/{activity}` - Get activity log
-- `GET /api/activity-logs/log-names` - Get log names
-- `GET /api/activity-logs/events` - Get events
-
-#### Settings
-- `GET /api/settings` - List settings
-- `POST /api/settings` - Create setting
-- `GET /api/settings/{setting}` - Get setting
-- `PUT /api/settings/{setting}` - Update setting
-- `DELETE /api/settings/{setting}` - Delete setting
-- `GET /api/settings/value/{key}` - Get setting value (public)
-
-#### Email Templates
-- `GET /api/email-templates` - List templates
-- `POST /api/email-templates` - Create template
-- `GET /api/email-templates/{template}` - Get template
-- `PUT /api/email-templates/{template}` - Update template
-- `DELETE /api/email-templates/{template}` - Delete template
-- `POST /api/email-templates/{template}/preview` - Preview template
-
-#### Business Modules
-- `GET /api/services` - List services
-- `POST /api/services` - Create service
-- `GET /api/services/{service}` - Get service
-- `PUT /api/services/{service}` - Update service
-- `DELETE /api/services/{service}` - Delete service
-
-(Same pattern for projects, testimonials, faqs, contact-messages)
-
-### 📁 Folder Structure
-
-```
-app/
-  Http/
-    Controllers/
-      Api/                  # All API controllers
-    Resources/              # API resource classes
-  Models/                   # Eloquent models
-  Support/
-    Activity/               # Custom activity log system
-  Jobs/                     # Queue jobs
-  Services/                 # Business logic services
-database/
-  migrations/               # Database migrations
-  seeders/                  # Database seeders
-routes/
-  api.php                   # API routes
-resources/
-  js/
-    admin/                  # Vue admin views (to be implemented)
-  views/
-    layouts/
-      public.blade.php      # Public Blade layout
-    pages/                  # Public Blade pages
-```
-
-### 🔜 Next Steps / Optional Features
-
-Per PLAN.md, these can be added as needed:
-
-1. **Multilingual Support**
-   - Static language files (lang/fr/, lang/ar/, lang/en/)
-   - JSON translatable fields for structured content
-   - Language switcher and Vue language tabs
-
-2. **Optional Modules**
-   - Catalog system
-   - Booking-lite system
-   - Blog-lite system
-   - Team members
-   - Partners
-
-3. **Advanced Features**
-   - Custom dashboard widgets
-   - Advanced analytics/reporting
-   - Notification system
-   - File manager
-   - Backup system
-
-### 📝 License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-### 💡 Design Philosophy
-
-This implementation follows the Laravel Business Kit specifications from PLAN.md:
-- Explicit, maintainable code over magic-heavy abstractions
-- Laravel handles backend logic, APIs, validation, auth, queues, permissions
-- Vue handles admin/client application interfaces
-- Blade is used for public SEO pages and landing pages
-- Avoids Filament, Livewire, Inertia, and Spatie Activity Log per guidelines
-- Prefers boring, clear code over clever code
+That lets projects receive safe fixes while keeping breaking upgrades deliberate.

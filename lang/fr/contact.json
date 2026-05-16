@@ -1,0 +1,18 @@
+{
+    "contact.address_label": "Adresse",
+    "contact.badge": "Contact",
+    "contact.email_label": "Email",
+    "contact.form_email": "Email",
+    "contact.form_message": "Message",
+    "contact.form_name": "Nom",
+    "contact.form_phone": "Téléphone",
+    "contact.form_subject": "Sujet",
+    "contact.form_submit": "Envoyer",
+    "contact.form_title": "Envoyez-nous un message",
+    "contact.meta_description": "Entrez en contact avec nous",
+    "contact.meta_title": "Contact",
+    "contact.phone_label": "Téléphone",
+    "contact.subtitle": "Vous avez un projet en tête ou vous voulez simplement dire bonjour ? Nous serions ravis de vous entendre.",
+    "contact.success_message": "Merci ! Votre message a été envoyé avec succès.",
+    "contact.title": "Contactez-nous"
+}

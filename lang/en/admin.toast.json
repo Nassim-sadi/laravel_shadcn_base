@@ -1,0 +1,15 @@
+{
+    "admin.toast.accountCreated": "Account created successfully!",
+    "admin.toast.avatarUploadFailed": "Failed to upload avatar",
+    "admin.toast.avatarUploaded": "Avatar uploaded successfully",
+    "admin.toast.loginFailed": "Login failed",
+    "admin.toast.passwordChangeFailed": "Failed to change password",
+    "admin.toast.passwordChanged": "Password changed successfully",
+    "admin.toast.profileUpdateFailed": "Failed to update profile",
+    "admin.toast.profileUpdated": "Profile updated successfully",
+    "admin.toast.registrationFailed": "Registration failed",
+    "admin.toast.saveError": "Unable to save translations.",
+    "admin.toast.userDeleteFailed": "Failed to delete user",
+    "admin.toast.userDeleted": "User deleted successfully",
+    "admin.toast.welcomeBack": "Welcome back!"
+}

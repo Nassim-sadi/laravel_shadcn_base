@@ -53,17 +53,29 @@
 
                 <nav class="navbar-center hidden lg:flex">
                     <ul class="menu menu-horizontal gap-1 px-1">
-<li><a href="{{ route('public.services.index') }}">Services</a></li>
-<li><a href="{{ route('public.projects.index') }}">Projects</a></li>
+                        @if (Route::has('public.services.index'))
+                            <li><a href="{{ route('public.services.index') }}">Services</a></li>
+                        @endif
+                        @if (Route::has('public.projects.index'))
+                            <li><a href="{{ route('public.projects.index') }}">Projects</a></li>
+                        @endif
                         <li><a href="{{ route('public.about') }}">About</a></li>
-                        <li><a href="{{ route('home') }}#testimonials">Testimonials</a></li>
-                        <li><a href="{{ route('home') }}#faq">FAQ</a></li>
-                        <li><a href="{{ route('public.contact') }}">Contact</a></li>
+                        @if (config('modules.testimonials', true))
+                            <li><a href="{{ route('home') }}#testimonials">Testimonials</a></li>
+                        @endif
+                        @if (config('modules.faqs', true))
+                            <li><a href="{{ route('home') }}#faq">FAQ</a></li>
+                        @endif
+                        @if (Route::has('public.contact'))
+                            <li><a href="{{ route('public.contact') }}">Contact</a></li>
+                        @endif
                     </ul>
                 </nav>
 
                 <div class="navbar-end">
-                    <a href="{{ route('public.contact') }}" class="btn btn-primary">Start a project</a>
+                    @if (Route::has('public.contact'))
+                        <a href="{{ route('public.contact') }}" class="btn btn-primary">Start a project</a>
+                    @endif
                 </div>
             </div>
         </header>

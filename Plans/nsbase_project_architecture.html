@@ -1,0 +1,377 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-size: 14px; }
+.tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.tab { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: 13px; transition: all .15s; }
+.tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+.section { display: none; }
+.section.active { display: block; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+.card-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: var(--border-radius-md); font-size: 11px; font-weight: 500; }
+.badge-core { background: var(--color-background-info); color: var(--color-text-info); }
+.badge-module { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-warning { background: var(--color-background-warning); color: var(--color-text-warning); }
+.badge-danger { background: var(--color-background-danger); color: var(--color-text-danger); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.rule { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1rem 0; }
+.label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; margin-top: 1rem; }
+.file-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-mono); }
+.file-row:last-child { border-bottom: none; }
+.file-row .fi { color: var(--color-text-tertiary); font-size: 14px; }
+.status-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+.status-row:last-child { border-bottom: none; }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.dot-done { background: var(--color-text-success); }
+.dot-todo { background: var(--color-border-secondary); }
+.dot-next { background: var(--color-text-warning); }
+.flow-step { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.flow-step:last-child { border-bottom: none; }
+.step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--color-text-secondary); }
+.step-body { flex: 1; }
+.step-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.step-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; line-height: 1.5; }
+code { font-family: var(--font-mono); font-size: 12px; background: var(--color-background-secondary); padding: 1px 5px; border-radius: 4px; color: var(--color-text-primary); }
+.ask-btn { margin-top: 10px; padding: 5px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: 12px; }
+.ask-btn:hover { background: var(--color-background-secondary); }
+</style>
+
+<h2 class="sr-only">NsBase architecture plan — core sync strategy and module specs for Booking, Catalog, and Clinic</h2>
+
+<div style="padding: 1rem 0 0.5rem;">
+  <div class="tabs">
+    <button class="tab active" onclick="show('sync')"><i class="ti ti-git-branch" aria-hidden="true"></i> Core sync strategy</button>
+    <button class="tab" onclick="show('booking')"><i class="ti ti-calendar" aria-hidden="true"></i> Booking</button>
+    <button class="tab" onclick="show('catalog')"><i class="ti ti-layout-grid" aria-hidden="true"></i> Catalog</button>
+    <button class="tab" onclick="show('clinic')"><i class="ti ti-stethoscope" aria-hidden="true"></i> Clinic</button>
+    <button class="tab" onclick="show('rules')"><i class="ti ti-shield-check" aria-hidden="true"></i> Core rules</button>
+  </div>
+
+  <div id="sync" class="section active">
+    <div class="label">The problem</div>
+    <div class="card">
+      <div class="card-body">You update NsBase (auth, media, email templates, settings…) and you want <strong>every project</strong> — Booking, Clinic, Catalog — to get those fixes without copy-pasting. Git branching alone won't solve this cleanly. The right answer is <strong>composer packages</strong>.</div>
+    </div>
+
+    <div class="label">Recommended approach — NsBase as a private composer package</div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-package" style="font-size:16px" aria-hidden="true"></i> How it works</div>
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">NsBase lives in its own repo</div>
+          <div class="step-desc">It is a standard Laravel package. All core modules (auth, settings, media, activity log, email templates, users/roles) live here. You push updates to this repo.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Each project installs NsBase via composer</div>
+          <div class="step-desc">Booking, Clinic, Catalog each do <code>composer require nassim/nsbase</code>. They get the core. NsBase publishes its migrations, config, and views.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Update = one command per project</div>
+          <div class="step-desc">When you fix a bug in NsBase, push the tag. Then in each project: <code>composer update nassim/nsbase</code>. Done. No copy-paste, no manual merging.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Project-specific code stays in the project</div>
+          <div class="step-desc">Booking logic, clinic appointments, catalog products — none of that is in NsBase. Each project extends the core, never modifies it.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title"><span class="badge badge-core">NsBase package</span></div>
+        <div class="label" style="margin-top:8px">What goes inside</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Auth (login, register, profile)</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Users + Roles (Spatie)</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Settings system</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Media manager</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Activity log</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Email templates</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Contact messages</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Admin layout + shared Vue components</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> SEO fields trait</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> HasTranslatedAttributes trait</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-module">Each project repo</span></div>
+        <div class="label" style="margin-top:8px">What goes inside</div>
+        <div class="file-row"><i class="ti ti-file fi"></i> composer.json (requires nsbase)</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> App-specific models/controllers</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> App-specific Vue pages</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> App-specific Blade pages</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> App-specific migrations</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> App-specific routes</div>
+        <div class="file-row"><i class="ti ti-folder fi"></i> Module-specific config</div>
+        <div class="file-row"><i class="ti ti-file fi"></i> .env (per deployment)</div>
+      </div>
+    </div>
+
+    <div class="label">If composer packages feel like too much right now</div>
+    <div class="card">
+      <div class="card-body" style="margin-bottom:8px">Simple fallback: use <strong>git subtree</strong>. NsBase is one repo. Each project adds it as a subtree. When NsBase updates, you pull the subtree. No branches, no copy-paste — just one command per project. Much simpler than submodules.</div>
+      <code>git subtree pull --prefix=packages/nsbase git@github.com:you/nsbase.git main --squash</code>
+      <button class="ask-btn" onclick="sendPrompt('Show me how to set up NsBase as a git subtree in a new Laravel project, step by step')">Show me git subtree setup ↗</button>
+    </div>
+  </div>
+
+  <div id="booking" class="section">
+    <div class="label">What booking adds on top of NsBase core</div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-database" style="font-size:15px" aria-hidden="true"></i> New tables</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> services <span style="margin-left:auto;color:var(--color-text-tertiary);font-size:11px">already in core</span></div>
+        <div class="file-row"><i class="ti ti-table fi"></i> staff</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> availability_rules</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> time_slots</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> bookings</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> booking_extras</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> booking_status_logs</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-list-check" style="font-size:15px" aria-hidden="true"></i> Booking statuses</div>
+        <div class="status-row"><span><span class="dot dot-todo"></span>pending</span><span style="font-size:11px;color:var(--color-text-tertiary)">New request, not confirmed</span></div>
+        <div class="status-row"><span><span class="dot dot-done"></span>confirmed</span><span style="font-size:11px;color:var(--color-text-tertiary)">Admin accepted it</span></div>
+        <div class="status-row"><span><span class="dot dot-next"></span>rescheduled</span><span style="font-size:11px;color:var(--color-text-tertiary)">Date changed</span></div>
+        <div class="status-row"><span><span class="dot dot-danger" style="background:var(--color-text-danger)"></span>cancelled</span><span style="font-size:11px;color:var(--color-text-tertiary)">By client or admin</span></div>
+        <div class="status-row"><span><span class="dot dot-done"></span>completed</span><span style="font-size:11px;color:var(--color-text-tertiary)">Session done</span></div>
+        <div class="status-row"><span><span class="dot dot-todo"></span>no_show</span><span style="font-size:11px;color:var(--color-text-tertiary)">Client didn't come</span></div>
+      </div>
+    </div>
+
+    <div class="label">Build phases</div>
+    <div class="card">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Service + staff setup <span class="badge badge-core" style="margin-left:6px">Phase 1</span></div>
+          <div class="step-desc">Services CRUD (from core), Staff CRUD (name, bio, image, assigned services). Admin can assign which staff handles which service.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Availability rules <span class="badge badge-module" style="margin-left:6px">Phase 1</span></div>
+          <div class="step-desc">Per-staff weekly schedule: Mon–Fri 9am–5pm, break 12–1pm. Stored as rules, not individual slots. Exception dates (holidays, leaves) override rules.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Public booking form <span class="badge badge-module" style="margin-left:6px">Phase 1</span></div>
+          <div class="step-desc">Blade page: pick service → pick staff (optional) → pick date → pick slot → fill details → submit. Slots generated from availability rules on the fly, not pre-stored. Rate-limited like contact form.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Admin booking management <span class="badge badge-module" style="margin-left:6px">Phase 2</span></div>
+          <div class="step-desc">Vue table with filters (status, staff, service, date range). Status change with confirmation dialog. Notes field. Email notification on every status change using core email templates.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Calendar view <span class="badge badge-warning" style="margin-left:6px">Phase 2</span></div>
+          <div class="step-desc">Simple week/day grid in Vue. No heavy library needed — pure CSS grid by hour slots. Shows confirmed bookings per staff column. Click to see details.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <div class="step-title">Client portal (optional) <span class="badge badge-warning" style="margin-left:6px">Phase 3</span></div>
+          <div class="step-desc">Logged-in clients see their own bookings, can cancel, can rebook. Only build this if the client explicitly needs it.</div>
+        </div>
+      </div>
+    </div>
+    <button class="ask-btn" onclick="sendPrompt('Show me the exact database migrations for the booking module on top of NsBase')">Generate booking migrations ↗</button>
+  </div>
+
+  <div id="catalog" class="section">
+    <div class="label">What catalog adds on top of NsBase core</div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-database" style="font-size:15px" aria-hidden="true"></i> New tables</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> catalog_categories</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> catalog_products</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> catalog_product_images <span style="margin-left:auto;font-size:11px;color:var(--color-text-tertiary)">uses core media</span></div>
+        <div class="file-row"><i class="ti ti-table fi"></i> catalog_attributes</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> catalog_attribute_values</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> catalog_brands (optional)</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> quote_requests</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-eye" style="font-size:15px" aria-hidden="true"></i> Public pages (Blade)</div>
+        <div class="file-row"><i class="ti ti-file fi"></i> /catalog — grid with filters</div>
+        <div class="file-row"><i class="ti ti-file fi"></i> /catalog/{category}</div>
+        <div class="file-row"><i class="ti ti-file fi"></i> /catalog/product/{slug}</div>
+        <div class="file-row"><i class="ti ti-file fi"></i> /catalog?brand=X&attr=Y — filter URL</div>
+        <div class="file-row"><i class="ti ti-file fi"></i> /quote — contact/quote request form</div>
+      </div>
+    </div>
+
+    <div class="label">Key design decision — no checkout</div>
+    <div class="card">
+      <div class="card-body">Catalog is <strong>display only</strong>. Client can browse, filter, see product details, and send a quote request. No cart, no payment. If the client later wants checkout, that's a separate scope upgrade or WooCommerce recommendation. Keep this boundary explicit from day one.</div>
+    </div>
+
+    <div class="label">Build phases</div>
+    <div class="card">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Categories + products CRUD</div>
+          <div class="step-desc">Vue admin. Category tree (max 2 levels: category → subcategory). Product: name (multilingual), description, price display (optional), images via core media, SEO fields via core trait, is_published toggle.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Attributes system</div>
+          <div class="step-desc">Admin defines attributes (Color, Size, Material…) and their values. Products are tagged with attribute values. Public filter sidebar uses these. Do not over-engineer — a simple pivot table is enough.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Public catalog with filter</div>
+          <div class="step-desc">Blade page with sidebar (categories, attributes, optional brand). Filter via query params — full page reload is fine, no need for Vue SPA here. Pagination. Product card: image, name, short description, price if set.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Quote request</div>
+          <div class="step-desc">Simple form: name, phone, email, product reference (auto-filled from product page), message. Stored in quote_requests table. Admin notified via core email template system.</div>
+        </div>
+      </div>
+    </div>
+    <button class="ask-btn" onclick="sendPrompt('Show me the Catalog module folder structure inside a Laravel project that uses NsBase as a package')">Generate catalog structure ↗</button>
+  </div>
+
+  <div id="clinic" class="section">
+    <div class="label">What clinic adds on top of NsBase core</div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-database" style="font-size:15px" aria-hidden="true"></i> New tables</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> doctors</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> doctor_services <span style="margin-left:auto;font-size:11px;color:var(--color-text-tertiary)">pivot</span></div>
+        <div class="file-row"><i class="ti ti-table fi"></i> patients</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> appointments</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> appointment_status_logs</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> schedules</div>
+        <div class="file-row"><i class="ti ti-table fi"></i> schedule_exceptions</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-users" style="font-size:15px" aria-hidden="true"></i> Roles (Spatie, via core)</div>
+        <div class="status-row"><span><span class="dot dot-done"></span>admin</span><span style="font-size:11px;color:var(--color-text-tertiary)">Full access</span></div>
+        <div class="status-row"><span><span class="dot dot-done"></span>doctor</span><span style="font-size:11px;color:var(--color-text-tertiary)">Own schedule + appointments</span></div>
+        <div class="status-row"><span><span class="dot dot-done"></span>receptionist</span><span style="font-size:11px;color:var(--color-text-tertiary)">Book + manage appointments</span></div>
+        <div class="status-row"><span><span class="dot dot-todo"></span>patient</span><span style="font-size:11px;color:var(--color-text-tertiary)">Optional — only if portal needed</span></div>
+      </div>
+    </div>
+
+    <div class="label">Appointment lifecycle</div>
+    <div class="card">
+      <div class="status-row"><span><span class="dot" style="background:#888"></span>requested</span><span style="font-size:12px;color:var(--color-text-secondary)">Public form or receptionist creates it</span></div>
+      <div class="status-row"><span><span class="dot dot-next"></span>scheduled</span><span style="font-size:12px;color:var(--color-text-secondary)">Assigned to doctor + time slot</span></div>
+      <div class="status-row"><span><span class="dot dot-done"></span>confirmed</span><span style="font-size:12px;color:var(--color-text-secondary)">Patient notified</span></div>
+      <div class="status-row"><span><span class="dot" style="background:#888"></span>in_progress</span><span style="font-size:12px;color:var(--color-text-secondary)">Optional — doctor checks in</span></div>
+      <div class="status-row"><span><span class="dot dot-done"></span>completed</span><span style="font-size:12px;color:var(--color-text-secondary)">Visit done</span></div>
+      <div class="status-row"><span><span class="dot" style="background:var(--color-text-danger)"></span>cancelled</span><span style="font-size:12px;color:var(--color-text-secondary)">By admin, doctor, or patient</span></div>
+      <div class="status-row"><span><span class="dot dot-todo"></span>no_show</span><span style="font-size:12px;color:var(--color-text-secondary)">Patient didn't arrive</span></div>
+    </div>
+
+    <div class="label">Build phases</div>
+    <div class="card">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Doctors + services CRUD</div>
+          <div class="step-desc">Doctor profile (name, speciality, bio, image via core media). Assign services to doctors via pivot. Services come from core module.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Patients CRUD</div>
+          <div class="step-desc">Patient record: name, phone, email, date of birth, notes. Separate from users table — patients are not system users by default. Only create a patient user account if portal is needed.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Schedule + appointments</div>
+          <div class="step-desc">Doctor weekly schedule (same availability rules pattern as booking). Receptionist creates appointments: patient → doctor → date → time → service. Status managed by receptionist or doctor.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Doctor dashboard</div>
+          <div class="step-desc">Vue view: today's appointments, upcoming week, status update buttons. Doctor sees only their own. No access to other doctors or admin settings.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Public booking page (optional)</div>
+          <div class="step-desc">Same pattern as Booking module — patient fills form, admin or receptionist confirms. Do not auto-confirm without human review by default.</div>
+        </div>
+      </div>
+    </div>
+    <button class="ask-btn" onclick="sendPrompt('Show me the exact migrations and model relationships for the Clinic module on top of NsBase')">Generate clinic migrations ↗</button>
+  </div>
+
+  <div id="rules" class="section">
+    <div class="label">The golden rule for keeping core clean</div>
+    <div class="card">
+      <div class="card-body">Never modify a file that came from NsBase inside a project. If you need to change behaviour, extend via Laravel's service container, event listeners, or config overrides. This is what lets you update NsBase without breaking projects.</div>
+    </div>
+    <div class="label">What you can safely do in projects</div>
+    <div class="card">
+      <div class="flow-step">
+        <div class="step-num"><i class="ti ti-check" style="font-size:12px;color:var(--color-text-success)" aria-hidden="true"></i></div>
+        <div class="step-body"><div class="step-title">Publish and customise views</div><div class="step-desc"><code>php artisan vendor:publish --tag=nsbase-views</code> — copies views to your project. You edit your copy, NsBase update doesn't overwrite it.</div></div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num"><i class="ti ti-check" style="font-size:12px;color:var(--color-text-success)" aria-hidden="true"></i></div>
+        <div class="step-body"><div class="step-title">Override config</div><div class="step-desc">Publish NsBase config, edit it in your project. Controls features, defaults, behaviour without touching core code.</div></div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num"><i class="ti ti-check" style="font-size:12px;color:var(--color-text-success)" aria-hidden="true"></i></div>
+        <div class="step-body"><div class="step-title">Extend models</div><div class="step-desc">Project's <code>User</code> model extends NsBase's <code>BaseUser</code>. Add project-specific relationships and methods there.</div></div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num"><i class="ti ti-check" style="font-size:12px;color:var(--color-text-success)" aria-hidden="true"></i></div>
+        <div class="step-body"><div class="step-title">Listen to core events</div><div class="step-desc">NsBase fires events (UserCreated, BookingStatusChanged…). Projects register listeners in their own EventServiceProvider. Core doesn't know about the listener.</div></div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num"><i class="ti ti-x" style="font-size:12px;color:var(--color-text-danger)" aria-hidden="true"></i></div>
+        <div class="step-body"><div class="step-title">Never edit files in vendor/nassim/nsbase/</div><div class="step-desc">They will be overwritten on the next <code>composer update</code>. If you need to change something, override it at the project level or open a fix in the NsBase repo itself.</div></div>
+      </div>
+    </div>
+    <div class="label">Versioning NsBase</div>
+    <div class="card">
+      <div class="card-body">Use semantic versioning. <code>1.x</code> = stable, no breaking changes. <code>2.x</code> = breaking change (migration schema, renamed method). Each project pins to a major version: <code>"nassim/nsbase": "^1.0"</code>. This means minor updates auto-install, breaking changes require deliberate upgrade.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.closest('.tab').classList.add('active');
+}
+</script>

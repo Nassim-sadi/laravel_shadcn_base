@@ -17,11 +17,23 @@ class HomeController extends Controller
     public function __invoke(): View
     {
         return view('pages.home', [
-            'services' => $this->activeContent(Service::class, 6),
-            'projects' => $this->activeContent(Project::class, 6),
-            'testimonials' => $this->activeContent(Testimonial::class, 6),
-            'faqs' => $this->activeContent(Faq::class, 8),
+            'services' => $this->moduleContent('services', Service::class, 6),
+            'projects' => $this->moduleContent('projects', Project::class, 6),
+            'testimonials' => $this->moduleContent('testimonials', Testimonial::class, 6),
+            'faqs' => $this->moduleContent('faqs', Faq::class, 8),
         ]);
+    }
+
+    /**
+     * @param  class-string<Model>  $model
+     */
+    private function moduleContent(string $module, string $model, int $limit): Collection
+    {
+        if (! config("modules.{$module}", true)) {
+            return collect();
+        }
+
+        return $this->activeContent($model, $limit);
     }
 
     /**

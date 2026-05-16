@@ -145,7 +145,7 @@ class ApiTest extends TestCase
     public function test_admin_can_list_permissions()
     {
         $this->actingAs($this->admin, 'sanctum')
-            ->getJson('/api/permissions')
+            ->getJson('/api/permissions/all')
             ->assertOk();
     }
 

@@ -36,7 +36,7 @@ class LocalizationTest extends TestCase
         $this->getJson('/api/translations/fr')
             ->assertOk()
             ->assertJsonFragment([
-                'admin.dashboard' => 'Tableau de bord',
+                'admin.nav.dashboard' => 'Tableau de bord',
             ]);
     }
 
@@ -69,7 +69,7 @@ class LocalizationTest extends TestCase
             ->getJson('/api/admin/translations/fr')
             ->assertOk()
             ->assertJsonFragment([
-                'admin.dashboard' => 'Tableau de bord',
+                'admin.nav.dashboard' => 'Tableau de bord',
             ]);
     }
 }

@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ReplyIcon, Trash2Icon } from '@lucide/vue'
 import { useGetContactMessagesQuery, useDeleteContactMessageMutation, useUpdateContactMessageMutation } from '@/services/api/contact-messages.api'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
@@ -62,10 +64,26 @@ function confirmDelete(id: number) {
           <p class="text-sm">{{ item.message?.slice(0, 200) }}{{ item.message?.length > 200 ? '...' : '' }}</p>
           <p class="text-xs text-muted-foreground">{{ new Date(item.created_at).toLocaleString() }}</p>
         </div>
-        <div class="flex gap-2">
-          <Button variant="ghost" size="sm" @click="openReply(item)">{{ item.reply ? $t('admin.btn.editReply') : $t('admin.btn.reply') }}</Button>
-          <Button variant="destructive" size="sm" @click="confirmDelete(item.id)">{{ $t('admin.btn.delete') }}</Button>
-        </div>
+        <TooltipProvider>
+          <div class="flex gap-1">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button variant="ghost" size="icon" class="size-8" @click="openReply(item)">
+                  <ReplyIcon class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>{{ item.reply ? $t('admin.btn.editReply') : $t('admin.btn.reply') }}</p></TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button variant="destructive" size="icon" class="size-8" @click="confirmDelete(item.id)">
+                  <Trash2Icon class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>{{ $t('admin.btn.delete') }}</p></TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </div>
       <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">{{ $t('admin.empty.messages') }}</div>
     </div>

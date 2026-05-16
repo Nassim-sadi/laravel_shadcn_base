@@ -1,0 +1,21 @@
+{
+    "admin.btn.add": "إضافة",
+    "admin.btn.cancel": "إلغاء",
+    "admin.btn.changePassword": "تغيير كلمة المرور",
+    "admin.btn.continue": "متابعة",
+    "admin.btn.create": "إنشاء",
+    "admin.btn.createAccount": "إنشاء حساب",
+    "admin.btn.delete": "حذف",
+    "admin.btn.discard": "تجاهل",
+    "admin.btn.edit": "تعديل",
+    "admin.btn.editReply": "تعديل الرد",
+    "admin.btn.refresh": "تحديث",
+    "admin.btn.reply": "رد",
+    "admin.btn.save": "حفظ",
+    "admin.btn.saveChanges": "حفظ التغييرات",
+    "admin.btn.sendReply": "إرسال الرد",
+    "admin.btn.signIn": "تسجيل الدخول",
+    "admin.btn.signUp": "تسجيل",
+    "admin.btn.stay": "البقاء",
+    "admin.btn.update": "تحديث"
+}

@@ -1,0 +1,17 @@
+{
+    "admin.sheet.createFaq": "Créer une FAQ",
+    "admin.sheet.createPermission": "Créer une permission",
+    "admin.sheet.createProject": "Créer un projet",
+    "admin.sheet.createRole": "Créer un rôle",
+    "admin.sheet.createService": "Créer un service",
+    "admin.sheet.createTemplate": "Créer un modèle",
+    "admin.sheet.createTestimonial": "Créer un témoignage",
+    "admin.sheet.editFaq": "Modifier la FAQ",
+    "admin.sheet.editPermission": "Modifier la permission",
+    "admin.sheet.editProject": "Modifier le projet",
+    "admin.sheet.editRole": "Modifier le rôle",
+    "admin.sheet.editService": "Modifier le service",
+    "admin.sheet.editTemplate": "Modifier le modèle",
+    "admin.sheet.editTestimonial": "Modifier le témoignage",
+    "admin.sheet.replyMessage": "Répondre au message"
+}

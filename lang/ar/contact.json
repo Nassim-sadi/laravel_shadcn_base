@@ -1,0 +1,18 @@
+{
+    "contact.address_label": "العنوان",
+    "contact.badge": "اتصل",
+    "contact.email_label": "البريد الإلكتروني",
+    "contact.form_email": "البريد الإلكتروني",
+    "contact.form_message": "الرسالة",
+    "contact.form_name": "الاسم",
+    "contact.form_phone": "الهاتف",
+    "contact.form_subject": "الموضوع",
+    "contact.form_submit": "إرسال",
+    "contact.form_title": "أرسل لنا رسالة",
+    "contact.meta_description": "تواصل معنا",
+    "contact.meta_title": "اتصل بنا",
+    "contact.phone_label": "الهاتف",
+    "contact.subtitle": "هل لديك مشروع في ذهنك أم تريد فقط إلقاء التحية؟ يسعدنا سماعك.",
+    "contact.success_message": "شكرًا لك! تم إرسال رسالتك بنجاح.",
+    "contact.title": "تواصل معنا"
+}

@@ -1,0 +1,14 @@
+{
+    "admin.empty.activityLogs": "No activity logs found",
+    "admin.empty.faqs": "No FAQs found",
+    "admin.empty.languages": "No languages available.",
+    "admin.empty.messages": "No messages found",
+    "admin.empty.permissions": "No permissions found. Run php artisan db:seed --class=PermissionSeeder.",
+    "admin.empty.permissionsList": "No permissions available. Run php artisan db:seed --class=PermissionSeeder first.",
+    "admin.empty.projects": "No projects found",
+    "admin.empty.roles": "No roles found.",
+    "admin.empty.services": "No services found",
+    "admin.empty.templates": "No templates found",
+    "admin.empty.testimonials": "No testimonials found",
+    "admin.empty.translations": "No matching translations."
+}

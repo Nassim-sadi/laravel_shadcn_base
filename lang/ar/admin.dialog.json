@@ -1,0 +1,6 @@
+{
+    "admin.dialog.deleteDescription": "هل أنت متأكد من أنك تريد حذف هذا {item}؟ هذه العملية لا يمكن التراجع فيها.",
+    "admin.dialog.deleteTitle": "حذف {item}",
+    "admin.dialog.unsavedDescription": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد تجاهلها؟",
+    "admin.dialog.unsavedTitle": "تغييرات غير محفوظة"
+}

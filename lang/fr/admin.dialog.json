@@ -1,0 +1,6 @@
+{
+    "admin.dialog.deleteDescription": "Êtes-vous sûr de vouloir supprimer ce {item} ? Cette action est irréversible.",
+    "admin.dialog.deleteTitle": "Supprimer {item}",
+    "admin.dialog.unsavedDescription": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les ignorer ?",
+    "admin.dialog.unsavedTitle": "Modifications non enregistrées"
+}

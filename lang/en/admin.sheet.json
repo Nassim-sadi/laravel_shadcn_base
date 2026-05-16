@@ -1,0 +1,17 @@
+{
+    "admin.sheet.createFaq": "Create FAQ",
+    "admin.sheet.createPermission": "Create Permission",
+    "admin.sheet.createProject": "Create Project",
+    "admin.sheet.createRole": "Create Role",
+    "admin.sheet.createService": "Create Service",
+    "admin.sheet.createTemplate": "Create Template",
+    "admin.sheet.createTestimonial": "Create Testimonial",
+    "admin.sheet.editFaq": "Edit FAQ",
+    "admin.sheet.editPermission": "Edit Permission",
+    "admin.sheet.editProject": "Edit Project",
+    "admin.sheet.editRole": "Edit Role",
+    "admin.sheet.editService": "Edit Service",
+    "admin.sheet.editTemplate": "Edit Template",
+    "admin.sheet.editTestimonial": "Edit Testimonial",
+    "admin.sheet.replyMessage": "Reply to Message"
+}

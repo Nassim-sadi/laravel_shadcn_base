@@ -2,6 +2,7 @@
 import { toast } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
 
+import { Eye, EyeOff } from '@lucide/vue'
 import { useAuth } from '@/composables/use-auth'
 
 import GitHubButton from './github-button.vue'
@@ -15,6 +16,7 @@ const { login, loading } = useAuth()
 
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const generalError = ref('')
 const fieldErrors = ref<Record<string, string[]>>({})
 
@@ -82,7 +84,13 @@ async function handleLogin() {
           </UiLabel>
           <ToForgotPasswordLink />
         </div>
-        <UiInput id="password" v-model="password" type="password" required placeholder="*********" :aria-invalid="!!fieldErrors.password?.length" />
+        <div class="relative">
+          <UiInput id="password" v-model="password" :type="showPassword ? 'text' : 'password'" required placeholder="*********" :aria-invalid="!!fieldErrors.password?.length" class="pe-9" />
+          <button type="button" class="absolute end-1 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground" @click="showPassword = !showPassword" tabindex="-1">
+            <Eye v-if="showPassword" class="size-4" />
+            <EyeOff v-else class="size-4" />
+          </button>
+        </div>
         <p v-if="fieldErrors.password?.length" class="text-sm text-destructive">
           {{ fieldErrors.password[0] }}
         </p>

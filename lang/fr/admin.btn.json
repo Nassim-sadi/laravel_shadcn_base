@@ -1,0 +1,21 @@
+{
+    "admin.btn.add": "Ajouter",
+    "admin.btn.cancel": "Annuler",
+    "admin.btn.changePassword": "Changer le mot de passe",
+    "admin.btn.continue": "Continuer",
+    "admin.btn.create": "Créer",
+    "admin.btn.createAccount": "Créer un compte",
+    "admin.btn.delete": "Supprimer",
+    "admin.btn.discard": "Ignorer",
+    "admin.btn.edit": "Modifier",
+    "admin.btn.editReply": "Modifier la réponse",
+    "admin.btn.refresh": "Actualiser",
+    "admin.btn.reply": "Répondre",
+    "admin.btn.save": "Enregistrer",
+    "admin.btn.saveChanges": "Enregistrer les modifications",
+    "admin.btn.sendReply": "Envoyer la réponse",
+    "admin.btn.signIn": "Se connecter",
+    "admin.btn.signUp": "S'inscrire",
+    "admin.btn.stay": "Rester",
+    "admin.btn.update": "Mettre à jour"
+}

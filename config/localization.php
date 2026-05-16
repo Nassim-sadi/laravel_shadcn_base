@@ -37,9 +37,14 @@ $appFallbackLocale = env('APP_FALLBACK_LOCALE', 'fr');
 $defaultLocale = in_array($appLocale, $codes, true) ? $appLocale : $codes[0];
 $fallbackLocale = in_array($appFallbackLocale, $codes, true) ? $appFallbackLocale : $defaultLocale;
 
+$enabledTranslationNamespaces = env('TRANSLATION_NAMESPACES')
+    ? array_map('trim', explode(',', (string) env('TRANSLATION_NAMESPACES')))
+    : null;
+
 return [
     'default_locale' => $defaultLocale,
     'fallback_locale' => $fallbackLocale,
     'languages' => $languages,
     'supported_codes' => $codes,
+    'enabled_translation_namespaces' => $enabledTranslationNamespaces,
 ];

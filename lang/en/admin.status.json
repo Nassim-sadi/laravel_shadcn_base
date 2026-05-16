@@ -1,0 +1,6 @@
+{
+    "admin.status.active": "Active",
+    "admin.status.inactive": "Inactive",
+    "admin.status.new": "New",
+    "admin.status.replied": "Replied"
+}

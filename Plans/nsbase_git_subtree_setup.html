@@ -1,0 +1,225 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.step-wrap{border-left:2px solid var(--color-border-secondary);margin-left:11px;padding-left:24px;padding-bottom:4px}
+.step-wrap:last-child{border-left:2px solid transparent}
+.step-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;margin-left:-35px}
+.step-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--color-border-secondary);background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-secondary);flex-shrink:0;transition:all .2s}
+.step-dot.done{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.step-dot.active{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
+.step-title{font-size:14px;font-weight:500;color:var(--color-text-primary);padding-top:2px}
+.step-subtitle{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.code-block{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;margin:8px 0;font-family:var(--font-mono);font-size:12px;color:var(--color-text-primary);line-height:1.7;position:relative}
+.code-block .comment{color:var(--color-text-tertiary)}
+.copy-btn{position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:11px;cursor:pointer;transition:all .15s}
+.copy-btn:hover{background:var(--color-background-secondary)}
+.note{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:var(--color-text-warning);margin:8px 0;display:flex;gap:8px;align-items:flex-start}
+.info{background:var(--color-background-info);border:0.5px solid var(--color-border-info);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:var(--color-text-info);margin:8px 0;display:flex;gap:8px;align-items:flex-start}
+.tag{display:inline-block;padding:1px 7px;border-radius:var(--border-radius-md);font-size:11px;font-weight:500}
+.tag-once{background:var(--color-background-success);color:var(--color-text-success)}
+.tag-repeat{background:var(--color-background-info);color:var(--color-text-info)}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1.5rem 0}
+.nav{display:flex;gap:8px;margin-top:1.5rem;justify-content:flex-end}
+.progress-bar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--color-text-info);border-radius:2px;transition:width .3s}
+</style>
+
+<h2 class="sr-only">Step-by-step guide: setting up NsBase as a git subtree in a new Laravel project</h2>
+
+<div style="padding:1rem 0 0">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+    <span style="font-size:13px;color:var(--color-text-secondary)" id="progress-label">Step 1 of 6</span>
+    <span style="font-size:11px;color:var(--color-text-tertiary)" id="context-label"></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:16.6%"></div></div>
+
+  <div id="steps-container"></div>
+
+  <div class="nav">
+    <button id="btn-prev" onclick="navigate(-1)" style="display:none"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
+    <button id="btn-next" onclick="navigate(1)">Next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<script>
+const steps = [
+  {
+    title: "One-time: prepare NsBase repo on GitHub",
+    subtitle: "Do this once — never again per project",
+    tag: "once",
+    tagLabel: "one-time setup",
+    context: "In your NsBase repo",
+    content: `<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:10px">NsBase must be its own git repo pushed to GitHub (or any remote). If it already is, skip to step 2.</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <span class="comment"># Inside your NsBase folder</span><br>
+      git init<br>
+      git add .<br>
+      git commit -m "initial nsbase core"<br>
+      git remote add origin git@github.com:yourname/nsbase.git<br>
+      git push -u origin main
+    </div>
+    <div class="info"><i class="ti ti-info-circle" style="font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>The repo can be private. GitHub, Gitea, or any bare remote works — as long as you can reach it from each project machine.</span></div>`
+  },
+  {
+    title: "Create your new Laravel project",
+    subtitle: "Standard Laravel setup",
+    tag: "once",
+    tagLabel: "per project",
+    context: "In your projects folder",
+    content: `<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:10px">Create the project and get it committed so git subtree has a clean base to work from.</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <span class="comment"># Create the project</span><br>
+      composer create-project laravel/laravel booking-app<br>
+      cd booking-app<br><br>
+      <span class="comment"># Init git and make first commit</span><br>
+      git init<br>
+      git add .<br>
+      git commit -m "fresh laravel install"<br><br>
+      <span class="comment"># Push to its own repo</span><br>
+      git remote add origin git@github.com:yourname/booking-app.git<br>
+      git push -u origin main
+    </div>
+    <div class="note"><i class="ti ti-alert-triangle" style="font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Git subtree requires at least one commit in the project repo before you add the subtree. Don't skip the first commit.</span></div>`
+  },
+  {
+    title: "Add NsBase as a remote",
+    subtitle: "Tell this project where NsBase lives",
+    tag: "once",
+    tagLabel: "per project",
+    context: "Inside booking-app/",
+    content: `<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:10px">You give the NsBase repo a short nickname (<code>nsbase</code>) so you don't have to type the full URL every time.</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      git remote add nsbase git@github.com:yourname/nsbase.git
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin:10px 0 6px">Verify it was added:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      git remote -v<br>
+      <span class="comment"># Should show: origin (booking-app) and nsbase (your nsbase repo)</span>
+    </div>`
+  },
+  {
+    title: "Pull NsBase into a subfolder",
+    subtitle: "This is the actual subtree add",
+    tag: "once",
+    tagLabel: "per project",
+    context: "Inside booking-app/",
+    content: `<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:10px">This copies NsBase's entire file tree into <code>packages/nsbase/</code> inside your project. The <code>--squash</code> flag merges NsBase's history into one commit so your project log stays clean.</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      git subtree add --prefix=packages/nsbase nsbase main --squash
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin:10px 0 6px">After this, your project structure looks like:</p>
+    <div class="code-block">
+      booking-app/<br>
+      ├── app/<br>
+      ├── packages/<br>
+      │   └── nsbase/        <span class="comment">← NsBase lives here</span><br>
+      │       ├── src/<br>
+      │       ├── routes/<br>
+      │       └── ...<br>
+      ├── composer.json<br>
+      └── ...
+    </div>
+    <div class="info"><i class="ti ti-info-circle" style="font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>NsBase files are now part of your project's git history. You can commit, push, and deploy normally — no special setup needed on the server.</span></div>`
+  },
+  {
+    title: "Register NsBase in composer.json",
+    subtitle: "So Laravel autoloads it properly",
+    tag: "once",
+    tagLabel: "per project",
+    context: "Edit booking-app/composer.json",
+    content: `<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:10px">Tell composer that NsBase is a local path package. Add a <code>repositories</code> entry and require it.</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      <span class="comment">// In composer.json</span><br>
+      "repositories": [<br>
+      &nbsp;&nbsp;{<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;"type": "path",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;"url": "packages/nsbase"<br>
+      &nbsp;&nbsp;}<br>
+      ],<br>
+      "require": {<br>
+      &nbsp;&nbsp;"nassim/nsbase": "@dev",<br>
+      &nbsp;&nbsp;...<br>
+      }
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin:10px 0 6px">Then run:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      composer update nassim/nsbase
+    </div>
+    <div class="note"><i class="ti ti-alert-triangle" style="font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>NsBase needs its own <code>composer.json</code> with <code>"name": "nassim/nsbase"</code> and a proper autoload PSR-4 entry for this to work.</span></div>`
+  },
+  {
+    title: "Pulling NsBase updates into any project",
+    subtitle: "The command you'll run every time you update NsBase",
+    tag: "repeat",
+    tagLabel: "use whenever NsBase updates",
+    context: "Inside any project folder",
+    content: `<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:10px">You pushed a fix to NsBase. Now pull it into this project:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      git subtree pull --prefix=packages/nsbase nsbase main --squash
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin:10px 0 4px">That's it. Git merges the NsBase changes into <code>packages/nsbase/</code> and creates one clean commit. Then:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      composer update nassim/nsbase<br>
+      php artisan migrate   <span class="comment"># if NsBase has new migrations</span>
+    </div>
+    <div class="info"><i class="ti ti-info-circle" style="font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Repeat for each project: <code>cd clinic-app</code> → pull → update. Takes about 30 seconds per project.</span></div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button style="padding:6px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:12px" onclick="sendPrompt('Show me what NsBase composer.json should look like to work as a local package')">NsBase composer.json example ↗</button>
+      <button style="padding:6px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:12px" onclick="sendPrompt('How do I handle a merge conflict when pulling NsBase subtree updates?')">Handle merge conflicts ↗</button>
+    </div>`
+  }
+];
+
+let current = 0;
+
+function render() {
+  const s = steps[current];
+  const total = steps.length;
+  document.getElementById('progress-label').textContent = `Step ${current+1} of ${total}`;
+  document.getElementById('context-label').textContent = s.context;
+  document.getElementById('progress-fill').style.width = ((current+1)/total*100)+'%';
+  document.getElementById('btn-prev').style.display = current === 0 ? 'none' : 'inline-flex';
+  document.getElementById('btn-next').style.display = current === total-1 ? 'none' : 'inline-flex';
+
+  const tagClass = s.tag === 'once' ? 'tag-once' : 'tag-repeat';
+  document.getElementById('steps-container').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--color-background-info);border:0.5px solid var(--color-border-info);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--color-text-info);flex-shrink:0">${current+1}</div>
+      <div>
+        <div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">${s.title}</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;display:flex;align-items:center;gap:6px">
+          <span>${s.subtitle}</span>
+          <span class="tag ${tagClass}">${s.tagLabel}</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--color-text-primary)">${s.content}</div>
+  `;
+}
+
+function navigate(dir) {
+  current = Math.max(0, Math.min(steps.length-1, current+dir));
+  render();
+}
+
+function copyCode(btn) {
+  const block = btn.parentElement;
+  const text = Array.from(block.childNodes)
+    .filter(n => n.nodeType === 3 || (n.nodeType===1 && !n.classList.contains('copy-btn') && !n.classList.contains('comment')))
+    .map(n => n.textContent.trim()).filter(Boolean).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  });
+}
+
+render();
+</script>

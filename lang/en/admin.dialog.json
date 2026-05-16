@@ -1,0 +1,6 @@
+{
+    "admin.dialog.deleteDescription": "Are you sure you want to delete this {item}? This action cannot be undone.",
+    "admin.dialog.deleteTitle": "Delete {item}",
+    "admin.dialog.unsavedDescription": "You have unsaved changes. Are you sure you want to discard them?",
+    "admin.dialog.unsavedTitle": "Unsaved Changes"
+}

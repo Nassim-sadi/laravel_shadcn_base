@@ -1,0 +1,15 @@
+{
+    "admin.toast.accountCreated": "تم إنشاء الحساب بنجاح!",
+    "admin.toast.avatarUploadFailed": "فشل رفع الصورة الشخصية",
+    "admin.toast.avatarUploaded": "تم رفع الصورة الشخصية بنجاح",
+    "admin.toast.loginFailed": "فشل تسجيل الدخول",
+    "admin.toast.passwordChangeFailed": "فشل تغيير كلمة المرور",
+    "admin.toast.passwordChanged": "تم تغيير كلمة المرور بنجاح",
+    "admin.toast.profileUpdateFailed": "فشل تحديث الملف الشخصي",
+    "admin.toast.profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+    "admin.toast.registrationFailed": "فشل التسجيل",
+    "admin.toast.saveError": "تعذر حفظ الترجمات.",
+    "admin.toast.userDeleteFailed": "فشل حذف المستخدم",
+    "admin.toast.userDeleted": "تم حذف المستخدم بنجاح",
+    "admin.toast.welcomeBack": "مرحبًا بعودتك!"
+}

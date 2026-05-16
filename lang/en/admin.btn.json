@@ -1,0 +1,21 @@
+{
+    "admin.btn.add": "Add",
+    "admin.btn.cancel": "Cancel",
+    "admin.btn.changePassword": "Change Password",
+    "admin.btn.continue": "Continue",
+    "admin.btn.create": "Create",
+    "admin.btn.createAccount": "Create Account",
+    "admin.btn.delete": "Delete",
+    "admin.btn.discard": "Discard",
+    "admin.btn.edit": "Edit",
+    "admin.btn.editReply": "Edit Reply",
+    "admin.btn.refresh": "Refresh",
+    "admin.btn.reply": "Reply",
+    "admin.btn.save": "Save",
+    "admin.btn.saveChanges": "Save Changes",
+    "admin.btn.sendReply": "Send Reply",
+    "admin.btn.signIn": "Sign In",
+    "admin.btn.signUp": "Sign Up",
+    "admin.btn.stay": "Stay",
+    "admin.btn.update": "Update"
+}

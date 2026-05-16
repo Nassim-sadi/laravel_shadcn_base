@@ -1,0 +1,17 @@
+{
+    "admin.sheet.createFaq": "إضافة سؤال",
+    "admin.sheet.createPermission": "إنشاء صلاحية",
+    "admin.sheet.createProject": "إنشاء مشروع",
+    "admin.sheet.createRole": "إنشاء دور",
+    "admin.sheet.createService": "إنشاء خدمة",
+    "admin.sheet.createTemplate": "إنشاء قالب",
+    "admin.sheet.createTestimonial": "إضافة شهادة",
+    "admin.sheet.editFaq": "تعديل السؤال",
+    "admin.sheet.editPermission": "تعديل الصلاحية",
+    "admin.sheet.editProject": "تعديل المشروع",
+    "admin.sheet.editRole": "تعديل الدور",
+    "admin.sheet.editService": "تعديل الخدمة",
+    "admin.sheet.editTemplate": "تعديل القالب",
+    "admin.sheet.editTestimonial": "تعديل الشهادة",
+    "admin.sheet.replyMessage": "الرد على الرسالة"
+}

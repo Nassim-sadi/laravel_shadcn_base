@@ -468,3 +468,50 @@ Rules:
 - Use Tailwind v4 logical property utilities instead (`start-*`/`end-*`, `ms-*`, `border-s-*`/`border-e-*`, `translate-i-*`).
 - For Reka UI positioning props (`side`, `align`), use the context `isRtl` ref to conditionally flip direction.
 - When building new sidebar features, verify RTL rendering by switching to Arabic (`ar`) locale.
+
+---
+
+## Module toggleability via env
+
+Admin page groups can be toggled on/off per project via `.env` flags defined in `config/modules.php`.
+
+Each module flag:
+- Defaults to `true` for built-in modules, `false` for optional add-ons.
+- Is checked in 3 places (all must stay in sync):
+  1. **Sidebar** — `resources/js/composables/use-sidebar.ts` wraps nav items with `isEnabled('name')`
+  2. **Vue router** — `resources/js/router/index.ts` wraps route with `isEnabled('name')`
+  3. **API routes** — `routes/api.php` wraps route groups with `if (config('modules.name', true))`
+
+The `isEnabled()` function reads from `(window as any).activeModules`, which is injected by `ModuleServiceProvider`.
+
+### Currently toggleable modules
+
+- `services`, `projects`, `testimonials`, `faqs`, `media` (content)
+- `contact`, `email_templates` (communication)
+- `activity_logs`, `translations` (system)
+- `catalog`, `booking`, `blog` (optional, default false)
+
+### Adding a new toggleable module
+
+1. Add to `config/modules.php` with appropriate default.
+2. Add `isEnabled()` guard in sidebar, router, and API routes.
+3. Add to `.env.example` with its default value.
+
+---
+
+## Translation namespace filtering
+
+The translations admin page supports filtering which namespace tabs are visible.
+
+Two layers:
+
+1. **Env var** — `TRANSLATION_NAMESPACES` in `.env` (comma-separated). Sets initial allowed namespaces. Empty = all namespaces shown. Passed to frontend via `LocalizationController` as `enabled_translation_namespaces`.
+
+2. **UI dropdown** — A `Settings2Icon` button next to the file tabs opens a dropdown with checkboxes for each namespace. Unchecking a tab hides it. Hidden state persists per locale in `localStorage` under key `ns-translation-hidden-tabs`.
+
+Key file: `resources/js/pages/admin/translations/index.vue`
+
+- `allFileTabs` — all namespaces present in the data (always complete).
+- `fileTabs` — filtered by hidden namespaces from localStorage.
+- `toggleNamespace(file)` — adds/removes from hidden list, handles active tab fallback.
+- `activeFileTab` defaults to first visible tab after filtering.

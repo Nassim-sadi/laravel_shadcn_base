@@ -1,0 +1,15 @@
+{
+    "admin.toast.accountCreated": "Compte créé avec succès !",
+    "admin.toast.avatarUploadFailed": "Échec du téléchargement de l'avatar",
+    "admin.toast.avatarUploaded": "Avatar téléchargé avec succès",
+    "admin.toast.loginFailed": "Échec de connexion",
+    "admin.toast.passwordChangeFailed": "Échec du changement de mot de passe",
+    "admin.toast.passwordChanged": "Mot de passe modifié avec succès",
+    "admin.toast.profileUpdateFailed": "Échec de la mise à jour du profil",
+    "admin.toast.profileUpdated": "Profil mis à jour avec succès",
+    "admin.toast.registrationFailed": "Échec de l'inscription",
+    "admin.toast.saveError": "Impossible d'enregistrer les traductions.",
+    "admin.toast.userDeleteFailed": "Échec de la suppression de l'utilisateur",
+    "admin.toast.userDeleted": "Utilisateur supprimé avec succès",
+    "admin.toast.welcomeBack": "Bon retour !"
+}

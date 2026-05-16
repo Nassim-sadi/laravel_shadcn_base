@@ -41,11 +41,21 @@ class AdminTranslationController extends Controller
 
         ksort($translations);
 
-        File::ensureDirectoryExists(lang_path());
-        File::put(
-            lang_path("{$locale}.json"),
-            json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES).PHP_EOL
-        );
+        $dir = lang_path($locale);
+        File::ensureDirectoryExists($dir);
+
+        $byFile = [];
+        foreach ($translations as $key => $value) {
+            $byFile[$this->fileNameForKey($key)][$key] = $value;
+        }
+
+        foreach ($byFile as $fileName => $fileTranslations) {
+            $path = "{$dir}/{$fileName}.json";
+            File::put(
+                $path,
+                json_encode($fileTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES).PHP_EOL
+            );
+        }
 
         return response()->json([
             'message' => 'Translations updated successfully.',
@@ -63,16 +73,43 @@ class AdminTranslationController extends Controller
         abort_unless(in_array($locale, config('localization.supported_codes'), true), 404);
     }
 
+    private function fileNameForKey(string $key): string
+    {
+        $parts = explode('.', $key);
+
+        if (count($parts) === 1) {
+            return 'common';
+        }
+
+        if ($parts[0] === 'admin') {
+            return 'admin.'.$parts[1];
+        }
+
+        return $parts[0];
+    }
+
     private function readTranslations(string $locale): array
     {
-        $path = lang_path("{$locale}.json");
+        $dir = lang_path($locale);
 
-        if (! File::exists($path)) {
+        if (! File::isDirectory($dir)) {
             return [];
         }
 
-        $translations = json_decode((string) File::get($path), true);
+        $translations = [];
 
-        return is_array($translations) ? $translations : [];
+        foreach (File::files($dir) as $file) {
+            if ($file->getExtension() !== 'json') {
+                continue;
+            }
+
+            $contents = json_decode((string) File::get($file->getPathname()), true);
+
+            if (is_array($contents)) {
+                $translations = array_merge($translations, $contents);
+            }
+        }
+
+        return $translations;
     }
 }

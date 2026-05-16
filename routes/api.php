@@ -51,47 +51,60 @@ Route::middleware('json.response')->group(function () {
         Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
         Route::post('/roles/{role}/assign-permissions', [RoleController::class, 'assignPermissions']);
 
-        Route::get('/permissions', [PermissionController::class, 'index']);
-        Route::post('/permissions', [PermissionController::class, 'store']);
-        Route::get('/permissions/groups', [PermissionController::class, 'getGroups']);
         Route::get('/permissions/all', [PermissionController::class, 'getAllPermissions']);
-        Route::get('/permissions/{permission}', [PermissionController::class, 'show']);
-        Route::put('/permissions/{permission}', [PermissionController::class, 'update']);
-        Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy']);
 
-        Route::get('/activity-logs', [ActivityLogController::class, 'index']);
-        Route::get('/activity-logs/{activity}', [ActivityLogController::class, 'show']);
-        Route::get('/activity-logs/log-names', [ActivityLogController::class, 'getLogNames']);
-        Route::get('/activity-logs/events', [ActivityLogController::class, 'getEvents']);
+        // Activity Logs
+        if (config('modules.activity_logs', true)) {
+            Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+            Route::get('/activity-logs/{activity}', [ActivityLogController::class, 'show']);
+            Route::get('/activity-logs/log-names', [ActivityLogController::class, 'getLogNames']);
+            Route::get('/activity-logs/events', [ActivityLogController::class, 'getEvents']);
+        }
 
-        Route::get('/admin/translations/{locale}', [AdminTranslationController::class, 'show']);
-        Route::put('/admin/translations/{locale}', [AdminTranslationController::class, 'update']);
+        if (config('modules.translations', true)) {
+            Route::get('/admin/translations/{locale}', [AdminTranslationController::class, 'show']);
+            Route::put('/admin/translations/{locale}', [AdminTranslationController::class, 'update']);
+        }
         
         // Services
-        Route::apiResource('services', ServiceController::class);
-        
+        if (config('modules.services', true)) {
+            Route::apiResource('services', ServiceController::class);
+        }
+
         // Projects
-        Route::apiResource('projects', ProjectController::class);
-        
+        if (config('modules.projects', true)) {
+            Route::apiResource('projects', ProjectController::class);
+        }
+
         // Testimonials
-        Route::apiResource('testimonials', TestimonialController::class);
-        
+        if (config('modules.testimonials', true)) {
+            Route::apiResource('testimonials', TestimonialController::class);
+        }
+
         // FAQs
-        Route::apiResource('faqs', FaqController::class);
-        
+        if (config('modules.faqs', true)) {
+            Route::apiResource('faqs', FaqController::class);
+        }
+
         // Settings
         Route::apiResource('settings', SettingController::class);
 
         // Email Templates
-        Route::apiResource('email-templates', EmailTemplateController::class);
+        if (config('modules.email_templates', true)) {
+            Route::apiResource('email-templates', EmailTemplateController::class);
+        }
 
         // Contact Messages
-        Route::apiResource('contact-messages', ContactMessageController::class);
+        if (config('modules.contact', true)) {
+            Route::apiResource('contact-messages', ContactMessageController::class);
+        }
 
         // Media
-        Route::get('media/folders', [MediaController::class, 'folders']);
-        Route::get('media/types', [MediaController::class, 'types']);
-        Route::post('media/bulk-delete', [MediaController::class, 'bulkDestroy']);
-        Route::apiResource('media', MediaController::class);
+        if (config('modules.media', true)) {
+            Route::get('media/folders', [MediaController::class, 'folders']);
+            Route::get('media/types', [MediaController::class, 'types']);
+            Route::post('media/bulk-delete', [MediaController::class, 'bulkDestroy']);
+            Route::apiResource('media', MediaController::class);
+        }
     });
 });

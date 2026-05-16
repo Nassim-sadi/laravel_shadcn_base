@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { PencilIcon, Trash2Icon } from '@lucide/vue'
 import { useGetServicesQuery, useDeleteServiceMutation, useCreateServiceMutation, useUpdateServiceMutation } from '@/services/api/services.api'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -161,10 +163,26 @@ function handleDelete() {
             {{ $t('admin.misc.orderLabel', { value: service.order }) }} | {{ $t('admin.misc.iconLabel', { value: service.icon || '-' }) }}
           </p>
         </div>
-        <div class="flex gap-2">
-          <Button variant="ghost" size="sm" @click="openEdit(service)">{{ $t('admin.btn.edit') }}</Button>
-          <Button variant="destructive" size="sm" @click="confirmDelete(service.id)">{{ $t('admin.btn.delete') }}</Button>
-        </div>
+        <TooltipProvider>
+          <div class="flex gap-1">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button variant="ghost" size="icon" class="size-8" @click="openEdit(service)">
+                  <PencilIcon class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>{{ $t('admin.btn.edit') }}</p></TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button variant="destructive" size="icon" class="size-8" @click="confirmDelete(service.id)">
+                  <Trash2Icon class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>{{ $t('admin.btn.delete') }}</p></TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </div>
       <div v-if="services.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">
         {{ $t('admin.empty.services') }}

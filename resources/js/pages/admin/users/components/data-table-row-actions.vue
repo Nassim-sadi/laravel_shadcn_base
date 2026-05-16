@@ -2,7 +2,9 @@
 import type { Row } from '@tanstack/vue-table'
 import type { Component } from 'vue'
 
-import { EllipsisIcon } from '@lucide/vue'
+import { PencilIcon, Trash2Icon } from '@lucide/vue'
+
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { Modal, ModalContent } from '@/components/prop-ui/modal'
 
@@ -37,27 +39,26 @@ async function handleSelect(command: TCommand) {
 
 <template>
   <Modal v-model:open="isOpen">
-    <UiDropdownMenu>
-      <UiDropdownMenuTrigger as-child>
-        <UiButton
-          variant="ghost"
-          class="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-        >
-          <EllipsisIcon class="size-4" />
-          <span class="sr-only">Open menu</span>
-        </UiButton>
-      </UiDropdownMenuTrigger>
-      <UiDropdownMenuContent align="end" class="w-[160px]">
-        <UiDropdownMenuItem @click.stop="handleSelect('edit')">
-          {{ $t('admin.btn.edit') }}
-        </UiDropdownMenuItem>
-
-        <UiDropdownMenuItem @click.stop="handleSelect('delete')">
-          {{ $t('admin.btn.delete') }}
-          <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-        </UiDropdownMenuItem>
-      </UiDropdownMenuContent>
-    </UiDropdownMenu>
+    <TooltipProvider>
+      <div class="flex gap-1">
+        <Tooltip>
+          <TooltipTrigger as-child>
+            <UiButton variant="ghost" size="icon" class="size-8" @click.stop="handleSelect('edit')">
+              <PencilIcon class="size-4" />
+            </UiButton>
+          </TooltipTrigger>
+          <TooltipContent><p>{{ $t('admin.btn.edit') }}</p></TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger as-child>
+            <UiButton variant="destructive" size="icon" class="size-8" @click.stop="handleSelect('delete')">
+              <Trash2Icon class="size-4" />
+            </UiButton>
+          </TooltipTrigger>
+          <TooltipContent><p>{{ $t('admin.btn.delete') }}</p></TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
 
     <ModalContent>
       <component :is="showComponent" :user="user" @close="isOpen = false" />

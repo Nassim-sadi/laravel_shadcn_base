@@ -1,0 +1,18 @@
+{
+    "contact.address_label": "Address",
+    "contact.badge": "Contact",
+    "contact.email_label": "Email",
+    "contact.form_email": "Email",
+    "contact.form_message": "Message",
+    "contact.form_name": "Name",
+    "contact.form_phone": "Phone",
+    "contact.form_subject": "Subject",
+    "contact.form_submit": "Send Message",
+    "contact.form_title": "Send us a message",
+    "contact.meta_description": "Get in touch with us",
+    "contact.meta_title": "Contact Us",
+    "contact.phone_label": "Phone",
+    "contact.subtitle": "Have a project in mind or just want to say hello? We'd love to hear from you.",
+    "contact.success_message": "Thank you! Your message has been sent successfully.",
+    "contact.title": "Get In Touch"
+}

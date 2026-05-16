@@ -20,16 +20,33 @@ Route::get('/robots.txt', function () {
 })->name('robots');
 
 Route::get('/sitemap.xml', function () {
-    $services = \App\Models\Service::query()->where('is_active', true)->get(['id', 'slug', 'updated_at']);
-    $projects = \App\Models\Project::query()->where('is_active', true)->get(['id', 'slug', 'updated_at']);
+    $servicesEnabled = Route::has('public.services.index') && Route::has('public.services.show');
+    $projectsEnabled = Route::has('public.projects.index') && Route::has('public.projects.show');
+    $contactEnabled = Route::has('public.contact');
+
+    $services = $servicesEnabled
+        ? \App\Models\Service::query()->where('is_active', true)->get(['id', 'slug', 'updated_at'])
+        : collect();
+    $projects = $projectsEnabled
+        ? \App\Models\Project::query()->where('is_active', true)->get(['id', 'slug', 'updated_at'])
+        : collect();
 
     $urls = [
         ['loc' => route('home'), 'priority' => '1.0', 'lastmod' => now()->toDateString()],
-        ['loc' => route('public.services.index'), 'priority' => '0.9'],
-        ['loc' => route('public.projects.index'), 'priority' => '0.9'],
         ['loc' => route('public.about'), 'priority' => '0.8'],
-        ['loc' => route('public.contact'), 'priority' => '0.7'],
     ];
+
+    if ($servicesEnabled) {
+        $urls[] = ['loc' => route('public.services.index'), 'priority' => '0.9'];
+    }
+
+    if ($projectsEnabled) {
+        $urls[] = ['loc' => route('public.projects.index'), 'priority' => '0.9'];
+    }
+
+    if ($contactEnabled) {
+        $urls[] = ['loc' => route('public.contact'), 'priority' => '0.7'];
+    }
 
     $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
@@ -65,14 +82,20 @@ Route::get('/sitemap.xml', function () {
     return response($xml)->header('Content-Type', 'application/xml');
 })->name('sitemap');
 
-Route::get('/contact', [ContactController::class, 'index'])->name('public.contact');
-Route::post('/contact', [ContactController::class, 'store'])->name('public.contact.store');
+if (config('modules.contact', true)) {
+    Route::get('/contact', [ContactController::class, 'index'])->name('public.contact');
+    Route::post('/contact', [ContactController::class, 'store'])->name('public.contact.store');
+}
 
-Route::get('/services', [ServiceController::class, 'index'])->name('public.services.index');
-Route::get('/services/{service}', [ServiceController::class, 'show'])->name('public.services.show');
+if (config('modules.services', true)) {
+    Route::get('/services', [ServiceController::class, 'index'])->name('public.services.index');
+    Route::get('/services/{service}', [ServiceController::class, 'show'])->name('public.services.show');
+}
 
-Route::get('/projects', [ProjectController::class, 'index'])->name('public.projects.index');
-Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('public.projects.show');
+if (config('modules.projects', true)) {
+    Route::get('/projects', [ProjectController::class, 'index'])->name('public.projects.index');
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('public.projects.show');
+}
 
 Route::view('/auth/login', 'app')->name('login');
 Route::view('/auth/register', 'app')->name('register');

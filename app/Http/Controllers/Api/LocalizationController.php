@@ -14,6 +14,7 @@ class LocalizationController extends Controller
             'languages' => config('localization.languages'),
             'default_locale' => config('localization.default_locale'),
             'fallback_locale' => config('localization.fallback_locale'),
+            'enabled_translation_namespaces' => config('localization.enabled_translation_namespaces'),
         ]);
     }
 
@@ -26,14 +27,26 @@ class LocalizationController extends Controller
 
     private function readTranslations(string $locale): array
     {
-        $path = lang_path("{$locale}.json");
+        $dir = lang_path($locale);
 
-        if (! File::exists($path)) {
+        if (! File::isDirectory($dir)) {
             return [];
         }
 
-        $translations = json_decode((string) File::get($path), true);
+        $translations = [];
 
-        return is_array($translations) ? $translations : [];
+        foreach (File::files($dir) as $file) {
+            if ($file->getExtension() !== 'json') {
+                continue;
+            }
+
+            $contents = json_decode((string) File::get($file->getPathname()), true);
+
+            if (is_array($contents)) {
+                $translations = array_merge($translations, $contents);
+            }
+        }
+
+        return $translations;
     }
 }

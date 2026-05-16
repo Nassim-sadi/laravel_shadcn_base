@@ -32,5 +32,17 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="MODULE_SERVICES" value="true" force="true"/>
+        <env name="MODULE_PROJECTS" value="true" force="true"/>
+        <env name="MODULE_TESTIMONIALS" value="true" force="true"/>
+        <env name="MODULE_FAQS" value="true" force="true"/>
+        <env name="MODULE_MEDIA" value="true" force="true"/>
+        <env name="MODULE_CONTACT" value="true" force="true"/>
+        <env name="MODULE_EMAIL_TEMPLATES" value="true" force="true"/>
+        <env name="MODULE_ACTIVITY_LOGS" value="true" force="true"/>
+        <env name="MODULE_TRANSLATIONS" value="true" force="true"/>
+        <env name="MODULE_CATALOG" value="false" force="true"/>
+        <env name="MODULE_BOOKING" value="false" force="true"/>
+        <env name="MODULE_BLOG" value="false" force="true"/>
     </php>
 </phpunit>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
 use App\Notifications\ContactMessageNotification;
+use App\Support\Localization\TranslationNamespace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -15,7 +16,9 @@ class ContactController extends Controller
 {
     public function index(): View
     {
-        return view('pages.contact');
+        return view('pages.contact', [
+            'contact' => TranslationNamespace::get('contact'),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -61,6 +64,6 @@ class ContactController extends Controller
             ->notify(new ContactMessageNotification('contact_notification_admin', $notificationData));
 
         return redirect()->route('public.contact')
-            ->with('success', __('contact.success_message'));
+            ->with('success', TranslationNamespace::value('contact.success_message'));
     }
 }
