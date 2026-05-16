@@ -18,8 +18,8 @@ const activeTab = ref(tabs.value[0].value)
 
 <template>
   <BasicPage
-    title="workspace"
-    description="workspace description"
+    :title="$t('admin.page.dashboard.title')"
+    :description="$t('admin.page.dashboard.description')"
     sticky
   >
     <template #actions>

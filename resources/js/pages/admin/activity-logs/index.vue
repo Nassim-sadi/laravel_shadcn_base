@@ -20,10 +20,10 @@ function getEventColor(event: string | null) {
 </script>
 
 <template>
-  <BasicPage title="Activity Logs" description="View system activity history" sticky>
+  <BasicPage :title="$t('admin.page.activityLogs.title')" :description="$t('admin.page.activityLogs.description')" sticky>
     <template #actions>
       <Button variant="outline" @click="refetch">
-        Refresh
+        {{ $t('admin.btn.refresh') }}
       </Button>
     </template>
     <div class="space-y-4">
@@ -43,7 +43,7 @@ function getEventColor(event: string | null) {
         </div>
       </div>
       <div v-if="logs.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">
-        No activity logs found
+        {{ $t('admin.empty.activityLogs') }}
       </div>
     </div>
   </BasicPage>

@@ -22,11 +22,22 @@ const queryParams = computed(() => {
 })
 
 const { data: response, isLoading, refetch } = useGetMediaQuery(queryParams)
-const mediaItems = computed(() => response.value?.data?.data ?? [])
+const mediaItems = computed(() => {
+  const r = response.value
+  if (!r) return []
+  if (Array.isArray(r)) return r
+  if (r.data && Array.isArray(r.data)) return r.data
+  if (Array.isArray((r as any)?.data?.data)) return (r as any).data.data
+  return []
+})
 const pagination = computed(() => {
-  if (!response.value?.data) return null
-  const { current_page, last_page, total } = response.value.data
-  return { current_page, last_page, total }
+  const r = response.value
+  if (!r) return null
+  const meta = (r as any)?.meta
+  if (meta?.current_page) return { current_page: meta.current_page, last_page: meta.last_page, total: meta.total }
+  const data = (r as any)?.data
+  if (data?.current_page) return { current_page: data.current_page, last_page: data.last_page, total: data.total }
+  return null
 })
 
 const selected = ref<Set<number>>(new Set())

@@ -9,7 +9,7 @@ const { teams = [] } = defineProps<{
   teams?: Team[]
 }>()
 
-const { isMobile, open } = useSidebar()
+const { isMobile, open, isRtl } = useSidebar()
 
 const activeTeam = computed(() => teams[0] ?? { name: 'Admin', logo: FolderIcon, plan: 'Admin' })
 </script>
@@ -32,14 +32,14 @@ const activeTeam = computed(() => teams[0] ?? { name: 'Admin', logo: FolderIcon,
               <span class="font-semibold truncate">{{ activeTeam.name }}</span>
               <span class="text-xs truncate">{{ activeTeam.plan }}</span>
             </div>
-            <ChevronsUpDownIcon v-if="teams.length > 1" class="ml-auto group-data-[collapsible=icon]:hidden" />
+            <ChevronsUpDownIcon v-if="teams.length > 1" class="ms-auto group-data-[collapsible=icon]:hidden" />
           </UiSidebarMenuButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent
           v-if="teams.length > 1"
           class="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
           align="start"
-          :side="(isMobile || open) ? 'bottom' : 'right'"
+          :side="(isMobile || open) ? 'bottom' : (isRtl ? 'left' : 'right')"
           :side-offset="4"
         >
           <UiDropdownMenuLabel class="text-xs text-muted-foreground">

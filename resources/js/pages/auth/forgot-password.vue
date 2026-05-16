@@ -9,10 +9,10 @@ import AuthTitle from './components/auth-title.vue'
       <UiCard>
         <UiCardHeader>
           <UiCardTitle class="text-2xl">
-            Forgot Password
+            {{ $t('forgotPassword') }}
           </UiCardTitle>
           <UiCardDescription>
-            Enter your registered email and we will send you a link to reset your password.
+            {{ $t('admin.misc.enterEmailReset') }}
           </UiCardDescription>
         </UiCardHeader>
         <UiCardContent class="grid gap-4">
@@ -25,16 +25,16 @@ import AuthTitle from './components/auth-title.vue'
         </UiCardContent>
         <UiCardFooter class="flex flex-col gap-2">
           <UiButton class="w-full">
-            {{ $t('forgotPasswordPage.continue') }}
+            {{ $t('admin.btn.continue') }}
           </UiButton>
 
           <div>
-            Don't have an account?
+            {{ $t('admin.misc.dontHaveAccount') }}
             <UiButton
               variant="link" class="px-0 text-muted-foreground"
               @click="$router.push('/auth/sign-up')"
             >
-              Sign up.
+              {{ $t('admin.btn.signUp') }}.
             </UiButton>
           </div>
         </UiCardFooter>

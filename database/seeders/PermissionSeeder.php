@@ -10,69 +10,33 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $permissions = [
-            'users' => [
-                'users.view',
-                'users.create',
-                'users.edit',
-                'users.delete',
-            ],
-            'roles' => [
-                'roles.view',
-                'roles.create',
-                'roles.edit',
-                'roles.delete',
-            ],
-            'permissions' => [
-                'permissions.view',
-                'permissions.manage',
-            ],
-            'settings' => [
-                'settings.view',
-                'settings.edit',
-            ],
-            'logs' => [
-                'logs.view',
-            ],
-            'services' => [
-                'services.view',
-                'services.create',
-                'services.edit',
-                'services.delete',
-            ],
-            'projects' => [
-                'projects.view',
-                'projects.create',
-                'projects.edit',
-                'projects.delete',
-            ],
-            'testimonials' => [
-                'testimonials.view',
-                'testimonials.create',
-                'testimonials.edit',
-                'testimonials.delete',
-            ],
-            'faqs' => [
-                'faqs.view',
-                'faqs.create',
-                'faqs.edit',
-                'faqs.delete',
-            ],
-            'contact-messages' => [
-                'contact-messages.view',
-                'contact-messages.create',
-                'contact-messages.edit',
-                'contact-messages.delete',
-            ],
-            'email-templates' => [
-                'email-templates.view',
-                'email-templates.create',
-                'email-templates.edit',
-                'email-templates.delete',
-            ],
+        $groups = [
+            'users' => ['users.view', 'users.create', 'users.edit', 'users.delete'],
+            'roles' => ['roles.view', 'roles.create', 'roles.edit', 'roles.delete'],
+            'permissions' => ['permissions.view', 'permissions.manage'],
+            'settings' => ['settings.view', 'settings.edit'],
+            'logs' => ['logs.view'],
+            'services' => ['services.view', 'services.create', 'services.edit', 'services.delete'],
+            'projects' => ['projects.view', 'projects.create', 'projects.edit', 'projects.delete'],
+            'testimonials' => ['testimonials.view', 'testimonials.create', 'testimonials.edit', 'testimonials.delete'],
+            'faqs' => ['faqs.view', 'faqs.create', 'faqs.edit', 'faqs.delete'],
+            'contact-messages' => ['contact-messages.view', 'contact-messages.create', 'contact-messages.edit', 'contact-messages.delete'],
+            'email-templates' => ['email-templates.view', 'email-templates.create', 'email-templates.edit', 'email-templates.delete'],
         ];
 
-        foreach ($permissions as $group => $perms) {
+        $modules = config('modules', []);
+        foreach ($modules as $module => $enabled) {
+            if ($enabled) {
+                $groups[$module] = [
+                    "{$module}.view",
+                    "{$module}.create",
+                    "{$module}.edit",
+                    "{$module}.delete",
+                ];
+            }
+        }
+
+        foreach ($groups as $group => $perms) {
             foreach ($perms as $name) {
                 Permission::firstOrCreate([
                     'name' => $name,

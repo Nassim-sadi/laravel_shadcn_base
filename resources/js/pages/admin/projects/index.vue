@@ -152,10 +152,10 @@ function handleDelete() {
 </script>
 
 <template>
-  <BasicPage title="Projects" description="Manage your projects" sticky>
+  <BasicPage :title="$t('admin.page.projects.title')" :description="$t('admin.page.projects.description')" sticky>
     <template #actions>
-      <Button @click="refetch" variant="outline">Refresh</Button>
-      <Button @click="openCreate">Create Project</Button>
+      <Button @click="refetch" variant="outline">{{ $t('admin.btn.refresh') }}</Button>
+      <Button @click="openCreate">{{ $t('admin.sheet.createProject') }}</Button>
     </template>
     <div class="space-y-4">
       <div v-for="item in items" :key="item.id" class="flex items-start gap-4 rounded-lg border p-4">
@@ -163,27 +163,27 @@ function handleDelete() {
           <div class="flex items-center gap-2">
             <span class="font-medium">{{ item.title }}</span>
             <Badge :variant="item.is_active ? 'default' : 'secondary'">
-              {{ item.is_active ? 'Active' : 'Inactive' }}
+              {{ item.is_active ? $t('admin.status.active') : $t('admin.status.inactive') }}
             </Badge>
           </div>
-          <p class="text-sm text-muted-foreground">{{ item.description?.slice(0, 100) || 'No description' }}</p>
-          <p class="text-xs text-muted-foreground">Client: {{ item.client || '-' }} | Order: {{ item.order }}</p>
+          <p class="text-sm text-muted-foreground">{{ item.description?.slice(0, 100) || $t('admin.misc.noDescription') }}</p>
+          <p class="text-xs text-muted-foreground">{{ $t('admin.misc.clientLabel', { value: item.client || '-' }) }} | {{ $t('admin.misc.orderLabel', { value: item.order }) }}</p>
           <div v-if="item.technologies?.length" class="flex gap-1 flex-wrap">
             <Badge v-for="tech in item.technologies" :key="tech" variant="outline">{{ tech }}</Badge>
           </div>
         </div>
         <div class="flex gap-2">
-          <Button variant="ghost" size="sm" @click="openEdit(item)">Edit</Button>
-          <Button variant="destructive" size="sm" @click="confirmDelete(item.id)">Delete</Button>
+          <Button variant="ghost" size="sm" @click="openEdit(item)">{{ $t('admin.btn.edit') }}</Button>
+          <Button variant="destructive" size="sm" @click="confirmDelete(item.id)">{{ $t('admin.btn.delete') }}</Button>
         </div>
       </div>
-      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">No projects found</div>
+      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">{{ $t('admin.empty.projects') }}</div>
     </div>
 
     <Sheet :open="showSheet" @update:open="handleSheetClose">
-      <SheetContent side="right" class="xl:max-w-2xl w-full">
+      <SheetContent side="right" class="xl:max-w-2xl w-full" @interact-outside.prevent>
         <SheetHeader>
-          <SheetTitle>{{ editingId ? 'Edit Project' : 'Create Project' }}</SheetTitle>
+          <SheetTitle>{{ editingId ? $t('admin.sheet.editProject') : $t('admin.sheet.createProject') }}</SheetTitle>
         </SheetHeader>
         <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
           <Tabs v-model="activeFormLocale">
@@ -206,33 +206,33 @@ function handleDelete() {
             >
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="admin-form-field">
-                  <Label>Title</Label>
-                  <Input v-model="form.title[language.code]" placeholder="Project title" :class="{ 'border-destructive': v$.title.$error && language.code === activeFormLocale }" />
+                  <Label>{{ $t('admin.label.title') }}</Label>
+                  <Input v-model="form.title[language.code]" :placeholder="$t('admin.misc.projectTitlePlaceholder')" :class="{ 'border-destructive': v$.title.$error && language.code === activeFormLocale }" />
                   <span v-if="v$.title.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.title.$errors[0]?.$message }}</span>
                 </div>
                 <div class="admin-form-field">
-                  <Label>Client</Label>
-                  <Input v-model="form.client[language.code]" placeholder="Client name" :class="{ 'border-destructive': v$.client.$error && language.code === activeFormLocale }" />
+                  <Label>{{ $t('admin.label.client') }}</Label>
+                  <Input v-model="form.client[language.code]" :placeholder="$t('admin.misc.clientNamePlaceholder')" :class="{ 'border-destructive': v$.client.$error && language.code === activeFormLocale }" />
                   <span v-if="v$.client.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.client.$errors[0]?.$message }}</span>
                 </div>
               </div>
               <div class="admin-form-field">
-                <Label>Description</Label>
+                <Label>{{ $t('admin.label.description') }}</Label>
                 <Textarea v-model="form.description[language.code]" placeholder="Project description" :class="{ 'border-destructive': v$.description.$error && language.code === activeFormLocale }" />
                 <span v-if="v$.description.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.description.$errors[0]?.$message }}</span>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="admin-form-field">
-                  <Label>SEO Title</Label>
+                  <Label>{{ $t('admin.label.seoTitle') }}</Label>
                   <Input v-model="form.seo_title[language.code]" placeholder="SEO title" />
                 </div>
                 <div class="admin-form-field">
-                  <Label>SEO Keywords</Label>
+                  <Label>{{ $t('admin.label.seoKeywords') }}</Label>
                   <Input v-model="form.seo_keywords[language.code]" placeholder="keyword, another keyword" />
                 </div>
               </div>
               <div class="admin-form-field">
-                <Label>SEO Description</Label>
+                <Label>{{ $t('admin.label.seoDescription') }}</Label>
                 <Textarea v-model="form.seo_description[language.code]" placeholder="SEO description" />
               </div>
             </TabsContent>
@@ -245,31 +245,31 @@ function handleDelete() {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="admin-form-field">
-              <Label>URL</Label>
-              <Input v-model="form.url" placeholder="https://..." />
+              <Label>{{ $t('admin.label.url') }}</Label>
+              <Input v-model="form.url" :placeholder="$t('admin.misc.urlPlaceholder')" />
             </div>
             <div class="admin-form-field">
-              <Label>Order</Label>
+              <Label>{{ $t('admin.label.order') }}</Label>
               <Input v-model.number="form.order" type="number" />
             </div>
           </div>
           <div>
-            <Label>Technologies</Label>
+            <Label>{{ $t('admin.label.technologies') }}</Label>
             <div class="flex gap-2 mt-1">
               <Input v-model="techInput" placeholder="Add tech" @keydown.enter.prevent="addTech" />
-              <Button @click="addTech" size="sm">Add</Button>
+              <Button @click="addTech" size="sm">{{ $t('admin.btn.add') }}</Button>
             </div>
             <div class="flex gap-1 flex-wrap mt-2">
               <Badge v-for="(tech, i) in form.technologies" :key="i" variant="secondary" class="cursor-pointer" @click="removeTech(i)">{{ tech }} ×</Badge>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <Switch v-model:checked="form.is_active" /><Label>Active</Label>
+            <Switch v-model:checked="form.is_active" /><Label>{{ $t('admin.label.active') }}</Label>
           </div>
         </div>
         <SheetFooter>
-          <Button variant="outline" @click="handleSheetClose(false)">Cancel</Button>
-          <Button @click="save">{{ editingId ? 'Update' : 'Create' }}</Button>
+          <Button variant="outline" @click="handleSheetClose(false)">{{ $t('admin.btn.cancel') }}</Button>
+          <Button @click="save">{{ editingId ? $t('admin.btn.update') : $t('admin.btn.create') }}</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -277,24 +277,24 @@ function handleDelete() {
     <ConfirmDialog
       v-model:open="showDeleteDialog"
       :is-loading="isDeleting"
-      cancel-button-text="Cancel"
-      confirm-button-text="Delete"
+      :cancel-button-text="$t('admin.btn.cancel')"
+      :confirm-button-text="$t('admin.btn.delete')"
       destructive
       @confirm="handleDelete"
     >
-      <template #title>Delete Project</template>
-      <template #description>Are you sure you want to delete this project? This action cannot be undone.</template>
+      <template #title>{{ $t('admin.dialog.deleteTitle', { item: $t('admin.nav.projects') }) }}</template>
+      <template #description>{{ $t('admin.dialog.deleteDescription', { item: $t('admin.nav.projects').toLowerCase() }) }}</template>
     </ConfirmDialog>
 
     <ConfirmDialog
       v-model:open="showUnsavedDialog"
-      cancel-button-text="Stay"
-      confirm-button-text="Discard"
+      :cancel-button-text="$t('admin.btn.stay')"
+      :confirm-button-text="$t('admin.btn.discard')"
       destructive
       @confirm="forceClose"
     >
-      <template #title>Unsaved Changes</template>
-      <template #description>You have unsaved changes. Are you sure you want to discard them?</template>
+      <template #title>{{ $t('admin.dialog.unsavedTitle') }}</template>
+      <template #description>{{ $t('admin.dialog.unsavedDescription') }}</template>
     </ConfirmDialog>
   </BasicPage>
 </template>

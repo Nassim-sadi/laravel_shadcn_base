@@ -14,6 +14,10 @@ if (!function_exists('setting')) {
             return \App\Models\Setting::class;
         }
 
-        return \App\Models\Setting::get($key, $default);
+        try {
+            return \App\Models\Setting::get($key, $default);
+        } catch (\Illuminate\Database\QueryException) {
+            return $default;
+        }
     }
 }

@@ -52,19 +52,24 @@ export function useCreateRoleMutation() {
   })
 }
 
-export function useUpdateRoleMutation(id: number) {
+export function useUpdateRoleMutation(id?: number) {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IResponse<IRole>, Error, Partial<IRole>>({
+  return useMutation<IResponse<IRole>, Error, Partial<IRole> & { id?: number }>({
     mutationKey: ['useUpdateRoleMutation', id],
-    mutationFn: async (data: Partial<IRole>) => await apiFetch<IResponse<IRole>>(`/roles/${id}`, {
-      method: 'put',
-      body: data,
-    }),
-    onSuccess: () => {
+    mutationFn: async (data) => {
+      const roleId = data.id ?? id
+      const { id: _id, ...body } = data
+      return await apiFetch<IResponse<IRole>>(`/roles/${roleId}`, {
+        method: 'put',
+        body,
+      })
+    },
+    onSuccess: (_, data) => {
+      const roleId = data.id ?? id
       queryClient.invalidateQueries({ queryKey: ['useGetRolesQuery'] })
-      queryClient.invalidateQueries({ queryKey: ['useGetRoleByIdQuery', id] })
+      queryClient.invalidateQueries({ queryKey: ['useGetRoleByIdQuery', roleId] })
     },
   })
 }

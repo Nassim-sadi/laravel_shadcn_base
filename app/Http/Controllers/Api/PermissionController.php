@@ -59,7 +59,14 @@ class PermissionController extends Controller
 
     public function getGroups()
     {
-        return response()->json([]);
+        $groups = Permission::all()
+            ->pluck('name')
+            ->map(fn(string $name) => explode('.', $name)[0])
+            ->unique()
+            ->sort()
+            ->values();
+
+        return response()->json($groups);
     }
 
     public function getAllPermissions()

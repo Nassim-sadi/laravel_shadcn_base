@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import { ModalDescription, ModalHeader, ModalTitle } from '@/components/prop-ui/modal'
 
 import type { User } from '../data/schema'
@@ -11,8 +12,9 @@ const props = defineProps<{
 defineEmits(['close'])
 
 const user = computed(() => props.user)
-const title = computed(() => user.value?.id ? `Edit User` : 'New User')
-const description = computed(() => user.value?.id ? `Edit user ${user.value.name}` : 'Create new user')
+const { t } = useI18n()
+const title = computed(() => user.value?.id ? `${t('admin.btn.edit')} ${t('admin.page.users.title')}` : `${t('admin.btn.create')} ${t('admin.page.users.title')}`)
+const description = computed(() => user.value?.id ? `${t('admin.btn.edit')} ${user.value.name}` : `${t('admin.btn.create')} ${t('admin.page.users.title').toLowerCase()}`)
 </script>
 
 <template>

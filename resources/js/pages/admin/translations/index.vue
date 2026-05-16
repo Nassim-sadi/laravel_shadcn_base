@@ -4,8 +4,11 @@ import { CheckIcon, Loader2Icon, SearchIcon } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 import type { LanguageMeta } from '@/plugins/i18n'
+import { useI18n } from 'vue-i18n'
 
 import { useTranslationsApi } from '@/services/api/translations.api'
+
+const { t } = useI18n()
 
 const translationsApi = useTranslationsApi()
 
@@ -62,7 +65,7 @@ const saveTranslations = useDebounceFn(async () => {
     saved.value = true
   }
   catch {
-    toast.error('Unable to save translations.')
+    toast.error(t('admin.toast.saveError'))
   }
   finally {
     saving.value = false
@@ -88,17 +91,17 @@ onMounted(async () => {
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-2xl font-semibold tracking-tight">
-          Translations
+          {{ $t('admin.page.translations.title') }}
         </h1>
         <p class="text-sm text-muted-foreground">
-          Edit Laravel JSON translation keys used by Blade and Vue.
+          {{ $t('admin.page.translations.description') }}
         </p>
       </div>
 
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
         <Loader2Icon v-if="saving" class="size-4 animate-spin" />
         <CheckIcon v-else-if="saved" class="size-4 text-emerald-600" />
-        <span>{{ saving ? 'Saving' : saved ? 'Saved' : 'Live save' }}</span>
+        <span>{{ saving ? $t('admin.misc.saving') : saved ? $t('admin.misc.saved') : $t('admin.misc.liveSave') }}</span>
       </div>
     </div>
 
@@ -119,28 +122,28 @@ onMounted(async () => {
       <div class="flex flex-col gap-2 sm:flex-row">
         <div class="relative">
           <SearchIcon class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <UiInput v-model="search" class="pl-9 sm:w-72" placeholder="Search keys or values" />
+          <UiInput v-model="search" class="pl-9 sm:w-72" :placeholder="$t('admin.misc.searchKeysOrValues')" />
         </div>
         <label class="flex h-10 items-center gap-2 rounded-md border px-3 text-sm">
           <UiCheckbox v-model:checked="showMissingOnly" />
-          Missing only
+          {{ $t('admin.label.missingOnly') }}
         </label>
       </div>
     </div>
 
     <div class="overflow-hidden rounded-lg border">
       <div class="grid grid-cols-[minmax(220px,0.9fr)_minmax(260px,1fr)_minmax(260px,1fr)] border-b bg-muted/40 px-4 py-3 text-sm font-medium">
-        <div>Key</div>
-        <div>{{ activeLocale }} value</div>
-        <div>French fallback</div>
+        <div>{{ $t('admin.label.key') }}</div>
+        <div>{{ $t('admin.misc.localeValue', { locale: activeLocale.toUpperCase() }) }}</div>
+        <div>{{ $t('admin.misc.frenchFallback') }}</div>
       </div>
 
       <div v-if="loading" class="p-6 text-sm text-muted-foreground">
-        Loading translations...
+        {{ $t('admin.misc.loadingTranslations') }}
       </div>
 
       <div v-else-if="visibleKeys.length === 0" class="p-6 text-sm text-muted-foreground">
-        No matching translations.
+        {{ $t('admin.empty.translations') }}
       </div>
 
       <template v-else>

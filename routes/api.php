@@ -53,11 +53,11 @@ Route::middleware('json.response')->group(function () {
 
         Route::get('/permissions', [PermissionController::class, 'index']);
         Route::post('/permissions', [PermissionController::class, 'store']);
+        Route::get('/permissions/groups', [PermissionController::class, 'getGroups']);
+        Route::get('/permissions/all', [PermissionController::class, 'getAllPermissions']);
         Route::get('/permissions/{permission}', [PermissionController::class, 'show']);
         Route::put('/permissions/{permission}', [PermissionController::class, 'update']);
         Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy']);
-        Route::get('/permissions/groups', [PermissionController::class, 'getGroups']);
-        Route::get('/permissions/all', [PermissionController::class, 'getAllPermissions']);
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index']);
         Route::get('/activity-logs/{activity}', [ActivityLogController::class, 'show']);

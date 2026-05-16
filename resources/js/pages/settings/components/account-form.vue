@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { CheckIcon, ChevronsUpDownIcon, Loader2 } from '@lucide/vue'
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
 
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
@@ -14,6 +15,8 @@ import { useUserQuery, useUpdateProfileMutation, useChangePasswordMutation, useU
 import { useAuthStore } from '@/stores/auth'
 import { cn } from '@/lib/utils'
 import { compressImage, formatFileSize } from '@/lib/image-utils'
+
+const { t } = useI18n()
 
 const { data: userResponse } = useUserQuery()
 const authStore = useAuthStore()
@@ -56,10 +59,10 @@ async function onSubmit() {
       name: formData.value.name,
       locale: formData.value.language,
     })
-    toast.success('Profile updated successfully')
+    toast.success(t('admin.toast.profileUpdated'))
   }
   catch (error: any) {
-    toast.error(error.message ?? 'Failed to update profile')
+    toast.error(error.message ?? t('admin.toast.profileUpdateFailed'))
   }
 }
 
@@ -70,12 +73,12 @@ async function onPasswordSubmit() {
       password: passwordData.value.password,
       password_confirmation: passwordData.value.password_confirmation,
     })
-    toast.success('Password changed successfully')
+    toast.success(t('admin.toast.passwordChanged'))
     passwordData.value = { current_password: '', password: '', password_confirmation: '' }
     passwordFormVisible.value = false
   }
   catch (error: any) {
-    toast.error(error.message ?? 'Failed to change password')
+    toast.error(error.message ?? t('admin.toast.passwordChangeFailed'))
   }
 }
 
@@ -108,12 +111,12 @@ async function onAvatarChange(event: Event) {
     if (response.data) {
       authStore.setUser(response.data.data)
     }
-    toast.success('Avatar uploaded successfully')
+    toast.success(t('admin.toast.avatarUploaded'))
 
     uploadProgress.value = 100
   }
   catch (error: any) {
-    toast.error(error.message ?? 'Failed to upload avatar')
+    toast.error(error.message ?? t('admin.toast.avatarUploadFailed'))
   }
   finally {
     isCompressing.value = false
@@ -125,8 +128,8 @@ async function onAvatarChange(event: Event) {
 <template>
   <div class="max-w-2xl">
     <div class="mb-6">
-      <h3 class="text-lg font-medium">Account</h3>
-      <p class="text-sm text-muted-foreground">Manage your account settings.</p>
+      <h3 class="text-lg font-medium">{{ $t('admin.page.settings.account.title') }}</h3>
+      <p class="text-sm text-muted-foreground">{{ $t('admin.page.settings.account.description') }}</p>
     </div>
     <Separator class="mb-6" />
 
@@ -142,11 +145,11 @@ async function onAvatarChange(event: Event) {
           <Input type="file" accept="image/*" class="w-auto" :disabled="isCompressing || isUploading" @change="onAvatarChange" />
           <Loader2 v-if="isCompressing || isUploading" class="size-4 animate-spin" />
         </div>
-        <p class="text-sm text-muted-foreground mt-1">JPG, PNG or GIF. Max 2MB.</p>
+        <p class="text-sm text-muted-foreground mt-1">{{ $t('admin.misc.avatarHelper') }}</p>
 
         <div v-if="isCompressing" class="mt-3 space-y-2">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-muted-foreground">Compressing...</span>
+            <span class="text-muted-foreground">{{ $t('admin.misc.compressing') }}</span>
             <span class="text-muted-foreground">{{ compressProgress }}%</span>
           </div>
           <Progress :model-value="compressProgress" />
@@ -154,7 +157,7 @@ async function onAvatarChange(event: Event) {
 
         <div v-if="isUploading" class="mt-3 space-y-2">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-muted-foreground">Uploading...</span>
+            <span class="text-muted-foreground">{{ $t('admin.misc.uploading') }}</span>
             <span class="text-muted-foreground">{{ uploadProgress }}%</span>
           </div>
           <Progress :model-value="uploadProgress" />
@@ -166,7 +169,7 @@ async function onAvatarChange(event: Event) {
     <Form class="space-y-6" @submit="onSubmit">
       <FormField v-slot="{ componentField }" name="name">
         <FormItem>
-          <FormLabel>Name</FormLabel>
+          <FormLabel>{{ $t('admin.label.name') }}</FormLabel>
           <FormControl>
             <Input type="text" placeholder="Your name" v-bind="componentField" v-model="formData.name" />
           </FormControl>
@@ -176,22 +179,22 @@ async function onAvatarChange(event: Event) {
 
       <FormField v-slot="{ value }" name="language">
         <FormItem class="flex flex-col">
-          <FormLabel>Language</FormLabel>
+          <FormLabel>{{ $t('admin.label.language') }}</FormLabel>
           <Popover v-model:open="languageOpen">
             <PopoverTrigger as-child>
               <FormControl>
                 <Button
                   variant="outline" role="combobox" :aria-expanded="languageOpen" :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
                 >
-                  {{ value ? languages.find(l => l.value === value)?.label : 'Select language...' }}
+                  {{ value ? languages.find(l => l.value === value)?.label : $t('admin.misc.selectLanguage') }}
                   <ChevronsUpDownIcon class="size-4 ml-2 opacity-50 shrink-0" />
                 </Button>
               </FormControl>
             </PopoverTrigger>
             <PopoverContent class="w-[200px] p-0">
               <Command>
-                <CommandInput placeholder="Search language..." />
-                <CommandEmpty>No language found.</CommandEmpty>
+                <CommandInput :placeholder="$t('admin.misc.searchLanguage')" />
+                <CommandEmpty>{{ $t('admin.misc.noLanguageFound') }}</CommandEmpty>
                 <CommandList>
                   <CommandGroup>
                     <CommandItem
@@ -211,7 +214,7 @@ async function onAvatarChange(event: Event) {
       </FormField>
 
       <Button type="submit">
-        Save changes
+        {{ $t('admin.btn.saveChanges') }}
       </Button>
     </Form>
 
@@ -220,15 +223,15 @@ async function onAvatarChange(event: Event) {
     <!-- Change Password -->
     <div class="space-y-4">
       <Button variant="outline" @click="passwordFormVisible = !passwordFormVisible">
-        {{ passwordFormVisible ? 'Cancel' : 'Change password' }}
+        {{ passwordFormVisible ? $t('admin.btn.cancel') : $t('admin.btn.changePassword') }}
       </Button>
 
       <div v-if="passwordFormVisible" class="space-y-4">
-        <h4 class="text-md font-medium">Change Password</h4>
+        <h4 class="text-md font-medium">{{ $t('admin.btn.changePassword') }}</h4>
         <Form class="space-y-4" @submit="onPasswordSubmit">
           <FormField v-slot="{ componentField }" name="current_password">
             <FormItem>
-              <FormLabel>Current Password</FormLabel>
+              <FormLabel>{{ $t('admin.label.currentPassword') }}</FormLabel>
               <FormControl>
                 <Input type="password" v-bind="componentField" v-model="passwordData.current_password" />
               </FormControl>
@@ -238,7 +241,7 @@ async function onAvatarChange(event: Event) {
 
           <FormField v-slot="{ componentField }" name="password">
             <FormItem>
-              <FormLabel>New Password</FormLabel>
+              <FormLabel>{{ $t('admin.label.newPassword') }}</FormLabel>
               <FormControl>
                 <Input type="password" v-bind="componentField" v-model="passwordData.password" />
               </FormControl>
@@ -248,7 +251,7 @@ async function onAvatarChange(event: Event) {
 
           <FormField v-slot="{ componentField }" name="password_confirmation">
             <FormItem>
-              <FormLabel>Confirm New Password</FormLabel>
+              <FormLabel>{{ $t('admin.label.confirmPassword') }}</FormLabel>
               <FormControl>
                 <Input type="password" v-bind="componentField" v-model="passwordData.password_confirmation" />
               </FormControl>
@@ -257,7 +260,7 @@ async function onAvatarChange(event: Event) {
           </FormField>
 
           <Button type="submit">
-            Change password
+            {{ $t('admin.btn.changePassword') }}
           </Button>
         </Form>
       </div>

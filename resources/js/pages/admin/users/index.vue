@@ -19,8 +19,8 @@ const loading = isLoading
 
 <template>
   <BasicPage
-    title="Users"
-    description="Manage your team members and their account permissions"
+    :title="$t('admin.page.users.title')"
+    :description="$t('admin.page.users.description')"
     sticky
   >
     <template #actions>

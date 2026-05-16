@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
 
 import { useAuth } from '@/composables/use-auth'
 
@@ -9,6 +10,7 @@ import PrivacyPolicyButton from './privacy-policy-button.vue'
 import TermsOfServiceButton from './terms-of-service-button.vue'
 import ToForgotPasswordLink from './to-forgot-password-link.vue'
 
+const { t } = useI18n()
 const { login, loading } = useAuth()
 
 const email = ref('')
@@ -23,7 +25,7 @@ function readErrorMessage(error: any) {
     .flat()
     .find(Boolean)
 
-  return firstFieldError || error?.data?.message || error?.message || 'Login failed'
+  return firstFieldError || error?.data?.message || error?.message || t('admin.toast.loginFailed')
 }
 
 async function handleLogin() {
@@ -32,7 +34,7 @@ async function handleLogin() {
 
   try {
     await login({ email: email.value, password: password.value })
-    toast.success('Welcome back!')
+    toast.success(t('admin.toast.welcomeBack'))
   }
   catch (error: any) {
     generalError.value = readErrorMessage(error)
@@ -45,22 +47,22 @@ async function handleLogin() {
   <UiCard class="w-full max-w-sm">
     <UiCardHeader>
       <UiCardTitle class="text-2xl">
-        Login
+        {{ $t('login') }}
       </UiCardTitle>
       <UiCardDescription>
-        Enter your email and password below to log into your account.
-        Not have an account?
+        {{ $t('admin.misc.enterEmailAndPassword') }}
+        {{ $t('admin.misc.dontHaveAccount') }}
         <UiButton
           variant="link" class="px-0 text-muted-foreground"
           @click="$router.push('/auth/sign-up')"
         >
-          Sign Up
+          {{ $t('admin.btn.signUp') }}
         </UiButton>
       </UiCardDescription>
     </UiCardHeader>
     <UiCardContent class="grid gap-4">
       <UiAlert v-if="generalError" variant="destructive">
-        <UiAlertTitle>Login failed</UiAlertTitle>
+        <UiAlertTitle>{{ $t('admin.toast.loginFailed') }}</UiAlertTitle>
         <UiAlertDescription>{{ generalError }}</UiAlertDescription>
       </UiAlert>
 
@@ -91,7 +93,7 @@ async function handleLogin() {
         {{ $t('login') }}
       </UiButton>
 
-      <UiSeparator label="Or continue with" />
+      <UiSeparator :label="$t('admin.misc.orContinueWith')" />
 
       <div class="flex flex-col items-center justify-between gap-4">
         <GitHubButton />
@@ -99,7 +101,7 @@ async function handleLogin() {
       </div>
 
       <UiCardDescription>
-        By clicking login, you agree to our
+        {{ $t('admin.misc.byClickingLogin') }}
         <TermsOfServiceButton />
         and
         <PrivacyPolicyButton />

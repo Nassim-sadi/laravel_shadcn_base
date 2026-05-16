@@ -35,7 +35,7 @@ export function useGetMediaQuery(params?: Record<string, any>) {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<IMediaResponse>, Error>({
     queryKey: ['useGetMediaQuery', params],
-    queryFn: () => apiFetch('/media', { method: 'get', query: params }),
+    queryFn: () => apiFetch('/media', { method: 'get', query: params ? unref(params) : undefined }),
   })
 }
 
@@ -54,7 +54,7 @@ export function useUpdateMediaMutation(id?: number) {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IMedia>, Error, Record<string, any>>({
     mutationKey: ['useUpdateMediaMutation', id],
-    mutationFn: (data) => apiFetch(`/media/${id}`, { method: 'put', body: data }),
+    mutationFn: (data) => apiFetch(`/media/${id ?? data.id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] })
     },

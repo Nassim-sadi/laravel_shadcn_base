@@ -1,7 +1,10 @@
 <script lang='ts' setup>
 import { ExternalLinkIcon } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 
 import type { NavItem } from './types'
+
+const { t } = useI18n()
 
 defineProps<{
   isActive: boolean
@@ -19,13 +22,13 @@ defineProps<{
   >
     <a v-if="isExternalUrl" :href="menu.url" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2">
       <component :is="menu.icon" v-if="menu.icon" />
-      <span>{{ menu.title }}</span>
-      <ExternalLinkIcon class="w-4 h-4 ml-auto" />
+      <span>{{ t(menu.title) }}</span>
+      <ExternalLinkIcon class="w-4 h-4 ms-auto" />
     </a>
 
     <router-link v-else :to="menu.url!" class="flex items-center gap-2">
       <component :is="menu.icon" v-if="menu.icon" />
-      <span>{{ menu.title }}</span>
+      <span>{{ t(menu.title) }}</span>
     </router-link>
   </UiSidebarMenuButton>
 </template>

@@ -23,11 +23,11 @@ const { contentLayout } = storeToRefs(themeStore)
       <header
         class="flex items-center gap-3 sm:gap-4 h-16 p-4 shrink-0 transition-[width,height] ease-linear"
       >
-        <UiSidebarTrigger class="-ml-1" />
+        <UiSidebarTrigger class="-ms-1" />
         <UiSeparator orientation="vertical" class="h-6" />
         <CommandMenuPanel />
         <div class="flex-1" />
-        <div class="ml-auto flex items-center space-x-4">
+        <div class="ms-auto flex items-center space-x-4">
           <LanguageChange />
           <ToggleTheme />
           <ThemePopover />

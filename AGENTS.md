@@ -431,3 +431,40 @@ Before editing, identify:
 Then make the change.
 
 Do not expand the scope unless required.
+
+---
+
+## RTL support
+
+The admin layout uses CSS logical properties (`start-*`/`end-*`, `ms-*`, `border-s`/`border-e`, `translate-i-*`) instead of physical properties (`left-*`/`right-*`, `ml-*`, `border-l`/`border-r`, `translate-x-*`) so that the sidebar automatically flips when `dir="rtl"` is set on `<html>`.
+
+Key files using logical properties:
+
+- `resources/js/components/ui/sidebar/Sidebar.vue` — `start-0`/`end-0`, `border-e`/`border-s`
+- `resources/js/components/ui/sidebar/SidebarRail.vue` — `-end-4`/`start-0`, `translate-i-*`
+- `resources/js/components/ui/sidebar/SidebarInset.vue` — `ms-0`/`ms-2`
+- `resources/js/components/ui/sidebar/SidebarMenuSub.vue` — `border-s`, `translate-i-px`
+- `resources/js/components/ui/sidebar/SidebarMenuSubButton.vue` — `-translate-i-px`
+- `resources/js/components/ui/sidebar/SidebarMenuBadge.vue` — `end-1`
+- `resources/js/components/ui/sidebar/SidebarMenuAction.vue` — `end-1`
+- `resources/js/components/ui/sidebar/SidebarGroupAction.vue` — `end-3`
+- `resources/js/layouts/default.vue` — `ms-auto`, `-ms-1`
+
+The sidebar context (`utils.ts`/`SidebarProvider.vue`) provides an `isRtl` ref (updated via `MutationObserver` on `document.documentElement.dir`) for dynamic prop binding on Reka UI components.
+
+Components using `isRtl`:
+
+- `SidebarMenuButton.vue` — tooltip `:side="isRtl ? 'left' : 'right'"`
+- `SidebarTrigger.vue` — icon switches between `PanelLeft`/`PanelRight`
+- `nav-team-collapsible.vue` — dropdown `:side="isRtl ? 'left' : 'right'"`
+- `nav-footer.vue` — dropdown side includes RTL fallback
+- `team-switcher.vue` — dropdown side includes RTL fallback
+
+App-sidebar chevrons and icons use `ms-auto` for margin alignment that flips in RTL.
+
+Rules:
+
+- Do not use physical positioning (`left-*`/`right-*`, `ml-*`/`mr-*`, `border-l-*`/`border-r-*`, `translate-x-*`) in sidebar-related files.
+- Use Tailwind v4 logical property utilities instead (`start-*`/`end-*`, `ms-*`, `border-s-*`/`border-e-*`, `translate-i-*`).
+- For Reka UI positioning props (`side`, `align`), use the context `isRtl` ref to conditionally flip direction.
+- When building new sidebar features, verify RTL rendering by switching to Arabic (`ar`) locale.

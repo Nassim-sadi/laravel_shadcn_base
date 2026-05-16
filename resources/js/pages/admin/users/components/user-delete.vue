@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
 
 import { ModalClose, ModalDescription, ModalFooter, ModalHeader, ModalTitle } from '@/components/prop-ui/modal'
 import { Button } from '@/components/ui/button'
 
 import type { User } from '../data/schema'
 import { useDeleteUserMutation } from '@/services/api/users.api'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   user: User
@@ -21,12 +24,12 @@ const deleteUserMutation = useDeleteUserMutation()
 async function handleRemove() {
   try {
     await deleteUserMutation.mutateAsync(props.user.id)
-    toast.success('User deleted successfully')
+    toast.success(t('admin.toast.userDeleted'))
     emit('remove')
     emit('close')
   }
   catch (error: any) {
-    toast.error(error.message ?? 'Failed to delete user')
+    toast.error(error.message ?? t('admin.toast.userDeleteFailed'))
   }
 }
 </script>
@@ -46,12 +49,12 @@ async function handleRemove() {
     <ModalFooter>
       <ModalClose as-child>
         <Button variant="outline">
-          Cancel
+          {{ $t('admin.btn.cancel') }}
         </Button>
       </ModalClose>
 
       <Button variant="destructive" @click="handleRemove" :disabled="deleteUserMutation.isPending.value">
-        {{ deleteUserMutation.isPending.value ? 'Deleting...' : 'Delete' }}
+        {{ deleteUserMutation.isPending.value ? $t('admin.misc.deleting') : $t('admin.btn.delete') }}
       </Button>
     </ModalFooter>
   </div>

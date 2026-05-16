@@ -140,10 +140,10 @@ function handleDelete() {
 </script>
 
 <template>
-  <BasicPage title="Services" description="Manage your services" sticky>
+  <BasicPage :title="$t('admin.page.services.title')" :description="$t('admin.page.services.description')" sticky>
     <template #actions>
-      <Button @click="refetch" variant="outline">Refresh</Button>
-      <Button @click="openCreate">Create Service</Button>
+      <Button @click="refetch" variant="outline">{{ $t('admin.btn.refresh') }}</Button>
+      <Button @click="openCreate">{{ $t('admin.sheet.createService') }}</Button>
     </template>
     <div class="space-y-4">
       <div v-for="service in services" :key="service.id" class="flex items-start gap-4 rounded-lg border p-4">
@@ -151,30 +151,30 @@ function handleDelete() {
           <div class="flex items-center gap-2">
             <span class="font-medium">{{ service.title }}</span>
             <Badge :variant="service.is_active ? 'default' : 'secondary'">
-              {{ service.is_active ? 'Active' : 'Inactive' }}
+              {{ service.is_active ? $t('admin.status.active') : $t('admin.status.inactive') }}
             </Badge>
           </div>
           <p class="text-sm text-muted-foreground">
-            {{ service.description?.slice(0, 100) ?? 'No description' }}
+            {{ service.description?.slice(0, 100) ?? $t('admin.misc.noDescription') }}
           </p>
           <p class="text-xs text-muted-foreground">
-            Order: {{ service.order }} | Icon: {{ service.icon || '-' }}
+            {{ $t('admin.misc.orderLabel', { value: service.order }) }} | {{ $t('admin.misc.iconLabel', { value: service.icon || '-' }) }}
           </p>
         </div>
         <div class="flex gap-2">
-          <Button variant="ghost" size="sm" @click="openEdit(service)">Edit</Button>
-          <Button variant="destructive" size="sm" @click="confirmDelete(service.id)">Delete</Button>
+          <Button variant="ghost" size="sm" @click="openEdit(service)">{{ $t('admin.btn.edit') }}</Button>
+          <Button variant="destructive" size="sm" @click="confirmDelete(service.id)">{{ $t('admin.btn.delete') }}</Button>
         </div>
       </div>
       <div v-if="services.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">
-        No services found
+        {{ $t('admin.empty.services') }}
       </div>
     </div>
 
     <Sheet :open="showSheet" @update:open="handleSheetClose">
-      <SheetContent side="right" class="xl:max-w-2xl w-full">
+      <SheetContent side="right" class="xl:max-w-2xl w-full" @interact-outside.prevent>
         <SheetHeader>
-          <SheetTitle>{{ editingId ? 'Edit Service' : 'Create Service' }}</SheetTitle>
+          <SheetTitle>{{ editingId ? $t('admin.sheet.editService') : $t('admin.sheet.createService') }}</SheetTitle>
         </SheetHeader>
         <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
           <Tabs v-model="activeFormLocale">
@@ -197,26 +197,26 @@ function handleDelete() {
             >
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="admin-form-field">
-                  <Label>Title</Label>
-                  <Input v-model="form.title[language.code]" placeholder="Service title" :class="{ 'border-destructive': v$.title.$error && language.code === activeFormLocale }" />
+                  <Label>{{ $t('admin.label.title') }}</Label>
+                  <Input v-model="form.title[language.code]" :placeholder="$t('admin.misc.serviceTitlePlaceholder')" :class="{ 'border-destructive': v$.title.$error && language.code === activeFormLocale }" />
                   <span v-if="v$.title.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.title.$errors[0]?.$message }}</span>
                 </div>
                 <div class="admin-form-field">
-                  <Label>SEO Title</Label>
+                  <Label>{{ $t('admin.label.seoTitle') }}</Label>
                   <Input v-model="form.seo_title[language.code]" placeholder="SEO title" />
                 </div>
               </div>
               <div class="admin-form-field">
-                <Label>Description</Label>
+                <Label>{{ $t('admin.label.description') }}</Label>
                 <Textarea v-model="form.description[language.code]" placeholder="Service description" :class="{ 'border-destructive': v$.description.$error && language.code === activeFormLocale }" />
                 <span v-if="v$.description.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.description.$errors[0]?.$message }}</span>
               </div>
               <div class="admin-form-field">
-                <Label>SEO Description</Label>
+                <Label>{{ $t('admin.label.seoDescription') }}</Label>
                 <Textarea v-model="form.seo_description[language.code]" placeholder="SEO description" />
               </div>
               <div class="admin-form-field">
-                <Label>SEO Keywords</Label>
+                <Label>{{ $t('admin.label.seoKeywords') }}</Label>
                 <Input v-model="form.seo_keywords[language.code]" placeholder="keyword, another keyword" />
               </div>
             </TabsContent>
@@ -224,13 +224,13 @@ function handleDelete() {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="admin-form-field">
-              <Label>Icon</Label>
-              <Input v-model="form.icon" placeholder="Icon name" :class="{ 'border-destructive': v$.icon.$error }" />
+              <Label>{{ $t('admin.label.icon') }}</Label>
+              <Input v-model="form.icon" :placeholder="$t('admin.misc.iconPlaceholder')" :class="{ 'border-destructive': v$.icon.$error }" />
               <span v-if="v$.icon.$error" class="text-xs text-destructive">{{ v$.icon.$errors[0]?.$message }}</span>
             </div>
             <div class="admin-form-field">
-              <Label>URL</Label>
-              <Input v-model="form.url" placeholder="https://..." />
+              <Label>{{ $t('admin.label.url') }}</Label>
+              <Input v-model="form.url" :placeholder="$t('admin.misc.urlPlaceholder')" />
             </div>
           </div>
           <ImagePickerField
@@ -240,19 +240,19 @@ function handleDelete() {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="admin-form-field">
-              <Label>Order</Label>
+              <Label>{{ $t('admin.label.order') }}</Label>
               <Input v-model.number="form.order" type="number" :class="{ 'border-destructive': v$.order.$error }" />
               <span v-if="v$.order.$error" class="text-xs text-destructive">{{ v$.order.$errors[0]?.$message }}</span>
             </div>
             <div class="flex items-center gap-2 pt-2">
               <Switch v-model:checked="form.is_active" />
-              <Label>Active</Label>
+              <Label>{{ $t('admin.label.active') }}</Label>
             </div>
           </div>
         </div>
         <SheetFooter>
-          <Button variant="outline" @click="handleSheetClose(false)">Cancel</Button>
-          <Button @click="save">{{ editingId ? 'Update' : 'Create' }}</Button>
+          <Button variant="outline" @click="handleSheetClose(false)">{{ $t('admin.btn.cancel') }}</Button>
+          <Button @click="save">{{ editingId ? $t('admin.btn.update') : $t('admin.btn.create') }}</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -260,24 +260,24 @@ function handleDelete() {
     <ConfirmDialog
       v-model:open="showDeleteDialog"
       :is-loading="isDeleting"
-      cancel-button-text="Cancel"
-      confirm-button-text="Delete"
+      :cancel-button-text="$t('admin.btn.cancel')"
+      :confirm-button-text="$t('admin.btn.delete')"
       destructive
       @confirm="handleDelete"
     >
-      <template #title>Delete Service</template>
-      <template #description>Are you sure you want to delete this service? This action cannot be undone.</template>
+      <template #title>{{ $t('admin.dialog.deleteTitle', { item: $t('admin.nav.services') }) }}</template>
+      <template #description>{{ $t('admin.dialog.deleteDescription', { item: $t('admin.nav.services').toLowerCase() }) }}</template>
     </ConfirmDialog>
 
     <ConfirmDialog
       v-model:open="showUnsavedDialog"
-      cancel-button-text="Stay"
-      confirm-button-text="Discard"
+      :cancel-button-text="$t('admin.btn.stay')"
+      :confirm-button-text="$t('admin.btn.discard')"
       destructive
       @confirm="forceClose"
     >
-      <template #title>Unsaved Changes</template>
-      <template #description>You have unsaved changes. Are you sure you want to discard them?</template>
+      <template #title>{{ $t('admin.dialog.unsavedTitle') }}</template>
+      <template #description>{{ $t('admin.dialog.unsavedDescription') }}</template>
     </ConfirmDialog>
   </BasicPage>
 </template>

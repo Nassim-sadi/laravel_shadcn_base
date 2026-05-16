@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ChevronLeftIcon, ChevronRightIcon } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 
 import { useSidebarNavigation } from '@/composables/use-sidebar-navigation'
 import { isExternalUrl } from '@/utils/is-external-url'
@@ -11,6 +12,8 @@ import MenuButton from './menu-button.vue'
 const { navMain } = defineProps<{
   navMain: NavGroup[]
 }>()
+
+const { t } = useI18n()
 
 const {
   navigationPath,
@@ -34,14 +37,14 @@ function handleGoBack() {
     <!-- Root level: show all groups -->
     <div v-if="navigationPath.length === 0" key="root">
       <UiSidebarGroup v-for="group in navMain" :key="group.title">
-        <UiSidebarGroupLabel>{{ group.title }}</UiSidebarGroupLabel>
+        <UiSidebarGroupLabel>{{ t(group.title) }}</UiSidebarGroupLabel>
         <UiSidebarMenu v-auto-animate>
           <template v-for="menu in group.items" :key="menu.title">
             <!-- Leaf item -->
             <UiSidebarMenuItem v-if="!menu.items">
               <MenuButton
                 :is-active="isMenuItemActive(menu)"
-                :tooltip="menu.title"
+                :tooltip="t(menu.title)"
                 :is-external-url="isExternalUrl(menu.url)"
                 :menu="menu as NavItem"
               />
@@ -51,13 +54,13 @@ function handleGoBack() {
             <UiSidebarMenuItem v-else>
               <UiSidebarMenuButton
                 class="cursor-pointer"
-                :tooltip="menu.title"
+                :tooltip="t(menu.title)"
                 :is-active="isMenuItemActive(menu)"
                 @click="enterMenu(menu)"
               >
                 <component :is="menu.icon" v-if="menu.icon" />
-                <span>{{ menu.title }}</span>
-                <ChevronRightIcon class="ml-auto w-4 h-4" />
+                <span>{{ t(menu.title) }}</span>
+                <ChevronRightIcon class="ms-auto w-4 h-4" />
               </UiSidebarMenuButton>
             </UiSidebarMenuItem>
           </template>
@@ -79,7 +82,7 @@ function handleGoBack() {
             >
               <ChevronLeftIcon />
               <div class="text-center w-full text-sm font-medium">
-                {{ currentMenuTitle }}
+                {{ t(currentMenuTitle) }}
               </div>
               <ChevronRightIcon class="invisible" />
             </UiSidebarMenuButton>
@@ -91,7 +94,7 @@ function handleGoBack() {
             <UiSidebarMenuItem v-if="!item.items">
               <MenuButton
                 :is-active="isMenuItemActive(item as NavItem)"
-                :tooltip="item.title"
+                :tooltip="t(item.title)"
                 :is-external-url="isExternalUrl((item as any).url)"
                 :menu="item as NavItem"
               />
@@ -101,12 +104,12 @@ function handleGoBack() {
             <UiSidebarMenuItem v-else>
               <UiSidebarMenuButton
                 class="cursor-pointer"
-                :tooltip="item.title"
+                :tooltip="t(item.title)"
                 @click="enterMenu(item as NavItem)"
               >
                 <component :is="item.icon" v-if="item.icon" />
-                <span>{{ item.title }}</span>
-                <ChevronRightIcon class="ml-auto w-4 h-4" />
+                <span>{{ t(item.title) }}</span>
+                <ChevronRightIcon class="ms-auto w-4 h-4" />
               </UiSidebarMenuButton>
             </UiSidebarMenuItem>
           </template>

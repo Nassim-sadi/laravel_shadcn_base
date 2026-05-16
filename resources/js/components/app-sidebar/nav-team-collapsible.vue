@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import { ChevronRightIcon, ExternalLinkIcon } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 
 import { useSidebar } from '@/components/ui/sidebar'
 import { isExternalUrl } from '@/utils/is-external-url'
@@ -15,7 +16,9 @@ const { navMain } = defineProps<{
 
 const route = useRoute()
 
-const { state, isMobile } = useSidebar()
+const { t } = useI18n()
+
+const { state, isMobile, isRtl } = useSidebar()
 
 function isCollapsed(menu: NavItem): boolean {
   const pathname = route.path
@@ -40,13 +43,13 @@ function isActive(menu: NavItem): boolean {
 
 <template>
   <UiSidebarGroup v-for="group in navMain" :key="group.title">
-    <UiSidebarGroupLabel>{{ group.title }}</UiSidebarGroupLabel>
+    <UiSidebarGroupLabel>{{ t(group.title) }}</UiSidebarGroupLabel>
     <UiSidebarMenu>
       <template v-for="menu in group.items" :key="menu.title">
         <UiSidebarMenuItem v-if="!menu.items">
           <MenuButton
             :is-active="isActive(menu)"
-            :tooltip="menu.title"
+            :tooltip="t(menu.title)"
             :is-external-url="isExternalUrl(menu.url)"
             :menu="menu as NavItem"
           />
@@ -61,11 +64,11 @@ function isActive(menu: NavItem): boolean {
           >
             <UiSidebarMenuItem>
               <UiCollapsibleTrigger as-child>
-                <UiSidebarMenuButton :tooltip="menu.title">
+                <UiSidebarMenuButton :tooltip="t(menu.title)">
                   <component :is="menu.icon" v-if="menu.icon" />
-                  <span>{{ menu.title }}</span>
+                  <span>{{ t(menu.title) }}</span>
                   <ChevronRightIcon
-                    class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                    class="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
                   />
                 </UiSidebarMenuButton>
               </UiCollapsibleTrigger>
@@ -76,12 +79,12 @@ function isActive(menu: NavItem): boolean {
                   <UiSidebarMenuSubButton as-child :is-active="isActive(subItem as NavItem)">
                     <a v-if="isExternalUrl(subItem?.url)" :href="subItem?.url" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2">
                       <component :is="subItem.icon" v-if="subItem.icon" />
-                      <span>{{ subItem.title }}</span>
-                      <ExternalLinkIcon class="w-4 h-4 ml-auto" />
+                      <span>{{ t(subItem.title) }}</span>
+                      <ExternalLinkIcon class="w-4 h-4 ms-auto" />
                     </a>
                     <router-link v-else :to="subItem?.url || '/'">
                       <component :is="subItem.icon" v-if="subItem.icon" />
-                      <span>{{ subItem.title }}</span>
+                      <span>{{ t(subItem.title) }}</span>
                     </router-link>
                   </UiSidebarMenuSubButton>
                 </UiSidebarMenuSubItem>
@@ -92,18 +95,18 @@ function isActive(menu: NavItem): boolean {
           <!-- sidebar collapsed -->
           <UiDropdownMenu v-else>
             <UiDropdownMenuTrigger as-child>
-              <UiSidebarMenuButton :tooltip="menu.title">
+              <UiSidebarMenuButton :tooltip="t(menu.title)">
                 <component :is="menu.icon" v-if="menu.icon" />
-                <span>{{ menu.title }}</span>
+                <span>{{ t(menu.title) }}</span>
               </UiSidebarMenuButton>
             </UiDropdownMenuTrigger>
-            <UiDropdownMenuContent align="start" side="right">
-              <UiDropdownMenuLabel>{{ menu.title }}</UiDropdownMenuLabel>
+            <UiDropdownMenuContent align="start" :side="isRtl ? 'left' : 'right'">
+              <UiDropdownMenuLabel>{{ t(menu.title) }}</UiDropdownMenuLabel>
               <UiDropdownMenuSeparator />
               <UiDropdownMenuItem v-for="subItem in menu.items" :key="subItem.title" as-child>
                 <MenuButton
                   :is-active="isActive(subItem as NavItem)"
-                  :tooltip="subItem.title"
+                  :tooltip="t(subItem.title)"
                   :is-external-url="isExternalUrl(subItem?.url)"
                   :menu="subItem as NavItem"
                 />

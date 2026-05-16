@@ -53,13 +53,17 @@ export function useCreatePermissionMutation() {
   })
 }
 
-export function useUpdatePermissionMutation(id: number) {
+export function useUpdatePermissionMutation(id?: number) {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IResponse<IPermission>, Error, Partial<IPermission>>({
+  return useMutation<IResponse<IPermission>, Error, Partial<IPermission> & { id?: number }>({
     mutationKey: ['useUpdatePermissionMutation', id],
-    mutationFn: async (data: Partial<IPermission>) => apiFetch<IResponse<IPermission>>(`/permissions/${id}`, { method: 'put', body: data }),
+    mutationFn: async (data) => {
+      const permissionId = data.id ?? id
+      const { id: _id, ...body } = data
+      return apiFetch<IResponse<IPermission>>(`/permissions/${permissionId}`, { method: 'put', body })
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetPermissionsQuery'] })
     },

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -7,6 +8,8 @@ import { useGetContactMessagesQuery, useDeleteContactMessageMutation, useUpdateC
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+
+const { t } = useI18n()
 
 const { data: response, isLoading, refetch } = useGetContactMessagesQuery()
 const items = computed(() => response.value?.data?.data ?? [])
@@ -37,22 +40,22 @@ function sendReply() {
 }
 
 function confirmDelete(id: number) {
-  if (confirm('Are you sure?')) deleteItem(id)
+  if (confirm(t('admin.misc.areYouSure'))) deleteItem(id)
 }
 </script>
 
 <template>
-  <BasicPage title="Contact Messages" description="Manage contact form submissions" sticky>
+  <BasicPage :title="$t('admin.page.contactMessages.title')" :description="$t('admin.page.contactMessages.description')" sticky>
     <template #actions>
-      <Button @click="refetch" variant="outline">Refresh</Button>
+      <Button @click="refetch" variant="outline">{{ $t('admin.btn.refresh') }}</Button>
     </template>
     <div class="space-y-4">
       <div v-for="item in items" :key="item.id" class="flex items-start gap-4 rounded-lg border p-4" :class="{ 'border-l-2 border-l-primary': !item.is_read }" @click="markAsRead(item)">
         <div class="flex-1 space-y-1">
           <div class="flex items-center gap-2">
             <span class="font-medium">{{ item.name }}</span>
-            <Badge v-if="!item.is_read" variant="default">New</Badge>
-            <Badge v-if="item.replied_at" variant="outline">Replied</Badge>
+            <Badge v-if="!item.is_read" variant="default">{{ $t('admin.status.new') }}</Badge>
+            <Badge v-if="item.replied_at" variant="outline">{{ $t('admin.status.replied') }}</Badge>
           </div>
           <p class="text-sm text-muted-foreground">{{ item.email }}{{ item.phone ? ` | ${item.phone}` : '' }}</p>
           <p class="text-sm"><strong>{{ item.subject }}</strong></p>
@@ -60,24 +63,24 @@ function confirmDelete(id: number) {
           <p class="text-xs text-muted-foreground">{{ new Date(item.created_at).toLocaleString() }}</p>
         </div>
         <div class="flex gap-2">
-          <Button variant="ghost" size="sm" @click="openReply(item)">{{ item.reply ? 'Edit Reply' : 'Reply' }}</Button>
-          <Button variant="destructive" size="sm" @click="confirmDelete(item.id)">Delete</Button>
+          <Button variant="ghost" size="sm" @click="openReply(item)">{{ item.reply ? $t('admin.btn.editReply') : $t('admin.btn.reply') }}</Button>
+          <Button variant="destructive" size="sm" @click="confirmDelete(item.id)">{{ $t('admin.btn.delete') }}</Button>
         </div>
       </div>
-      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">No messages found</div>
+      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">{{ $t('admin.empty.messages') }}</div>
     </div>
     <Dialog v-model:open="showReply">
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Reply to Message</DialogTitle>
-          <DialogDescription class="sr-only">Write a reply to this contact message.</DialogDescription>
+          <DialogTitle>{{ $t('admin.sheet.replyMessage') }}</DialogTitle>
+          <DialogDescription class="sr-only">{{ $t('admin.misc.writeReply') }}</DialogDescription>
         </DialogHeader>
         <div class="space-y-4">
-          <div><Label>Reply</Label><Textarea v-model="replyText" placeholder="Type your reply..." rows="6" /></div>
+          <div><Label>{{ $t('admin.label.reply') }}</Label><Textarea v-model="replyText" :placeholder="$t('admin.misc.replyPlaceholder')" rows="6" /></div>
         </div>
         <DialogFooter>
-          <Button variant="outline" @click="showReply = false">Cancel</Button>
-          <Button @click="sendReply">Send Reply</Button>
+          <Button variant="outline" @click="showReply = false">{{ $t('admin.btn.cancel') }}</Button>
+          <Button @click="sendReply">{{ $t('admin.btn.sendReply') }}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

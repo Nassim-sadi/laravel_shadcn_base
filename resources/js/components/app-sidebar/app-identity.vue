@@ -15,8 +15,8 @@ import { BlocksIcon } from '@lucide/vue'
             <BlocksIcon class="size-4" />
           </div>
           <div class="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-            <span class="truncate font-semibold">NsBase</span>
-            <span class="truncate text-xs">Admin Panel</span>
+            <span class="truncate font-semibold">{{ $t('admin.nav.appTitle') }}</span>
+            <span class="truncate text-xs">{{ $t('admin.nav.appSubtitle') }}</span>
           </div>
         </RouterLink>
       </UiSidebarMenuButton>

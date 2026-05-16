@@ -119,10 +119,10 @@ function handleDelete() {
 </script>
 
 <template>
-  <BasicPage title="Email Templates" description="Manage email notification templates" sticky>
+  <BasicPage :title="$t('admin.page.emailTemplates.title')" :description="$t('admin.page.emailTemplates.description')" sticky>
     <template #actions>
-      <Button @click="refetch" variant="outline">Refresh</Button>
-      <Button @click="openCreate">Create Template</Button>
+      <Button @click="refetch" variant="outline">{{ $t('admin.btn.refresh') }}</Button>
+      <Button @click="openCreate">{{ $t('admin.sheet.createTemplate') }}</Button>
     </template>
     <div class="space-y-4">
       <div v-for="item in items" :key="item.id" class="flex items-start gap-4 rounded-lg border p-4">
@@ -130,33 +130,33 @@ function handleDelete() {
           <div class="flex items-center gap-2">
             <span class="font-medium">{{ item.name }}</span>
             <Badge :variant="item.is_active ? 'default' : 'secondary'">
-              {{ item.is_active ? 'Active' : 'Inactive' }}
+              {{ item.is_active ? $t('admin.status.active') : $t('admin.status.inactive') }}
             </Badge>
           </div>
-          <p class="text-xs text-muted-foreground">Key: {{ item.key }}</p>
-          <p class="text-sm">Subject: {{ item.subject }}</p>
-          <p class="text-xs text-muted-foreground">Body: {{ item.body?.slice(0, 100) }}...</p>
+          <p class="text-xs text-muted-foreground">{{ $t('admin.misc.keyLabel', { value: item.key }) }}</p>
+          <p class="text-sm">{{ $t('admin.misc.subjectLabel', { value: item.subject }) }}</p>
+          <p class="text-xs text-muted-foreground">{{ $t('admin.label.body') }}: {{ item.body?.slice(0, 100) }}...</p>
           <div v-if="item.variables?.length" class="flex gap-1 flex-wrap">
             <Badge v-for="v in item.variables" :key="v" variant="outline">{{ v }}</Badge>
           </div>
         </div>
         <div class="flex gap-2">
-          <Button variant="ghost" size="sm" @click="openEdit(item)">Edit</Button>
-          <Button variant="destructive" size="sm" @click="confirmDelete(item.id)">Delete</Button>
+          <Button variant="ghost" size="sm" @click="openEdit(item)">{{ $t('admin.btn.edit') }}</Button>
+          <Button variant="destructive" size="sm" @click="confirmDelete(item.id)">{{ $t('admin.btn.delete') }}</Button>
         </div>
       </div>
-      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">No templates found</div>
+      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">{{ $t('admin.empty.templates') }}</div>
     </div>
 
     <Sheet :open="showSheet" @update:open="handleSheetClose">
       <SheetContent side="right" class="xl:max-w-2xl w-full">
         <SheetHeader>
-          <SheetTitle>{{ editingId ? 'Edit Template' : 'Create Template' }}</SheetTitle>
+          <SheetTitle>{{ editingId ? $t('admin.sheet.editTemplate') : $t('admin.sheet.createTemplate') }}</SheetTitle>
         </SheetHeader>
         <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="admin-form-field">
-              <Label>Key</Label>
+              <Label>{{ $t('admin.label.key') }}</Label>
               <Input v-model="form.key" placeholder="welcome.email" :disabled="!!editingId" :class="{ 'border-destructive': v$.key.$error }" />
               <span v-if="v$.key.$error" class="text-xs text-destructive">{{ v$.key.$errors[0]?.$message }}</span>
             </div>
@@ -181,18 +181,18 @@ function handleDelete() {
             >
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="admin-form-field">
-                  <Label>Name</Label>
+                  <Label>{{ $t('admin.label.name') }}</Label>
                   <Input v-model="form.name[language.code]" placeholder="Welcome Email" :class="{ 'border-destructive': v$.name.$error && language.code === activeFormLocale }" />
                   <span v-if="v$.name.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.name.$errors[0]?.$message }}</span>
                 </div>
                 <div class="admin-form-field">
-                  <Label>Subject</Label>
+                  <Label>{{ $t('admin.label.subject') }}</Label>
                   <Input v-model="form.subject[language.code]" placeholder="Hello {name}, welcome!" :class="{ 'border-destructive': v$.subject.$error && language.code === activeFormLocale }" />
                   <span v-if="v$.subject.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.subject.$errors[0]?.$message }}</span>
                 </div>
               </div>
               <div class="admin-form-field">
-                <Label>Body</Label>
+                <Label>{{ $t('admin.label.body') }}</Label>
                 <Textarea v-model="form.body[language.code]" placeholder="Email body with {name}, {email} placeholders..." rows="8" :class="{ 'border-destructive': v$.body.$error && language.code === activeFormLocale }" />
                 <span v-if="v$.body.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.body.$errors[0]?.$message }}</span>
               </div>
@@ -200,12 +200,12 @@ function handleDelete() {
           </Tabs>
 
           <div class="flex items-center gap-2">
-            <Switch v-model:checked="form.is_active" /><Label>Active</Label>
+            <Switch v-model:checked="form.is_active" /><Label>{{ $t('admin.label.active') }}</Label>
           </div>
         </div>
         <SheetFooter>
-          <Button variant="outline" @click="handleSheetClose(false)">Cancel</Button>
-          <Button @click="save">{{ editingId ? 'Update' : 'Create' }}</Button>
+          <Button variant="outline" @click="handleSheetClose(false)">{{ $t('admin.btn.cancel') }}</Button>
+          <Button @click="save">{{ editingId ? $t('admin.btn.update') : $t('admin.btn.create') }}</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -213,24 +213,24 @@ function handleDelete() {
     <ConfirmDialog
       v-model:open="showDeleteDialog"
       :is-loading="isDeleting"
-      cancel-button-text="Cancel"
-      confirm-button-text="Delete"
+      :cancel-button-text="$t('admin.btn.cancel')"
+      :confirm-button-text="$t('admin.btn.delete')"
       destructive
       @confirm="handleDelete"
     >
-      <template #title>Delete Template</template>
-      <template #description>Are you sure you want to delete this email template? This action cannot be undone.</template>
+      <template #title>{{ $t('admin.dialog.deleteTitle', { item: 'email template' }) }}</template>
+      <template #description>{{ $t('admin.dialog.deleteDescription', { item: 'email template' }) }}</template>
     </ConfirmDialog>
 
     <ConfirmDialog
       v-model:open="showUnsavedDialog"
-      cancel-button-text="Stay"
-      confirm-button-text="Discard"
+      :cancel-button-text="$t('admin.btn.stay')"
+      :confirm-button-text="$t('admin.btn.discard')"
       destructive
       @confirm="forceClose"
     >
-      <template #title>Unsaved Changes</template>
-      <template #description>You have unsaved changes. Are you sure you want to discard them?</template>
+      <template #title>{{ $t('admin.dialog.unsavedTitle') }}</template>
+      <template #description>{{ $t('admin.dialog.unsavedDescription') }}</template>
     </ConfirmDialog>
   </BasicPage>
 </template>

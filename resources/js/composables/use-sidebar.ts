@@ -16,46 +16,46 @@ function navItem(title: string, url: string, icon: any) {
 export function useSidebar() {
 
   const settingsNavItems = [
-    { title: 'Profile', url: '/admin/settings', icon: UserIcon },
-    { title: 'Account', url: '/admin/settings/account', icon: UserIcon },
+    { title: 'admin.nav.profile', url: '/admin/settings', icon: UserIcon },
+    { title: 'admin.nav.account', url: '/admin/settings/account', icon: UserIcon },
   ]
 
   const navData = computed<NavGroup[]>(() => [
     {
-      title: 'Main',
+      title: 'admin.nav.group.main',
       items: [
-        navItem('Dashboard', '/admin', LayoutDashboardIcon),
-        navItem('Users', '/admin/users', UsersIcon),
-        navItem('Roles', '/admin/roles', ShieldCheckIcon),
-        navItem('Permissions', '/admin/permissions', ScrollTextIcon),
+        navItem('admin.nav.dashboard', '/admin', LayoutDashboardIcon),
+        navItem('admin.nav.users', '/admin/users', UsersIcon),
+        navItem('admin.nav.roles', '/admin/roles', ShieldCheckIcon),
+        navItem('admin.nav.permissions', '/admin/permissions', ScrollTextIcon),
       ],
     },
     {
-      title: 'Content',
+      title: 'admin.nav.group.content',
       items: [
-        navItem('Services', '/admin/services', BriefcaseIcon),
-        navItem('Projects', '/admin/projects', FolderKanbanIcon),
-        navItem('Testimonials', '/admin/testimonials', StarIcon),
-        navItem('FAQs', '/admin/faqs', HelpCircleIcon),
-        ...(isEnabled('catalog') ? [navItem('Catalog', '/admin/catalog', BriefcaseIcon)] : []),
-        ...(isEnabled('blog') ? [navItem('Blog', '/admin/blog', FileTextIcon)] : []),
-        ...(isEnabled('booking') ? [navItem('Bookings', '/admin/bookings', FileTextIcon)] : []),
-        navItem('Media', '/admin/media', ImageIcon),
+        navItem('admin.nav.services', '/admin/services', BriefcaseIcon),
+        navItem('admin.nav.projects', '/admin/projects', FolderKanbanIcon),
+        navItem('admin.nav.testimonials', '/admin/testimonials', StarIcon),
+        navItem('admin.nav.faqs', '/admin/faqs', HelpCircleIcon),
+        ...(isEnabled('catalog') ? [navItem('admin.nav.catalog', '/admin/catalog', BriefcaseIcon)] : []),
+        ...(isEnabled('blog') ? [navItem('admin.nav.blog', '/admin/blog', FileTextIcon)] : []),
+        ...(isEnabled('booking') ? [navItem('admin.nav.bookings', '/admin/bookings', FileTextIcon)] : []),
+        navItem('admin.nav.media', '/admin/media', ImageIcon),
       ],
     },
     {
-      title: 'Communication',
+      title: 'admin.nav.group.communication',
       items: [
-        navItem('Contact Messages', '/admin/contact-messages', MailIcon),
-        navItem('Email Templates', '/admin/email-templates', FileTextIcon),
+        navItem('admin.nav.contactMessages', '/admin/contact-messages', MailIcon),
+        navItem('admin.nav.emailTemplates', '/admin/email-templates', FileTextIcon),
       ],
     },
     {
-      title: 'System',
+      title: 'admin.nav.group.system',
       items: [
-        navItem('Activity Logs', '/admin/activity-logs', ScrollTextIcon),
-        navItem('Translations', '/admin/translations', LanguagesIcon),
-        navItem('Settings', '/admin/settings', SettingsIcon),
+        navItem('admin.nav.activityLogs', '/admin/activity-logs', ScrollTextIcon),
+        navItem('admin.nav.translations', '/admin/translations', LanguagesIcon),
+        navItem('admin.nav.settings', '/admin/settings', SettingsIcon),
       ],
     },
   ])

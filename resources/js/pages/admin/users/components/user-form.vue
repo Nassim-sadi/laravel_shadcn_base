@@ -86,7 +86,7 @@ const onSubmit = async () => {
     <form class="space-y-6" @submit.prevent="onSubmit">
       <FormField v-slot="{ componentField }" name="name" :error="v$.name.$error">
         <FormItem>
-          <FormLabel>Name</FormLabel>
+          <FormLabel>{{ $t('admin.label.name') }}</FormLabel>
           <FormControl>
             <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" :model-value="formData.name" />
           </FormControl>
@@ -110,7 +110,7 @@ const onSubmit = async () => {
 
       <FormField v-if="!isEditing" v-slot="{ componentField }" name="password" :error="v$.password.$error">
         <FormItem>
-          <FormLabel>Password</FormLabel>
+          <FormLabel>{{ $t('admin.label.newPassword') }}</FormLabel>
           <FormControl>
             <Input type="password" v-bind="componentField" @blur="v$.password.$touch" @update:model-value="formData.password = String($event)" :model-value="formData.password" />
           </FormControl>
@@ -122,7 +122,7 @@ const onSubmit = async () => {
 
       <FormField v-if="isEditing" v-slot="{ componentField }" name="password">
         <FormItem>
-          <FormLabel>New Password (optional)</FormLabel>
+          <FormLabel>{{ $t('admin.label.newPassword') }} (optional)</FormLabel>
           <FormControl>
             <Input type="password" v-bind="componentField" @update:model-value="formData.password = String($event)" :model-value="formData.password" />
           </FormControl>
@@ -131,7 +131,7 @@ const onSubmit = async () => {
 
       <FormField v-slot="{ componentField }" name="role" :error="v$.role.$error">
         <FormItem>
-          <FormLabel>Role</FormLabel>
+          <FormLabel>{{ $t('admin.label.roleName') }}</FormLabel>
           <FormControl>
             <Select v-bind="componentField" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')" :model-value="formData.role">
               <FormControl>
@@ -155,7 +155,7 @@ const onSubmit = async () => {
       </FormField>
 
       <Button type="submit" class="w-full" :disabled="createUserMutation.isPending.value || updateUserMutation.isPending.value">
-        {{ createUserMutation.isPending.value || updateUserMutation.isPending.value ? 'Saving...' : (isEditing ? 'Update User' : 'Create User') }}
+        {{ createUserMutation.isPending.value || updateUserMutation.isPending.value ? $t('admin.misc.saving') : (isEditing ? $t('admin.btn.update') : $t('admin.btn.create')) }} {{ $t('admin.page.users.title') }}
       </Button>
     </form>
   </div>

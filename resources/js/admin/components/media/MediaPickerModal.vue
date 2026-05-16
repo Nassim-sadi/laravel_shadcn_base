@@ -21,7 +21,14 @@ const queryParams = computed(() => {
 })
 
 const { data: response } = useGetMediaQuery(queryParams)
-const mediaItems = computed(() => response.value?.data?.data ?? [])
+const mediaItems = computed(() => {
+  const r = response.value
+  if (!r) return []
+  if (Array.isArray(r)) return r
+  if (r.data && Array.isArray(r.data)) return r.data
+  if (Array.isArray((r as any)?.data?.data)) return (r as any).data.data
+  return []
+})
 
 const selectedSet = ref<Set<number>>(new Set())
 const selectedItem = ref<IMedia | null>(null)

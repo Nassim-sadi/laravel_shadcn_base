@@ -15,7 +15,7 @@
         <meta property="og:url" content="{{ url()->current() }}" />
         <meta property="og:type" content="@yield('og_type', 'website')" />
         <meta property="og:site_name" content="{{ config('app.name', 'NsBase') }}" />
-        <meta property="og:image" content="@yield('og_image', (file_exists(public_path('images/og-default.png')) ? asset('images/og-default.png') : ''))" />
+        <meta property="og:image" content="@yield('og_image', '')" />
 
         <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -24,7 +24,7 @@
 
         <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
+            "@@context": "https://schema.org",
             "@type": "Organization",
             "name": "{{ config('app.name', 'NsBase') }}",
             "url": "{{ url('/') }}",

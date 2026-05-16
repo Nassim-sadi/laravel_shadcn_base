@@ -13,7 +13,7 @@ const isOpen = ref(false)
     <ModalTrigger as-child>
       <UiButton>
         <UserRoundPlusIcon />
-        Create User
+        {{ $t('admin.btn.create') }} {{ $t('admin.page.users.title') }}
       </UiButton>
     </ModalTrigger>
 

@@ -36,10 +36,21 @@ const queryParams = computed(() => {
 })
 
 const { data: response, isLoading } = useGetMediaQuery(queryParams)
-const mediaItems = computed(() => response.value?.data?.data ?? [])
+const mediaItems = computed(() => {
+  const r = response.value
+  if (!r) return []
+  if (Array.isArray(r)) return r
+  if (r.data && Array.isArray(r.data)) return r.data
+  if (Array.isArray((r as any)?.data?.data)) return (r as any).data.data
+  return []
+})
 const pagination = computed(() => {
-  if (!response.value?.data) return null
-  return response.value.data
+  const r = response.value
+  if (!r) return null
+  const meta = (r as any)?.meta
+  if (meta?.current_page) return meta
+  if ((r as any)?.data?.current_page) return (r as any).data
+  return null
 })
 
 const { mutate: updateMedia } = useUpdateMediaMutation()
@@ -164,15 +175,14 @@ watch(() => props.open, (isOpen) => {
 
 <template>
   <Teleport defer to="body">
-    <div
-      v-if="open"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-      @keydown.escape="emit('close')"
-    >
+    <div v-if="open" class="fixed inset-0 z-50" @keydown.escape="emit('close')">
       <div class="fixed inset-0 bg-black/50" @click="emit('close')" />
 
       <div
-        class="relative bg-background rounded-lg shadow-xl w-[95vw] max-w-5xl max-h-[90vh] flex flex-col"
+        class="fixed inset-0 flex items-center justify-center pointer-events-none"
+      >
+      <div
+        class="pointer-events-auto bg-background rounded-lg shadow-xl w-[95vw] max-w-5xl max-h-[90vh] flex flex-col"
         @drop="handleDrop"
         @dragover="handleDragOver"
         @dragleave="handleDragLeave"
@@ -209,84 +219,86 @@ watch(() => props.open, (isOpen) => {
         <div class="flex-1 overflow-y-auto p-6">
           <!-- === LIBRARY TAB === -->
           <div v-if="activeTab === 'library'">
-            <template v-if="!editingImage">
-              <!-- Search -->
-              <div class="flex gap-2 mb-4">
-                <Input v-model="search" placeholder="Search files..." class="flex-1" />
-              </div>
+            <Transition name="slide" mode="out-in">
+              <!-- Grid view -->
+              <div v-if="!editingImage" key="grid">
+                <!-- Search -->
+                <div class="flex gap-2 mb-4">
+                  <Input v-model="search" placeholder="Search files..." class="flex-1" />
+                </div>
 
-              <!-- Grid -->
-              <div v-if="isLoading" class="flex justify-center py-12">
-                <Loader2Icon class="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+                <!-- Grid -->
+                <div v-if="isLoading" class="flex justify-center py-12">
+                  <Loader2Icon class="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
 
-              <div v-else-if="mediaItems.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                <div
-                  v-for="item in mediaItems"
-                  :key="item.id"
-                  class="relative group rounded-lg border overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                  :class="{
-                    'ring-2 ring-primary': selectMode && selectedImage?.id === item.id,
-                  }"
-                  @click="selectMode ? handleGridSelect(item.id) : handleGridEdit(item)"
-                >
-                  <div class="aspect-square bg-muted flex items-center justify-center overflow-hidden">
-                    <img
-                      v-if="item.mime_type.startsWith('image/')"
-                      :src="item.thumbnail_url || item.url"
-                      :alt="item.alt_text || item.name"
-                      class="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div v-else class="flex flex-col items-center gap-1 text-muted-foreground">
-                      <span class="text-xs font-medium uppercase">{{ item.extension }}</span>
+                <div v-else-if="mediaItems.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  <div
+                    v-for="item in mediaItems"
+                    :key="item.id"
+                    class="relative group rounded-lg border overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                    :class="{
+                      'ring-2 ring-primary': selectMode && selectedImage?.id === item.id,
+                    }"
+                    @click="selectMode ? handleGridSelect(item.id) : handleGridEdit(item)"
+                  >
+                    <div class="aspect-square bg-muted flex items-center justify-center overflow-hidden">
+                      <img
+                        v-if="item.mime_type.startsWith('image/')"
+                        :src="item.thumbnail_url || item.url"
+                        :alt="item.alt_text || item.name"
+                        class="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div v-else class="flex flex-col items-center gap-1 text-muted-foreground">
+                        <span class="text-xs font-medium uppercase">{{ item.extension }}</span>
+                      </div>
+                    </div>
+                    <div class="p-2">
+                      <p class="text-xs font-medium truncate">{{ item.name }}</p>
+                      <p class="text-[10px] text-muted-foreground">{{ (item.size / 1024).toFixed(0) }} KB</p>
+                    </div>
+                    <div
+                      v-if="selectMode && selectedImage?.id === item.id"
+                      class="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-0.5"
+                    >
+                      <CheckIcon class="h-3 w-3" />
                     </div>
                   </div>
-                  <div class="p-2">
-                    <p class="text-xs font-medium truncate">{{ item.name }}</p>
-                    <p class="text-[10px] text-muted-foreground">{{ (item.size / 1024).toFixed(0) }} KB</p>
-                  </div>
-                  <div
-                    v-if="selectMode && selectedImage?.id === item.id"
-                    class="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-0.5"
+                </div>
+
+                <div v-else class="text-center py-12 text-muted-foreground space-y-4">
+                  <ImageIcon class="h-12 w-12 mx-auto" />
+                  <p>No media files yet.</p>
+                  <Button variant="outline" @click="openUploadTab">Upload your first file</Button>
+                </div>
+
+                <!-- Pagination -->
+                <div v-if="pagination && pagination.last_page > 1" class="flex items-center justify-center gap-2 mt-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    :disabled="page <= 1"
+                    @click="page = page - 1"
                   >
-                    <CheckIcon class="h-3 w-3" />
-                  </div>
+                    Previous
+                  </Button>
+                  <span class="text-sm text-muted-foreground">
+                    Page {{ pagination.current_page }} of {{ pagination.last_page }}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    :disabled="page >= pagination.last_page"
+                    @click="page = page + 1"
+                  >
+                    Next
+                  </Button>
                 </div>
               </div>
 
-              <div v-else class="text-center py-12 text-muted-foreground space-y-4">
-                <ImageIcon class="h-12 w-12 mx-auto" />
-                <p>No media files yet.</p>
-                <Button variant="outline" @click="openUploadTab">Upload your first file</Button>
-              </div>
-
-              <!-- Pagination -->
-              <div v-if="pagination && pagination.last_page > 1" class="flex items-center justify-center gap-2 mt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  :disabled="page <= 1"
-                  @click="page = page - 1"
-                >
-                  Previous
-                </Button>
-                <span class="text-sm text-muted-foreground">
-                  Page {{ pagination.current_page }} of {{ pagination.last_page }}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  :disabled="page >= pagination.last_page"
-                  @click="page = page + 1"
-                >
-                  Next
-                </Button>
-              </div>
-            </template>
-
-            <!-- Inline edit -->
-            <template v-else>
+              <!-- Inline edit -->
+              <div v-else key="edit">
               <button
                 class="text-sm text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1"
                 @click="editingImage = null"
@@ -343,7 +355,8 @@ watch(() => props.open, (isOpen) => {
                   </div>
                 </div>
               </div>
-            </template>
+            </div>
+          </Transition>
           </div>
 
           <!-- === UPLOAD TAB === -->
@@ -469,18 +482,34 @@ watch(() => props.open, (isOpen) => {
           </div>
         </div>
       </div>
+      </div>
     </div>
   </Teleport>
 
   <ConfirmDialog
-    :open="showDeleteDialog"
-    title="Delete Media"
-    description="Are you sure you want to delete this file? This action cannot be undone."
+    v-model:open="showDeleteDialog"
     cancel-button-text="Cancel"
     confirm-button-text="Delete"
     :destructive="true"
     :is-loading="isDeleting"
-    @cancel="showDeleteDialog = false"
     @confirm="handleDeleteImage"
-  />
+  >
+    <template #title>Delete Media</template>
+    <template #description>Are you sure you want to delete this file? This action cannot be undone.</template>
+  </ConfirmDialog>
 </template>
+
+<style scoped>
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.25s ease;
+}
+.slide-enter-from {
+  transform: translateX(40px);
+  opacity: 0;
+}
+.slide-leave-to {
+  transform: translateX(-40px);
+  opacity: 0;
+}
+</style>

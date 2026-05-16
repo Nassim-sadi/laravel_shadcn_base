@@ -62,7 +62,7 @@ async function onSubmit() {
   <form class="space-y-6" @submit.prevent="onSubmit">
     <FormField v-slot="{ componentField }" name="name" :error="v$.name.$error">
       <FormItem>
-        <FormLabel>Name</FormLabel>
+        <FormLabel>{{ $t('admin.label.name') }}</FormLabel>
         <FormControl>
           <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" :model-value="formData.name" />
         </FormControl>
@@ -86,7 +86,7 @@ async function onSubmit() {
 
     <FormField v-slot="{ componentField }" name="role">
       <FormItem>
-        <FormLabel>Role</FormLabel>
+        <FormLabel>{{ $t('admin.label.roleName') }}</FormLabel>
         <FormControl>
           <Select v-bind="componentField" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')" :model-value="formData.role">
             <FormControl>

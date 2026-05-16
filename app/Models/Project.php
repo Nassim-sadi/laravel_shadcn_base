@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasTranslatedAttributes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasTranslatedAttributes, SoftDeletes;
+    use HasFactory, HasTranslatedAttributes, SoftDeletes;
 
     protected $fillable = [
         'title',

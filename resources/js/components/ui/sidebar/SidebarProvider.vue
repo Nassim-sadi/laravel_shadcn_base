@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes, Ref } from "vue"
-import { defaultDocument, useEventListener, useMediaQuery, useVModel } from "@vueuse/core"
+import { defaultDocument, useEventListener, useMediaQuery, useMutationObserver, useVModel } from "@vueuse/core"
 import { TooltipProvider } from "reka-ui"
 import { computed, ref } from "vue"
 import { cn } from "@/lib/utils"
@@ -54,14 +54,13 @@ useEventListener("keydown", (event: KeyboardEvent) => {
 // This makes it easier to style the sidebar with Tailwind classes.
 const state = computed(() => open.value ? "expanded" : "collapsed")
 
+const isRtl = ref(document.dir === "rtl")
+useMutationObserver(document.documentElement, () => {
+  isRtl.value = document.documentElement.dir === "rtl"
+}, { attributes: true, attributeFilter: ["dir"] })
+
 provideSidebarContext({
-  state,
-  open,
-  setOpen,
-  isMobile,
-  openMobile,
-  setOpenMobile,
-  toggleSidebar,
+  state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, isRtl,
 })
 </script>
 

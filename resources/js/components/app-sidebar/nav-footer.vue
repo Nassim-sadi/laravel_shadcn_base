@@ -11,7 +11,7 @@ const { user } = defineProps<
 >()
 
 const { logout } = useAuth()
-const { isMobile, open } = useSidebar()
+const { isMobile, open, isRtl } = useSidebar()
 </script>
 
 <template>
@@ -33,12 +33,12 @@ const { isMobile, open } = useSidebar()
               <span class="font-semibold truncate">{{ user.name }}</span>
               <span class="text-xs truncate">{{ user.email }}</span>
             </div>
-            <ChevronsUpDownIcon class="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+            <ChevronsUpDownIcon class="ms-auto size-4 group-data-[collapsible=icon]:hidden" />
           </UiSidebarMenuButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent
           class="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-          :side="(isMobile || open) ? 'bottom' : 'right'"
+          :side="(isMobile || open) ? 'bottom' : (isRtl ? 'left' : 'right')"
           align="start"
           :side-offset="4"
         >
@@ -61,22 +61,22 @@ const { isMobile, open } = useSidebar()
           <UiDropdownMenuGroup>
             <UiDropdownMenuItem @click="$router.push('/admin/settings')">
               <UserRoundCogIcon />
-              Profile
+              {{ $t('admin.nav.profile') }}
             </UiDropdownMenuItem>
             <UiDropdownMenuItem @click="$router.push('/admin/settings/account')">
               <BadgeCheckIcon />
-              Account
+              {{ $t('admin.nav.account') }}
             </UiDropdownMenuItem>
             <UiDropdownMenuItem @click="$router.push('/admin/settings/notifications')">
               <BellIcon />
-              Notifications
+              {{ $t('admin.nav.notifications') }}
             </UiDropdownMenuItem>
           </UiDropdownMenuGroup>
 
           <UiDropdownMenuSeparator />
           <UiDropdownMenuItem @click="logout">
             <LogOutIcon />
-            Logout
+            {{ $t('admin.nav.logout') }}
           </UiDropdownMenuItem>
         </UiDropdownMenuContent>
       </UiDropdownMenu>

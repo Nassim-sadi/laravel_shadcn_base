@@ -13,18 +13,18 @@ Route::get('/about', [AboutController::class, 'index'])->name('public.about');
 
 Route::get('/robots.txt', function () {
     $disallow = app()->environment('production') ? '' : 'Disallow: /';
+    $sitemap = route('sitemap');
 
-    return response(<<<TXT
-User-agent: *
-{$disallow}
-Allow: /
-Sitemap: {{ url('/sitemap.xml') }}
-TXT)->header('Content-Type', 'text/plain');
+    return response("User-agent: *\n{$disallow}\nAllow: /\nSitemap: {$sitemap}\n")
+        ->header('Content-Type', 'text/plain');
 })->name('robots');
 
 Route::get('/sitemap.xml', function () {
+    $services = \App\Models\Service::query()->where('is_active', true)->get(['id', 'slug', 'updated_at']);
+    $projects = \App\Models\Project::query()->where('is_active', true)->get(['id', 'slug', 'updated_at']);
+
     $urls = [
-        ['loc' => route('home'), 'priority' => '1.0'],
+        ['loc' => route('home'), 'priority' => '1.0', 'lastmod' => now()->toDateString()],
         ['loc' => route('public.services.index'), 'priority' => '0.9'],
         ['loc' => route('public.projects.index'), 'priority' => '0.9'],
         ['loc' => route('public.about'), 'priority' => '0.8'],
@@ -38,6 +38,25 @@ Route::get('/sitemap.xml', function () {
         $xml .= "  <url>\n";
         $xml .= "    <loc>{$url['loc']}</loc>\n";
         $xml .= "    <priority>{$url['priority']}</priority>\n";
+        if (isset($url['lastmod'])) {
+            $xml .= "    <lastmod>{$url['lastmod']}</lastmod>\n";
+        }
+        $xml .= "  </url>\n";
+    }
+
+    foreach ($services as $service) {
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>" . route('public.services.show', $service) . "</loc>\n";
+        $xml .= "    <priority>0.7</priority>\n";
+        $xml .= "    <lastmod>{$service->updated_at->toDateString()}</lastmod>\n";
+        $xml .= "  </url>\n";
+    }
+
+    foreach ($projects as $project) {
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>" . route('public.projects.show', $project) . "</loc>\n";
+        $xml .= "    <priority>0.7</priority>\n";
+        $xml .= "    <lastmod>{$project->updated_at->toDateString()}</lastmod>\n";
         $xml .= "  </url>\n";
     }
 

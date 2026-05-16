@@ -49,11 +49,11 @@ async function handleSelect(command: TCommand) {
       </UiDropdownMenuTrigger>
       <UiDropdownMenuContent align="end" class="w-[160px]">
         <UiDropdownMenuItem @click.stop="handleSelect('edit')">
-          Edit
+          {{ $t('admin.btn.edit') }}
         </UiDropdownMenuItem>
 
         <UiDropdownMenuItem @click.stop="handleSelect('delete')">
-          Delete
+          {{ $t('admin.btn.delete') }}
           <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
         </UiDropdownMenuItem>
       </UiDropdownMenuContent>
