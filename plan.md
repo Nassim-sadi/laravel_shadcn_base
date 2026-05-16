@@ -1215,31 +1215,39 @@ The goal is to become faster, clearer, and less dependent on expensive AI.
 
 | Area | Status |
 |------|--------|
-| Auth (login, register, profile, password change) | Done |
+| Auth (login, register, profile, password change, avatar upload with compression) | Done |
 | Users CRUD + invite + assign roles | Done |
 | Roles & permissions CRUD (Spatie) | Done |
-| Admin layout (sidebar, navbar, theme) | Done |
+| Admin layout (sidebar width 18rem, theme, sticky header) | Done |
 | Activity log (custom queue-based) | Done |
 | Settings CRUD (general, SEO, mail, etc.) | Done |
-| Email templates CRUD + render() with placeholders | Done |
-| Contact messages (API CRUD, admin list) | Done |
+| Email templates CRUD + render() with placeholders + `TemplateMailable` | Done |
+| Contact messages (API CRUD, admin list, `ContactMessageNotification`) | Done |
 | Services CRUD (multilingual JSON fields, Sheet sidebar) | Done |
 | Projects CRUD (multilingual JSON fields, Sheet sidebar) | Done |
 | Testimonials CRUD (multilingual JSON fields, Sheet sidebar) | Done |
 | FAQs CRUD (multilingual JSON fields, Sheet sidebar) | Done |
-| Admin CRUD forms: Sheet sidebar + ConfirmDialog delete pattern | Done for 5 modules |
-| Multilingual: `HasTranslatedAttributes` trait, lang JSON files, Vue language tabs | Done |
+| Admin CRUD forms: Sheet sidebar (`xl:max-w-2xl`) + ConfirmDialog delete pattern + 2-column grid | Done for 5 modules |
+| Multilingual: `HasTranslatedAttributes` trait, lang JSON files, Vue language tabs, dynamic locale loading | Done |
 | Public Blade: Home, Services index/show, Projects index/show | Done |
 | About Blade page (static, content via `__('about.*')` lang files) | Done |
-| Contact Blade page (form + throttled store, POST to server) | Done |
+| Contact Blade page (form + throttled store, rate-limit 3/10min) | Done |
 | Public nav updated (About, Contact, Services, Projects links) | Done |
 | Media manager: migration, model, Admin API CRUD + bulkDestroy + thumbnail (intervention/image v4) | Done |
-| Media Vue admin: grid, upload Sheet, edit Sheet, folders/types | Done |
-| MediaPickerModal + ImagePicker reusable components | Done |
-| `image_id` FK added to services, projects, testimonials | Done |
-| `ContactMessageRequest` FormRequest | Done |
-| `setting()` global helper | Done |
-| `useCreateContactMessageMutation` frontend mutation | Done |
+| Media Vue admin: grid, custom modal (MediaLibrary + Upload tabs, inline edit, selectMode) | Done — refactored from Sheet to custom modal |
+| `ImagePickerField.vue` reusable component + `MediaModal.vue` custom modal | Done — integrated into services, projects, testimonials forms |
+| `useMediaUpload` composable (multi-file drag-drop XHR upload with per-file progress) | Done |
+| `image_id` FK added to services, projects, testimonials + backend eager loading | Done |
+| Form validation: Vuelidate error messages under every field, `translatedRequired()` helper | Done |
+| Unsaved changes guard: simplified always-show confirm dialog | Done — smart composable removed |
+| `DialogContent` accessibility: hidden `DialogDescription` in Sheet/MediaPicker/ContactMessages | Done |
+| `Switch` import fix in testimonials page | Done |
+| CSS: `.admin-form-field` class for consistent label-input spacing | Done |
+| `ContactMessageNotification` (ShouldQueue, uses `TemplateMailable`) | Done |
+| Contact form sends confirmation + admin notification | Done |
+| PHP feature tests for API and localization | Done |
+| DEPLOY.md — one-command deploy flow with shared hosting notes | Done |
+| `npm run build` passes with 0 TypeScript errors | Done |
 
 ### Not built (ready when needed)
 
@@ -1250,15 +1258,16 @@ The goal is to become faster, clearer, and less dependent on expensive AI.
 - Partners CRUD
 - Landing pages with controlled sections
 - Galleries pivot table (`mediaables`)
-- Email sending integration (Mailhog/SMTP config)
+- Email sending integration (Mailhog/SMTP config) — notification classes exist, need SMTP setup
+- Sitemap / robots.txt / canonical URLs / OG tags pass — basic OG exists, can be enhanced
+- Content seeders (ContentSeeder exists but may need fine-tuning)
 
 ### Next steps
 
-1. **Integration / QA pass through all admin CRUDs** — verify each module loads, creates, edits, deletes correctly with the Sheet + ConfirmDialog pattern. Fix edge cases in the multilingual tabs.
-2. **Email sending** — wire `EmailTemplate::render()` into a Mailable/Notification class, test with Mailhog or SMTP.
-3. **Seo pass** — add sitemap, robots.txt, canonical URLs, OG tags to public Blade layouts.
-4. **Vite build & typecheck** — ensure `npm run build` and `vue-tsc --noEmit` pass (currently ~40 pre-existing TS errors in old files, none in new code).
-5. **Seeders** — create database seeders for test data (services, projects, testimonials, faqs, settings).
-6. **Deploy documentation** — document the one-command deploy flow for shared hosting.
+1. **Email sending** — configure SMTP/Mailhog, verify `ContactMessageNotification` sends correctly via queue worker (`php artisan queue:work`).
+2. **Seo pass** — add sitemap.xml, robots.txt, canonical URLs, richer OG tags to public Blade layouts.
+3. **Seeders** — verify and refine `ContentSeeder` for realistic test data (services, projects, testimonials, faqs, settings).
+4. **Production deploy** — follow DEPLOY.md to deploy to staging/production server.
+5. **Optional modules** — catalog, booking-lite, blog-lite, team, partners when client needs them.
 
 After these, the Business Kit scaffold is ready for the first real client project.
