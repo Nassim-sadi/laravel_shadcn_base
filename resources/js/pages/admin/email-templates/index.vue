@@ -4,44 +4,117 @@ import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useGetEmailTemplatesQuery, useDeleteEmailTemplateMutation, useCreateEmailTemplateMutation, useUpdateEmailTemplateMutation } from '@/services/api/email-templates.api'
+import type { TranslatedValue } from '@/services/api/email-templates.api'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
+import { languageMetadata } from '@/plugins/i18n'
+import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
+import { translatedRequired } from '@/composables/use-validation'
+import { useVuelidate } from '@vuelidate/core'
+import { required, helpers } from '@vuelidate/validators'
+import ConfirmDialog from '@/components/confirm-dialog.vue'
+
+interface EmailTemplateForm {
+  key: string
+  name: TranslatedValue
+  subject: TranslatedValue
+  body: TranslatedValue
+  is_active: boolean
+}
 
 const { data: response, isLoading, refetch } = useGetEmailTemplatesQuery()
 const items = computed(() => response.value?.data?.data ?? [])
-const showDialog = ref(false)
+const showSheet = ref(false)
 const editingId = ref<number | null>(null)
-const form = ref({ key: '', name: '', subject: '', body: '', is_active: true })
-const { mutate: deleteItem } = useDeleteEmailTemplateMutation()
+const activeFormLocale = ref('fr')
+const deleteTargetId = ref<number | null>(null)
+const showDeleteDialog = ref(false)
+const { mutate: deleteItem, isPending: isDeleting } = useDeleteEmailTemplateMutation()
 const { mutate: createItem } = useCreateEmailTemplateMutation()
 const { mutate: updateItem } = useUpdateEmailTemplateMutation(0)
+const showUnsavedDialog = ref(false)
+
+function createEmptyForm(): EmailTemplateForm {
+  return {
+    key: '',
+    name: emptyTranslations(),
+    subject: emptyTranslations(),
+    body: emptyTranslations(),
+    is_active: true,
+  }
+}
+
+const form = ref<EmailTemplateForm>(createEmptyForm())
+
+const rules = computed(() => ({
+  key: { required: helpers.withMessage('Key is required', required) },
+  name: { required: translatedRequired() },
+  subject: { required: translatedRequired() },
+  body: { required: translatedRequired() },
+}))
+
+const v$ = useVuelidate(rules, form)
+
+function handleSheetClose(open: boolean) {
+  if (!open) {
+    showUnsavedDialog.value = true
+    return
+  }
+  showSheet.value = open
+}
 
 function openCreate() {
   editingId.value = null
-  form.value = { key: '', name: '', subject: '', body: '', is_active: true }
-  showDialog.value = true
+  form.value = createEmptyForm()
+  activeFormLocale.value = 'fr'
+  showSheet.value = true
 }
 
 function openEdit(item: any) {
   editingId.value = item.id
-  form.value = { key: item.key, name: item.name, subject: item.subject, body: item.body, is_active: item.is_active }
-  showDialog.value = true
+  form.value = {
+    key: item.key,
+    name: withLanguages(item.name_translations, item.name),
+    subject: withLanguages(item.subject_translations, item.subject),
+    body: withLanguages(item.body_translations, item.body),
+    is_active: item.is_active,
+  }
+  activeFormLocale.value = 'fr'
+  showSheet.value = true
 }
 
-function save() {
+async function save() {
+  const isValid = await v$.value.$validate()
+  if (!isValid) return
+
   if (editingId.value) {
     updateItem({ id: editingId.value, ...form.value } as any)
   } else {
     createItem(form.value)
   }
-  showDialog.value = false
+  showSheet.value = false
+}
+
+function forceClose() {
+  showUnsavedDialog.value = false
+  showSheet.value = false
 }
 
 function confirmDelete(id: number) {
-  if (confirm('Are you sure?')) deleteItem(id)
+  deleteTargetId.value = id
+  showDeleteDialog.value = true
+}
+
+function handleDelete() {
+  if (deleteTargetId.value !== null) {
+    deleteItem(deleteTargetId.value)
+  }
+  showDeleteDialog.value = false
+  deleteTargetId.value = null
 }
 </script>
 
@@ -74,27 +147,90 @@ function confirmDelete(id: number) {
       </div>
       <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">No templates found</div>
     </div>
-    <Dialog v-model:open="showDialog">
-      <DialogContent class="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{{ editingId ? 'Edit Template' : 'Create Template' }}</DialogTitle>
-        </DialogHeader>
-        <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div><Label>Key</Label><Input v-model="form.key" placeholder="welcome.email" :disabled="!!editingId" /></div>
-            <div><Label>Name</Label><Input v-model="form.name" placeholder="Welcome Email" /></div>
+
+    <Sheet :open="showSheet" @update:open="handleSheetClose">
+      <SheetContent side="right" class="xl:max-w-2xl w-full">
+        <SheetHeader>
+          <SheetTitle>{{ editingId ? 'Edit Template' : 'Create Template' }}</SheetTitle>
+        </SheetHeader>
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="admin-form-field">
+              <Label>Key</Label>
+              <Input v-model="form.key" placeholder="welcome.email" :disabled="!!editingId" :class="{ 'border-destructive': v$.key.$error }" />
+              <span v-if="v$.key.$error" class="text-xs text-destructive">{{ v$.key.$errors[0]?.$message }}</span>
+            </div>
           </div>
-          <div><Label>Subject</Label><Input v-model="form.subject" placeholder="Hello {name}, welcome!" /></div>
-          <div><Label>Body</Label><Textarea v-model="form.body" placeholder="Email body with {name}, {email} placeholders..." rows="8" /></div>
+          <Tabs v-model="activeFormLocale">
+            <TabsList>
+              <TabsTrigger
+                v-for="language in languageMetadata"
+                :key="language.code"
+                :value="language.code"
+              >
+                <span>{{ language.flag }}</span>
+                <span>{{ language.name }}</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent
+              v-for="language in languageMetadata"
+              :key="language.code"
+              :value="language.code"
+              class="space-y-4 pt-4"
+            >
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="admin-form-field">
+                  <Label>Name</Label>
+                  <Input v-model="form.name[language.code]" placeholder="Welcome Email" :class="{ 'border-destructive': v$.name.$error && language.code === activeFormLocale }" />
+                  <span v-if="v$.name.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.name.$errors[0]?.$message }}</span>
+                </div>
+                <div class="admin-form-field">
+                  <Label>Subject</Label>
+                  <Input v-model="form.subject[language.code]" placeholder="Hello {name}, welcome!" :class="{ 'border-destructive': v$.subject.$error && language.code === activeFormLocale }" />
+                  <span v-if="v$.subject.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.subject.$errors[0]?.$message }}</span>
+                </div>
+              </div>
+              <div class="admin-form-field">
+                <Label>Body</Label>
+                <Textarea v-model="form.body[language.code]" placeholder="Email body with {name}, {email} placeholders..." rows="8" :class="{ 'border-destructive': v$.body.$error && language.code === activeFormLocale }" />
+                <span v-if="v$.body.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.body.$errors[0]?.$message }}</span>
+              </div>
+            </TabsContent>
+          </Tabs>
+
           <div class="flex items-center gap-2">
             <Switch v-model:checked="form.is_active" /><Label>Active</Label>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" @click="showDialog = false">Cancel</Button>
+        <SheetFooter>
+          <Button variant="outline" @click="handleSheetClose(false)">Cancel</Button>
           <Button @click="save">{{ editingId ? 'Update' : 'Create' }}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+
+    <ConfirmDialog
+      v-model:open="showDeleteDialog"
+      :is-loading="isDeleting"
+      cancel-button-text="Cancel"
+      confirm-button-text="Delete"
+      destructive
+      @confirm="handleDelete"
+    >
+      <template #title>Delete Template</template>
+      <template #description>Are you sure you want to delete this email template? This action cannot be undone.</template>
+    </ConfirmDialog>
+
+    <ConfirmDialog
+      v-model:open="showUnsavedDialog"
+      cancel-button-text="Stay"
+      confirm-button-text="Discard"
+      destructive
+      @confirm="forceClose"
+    >
+      <template #title>Unsaved Changes</template>
+      <template #description>You have unsaved changes. Are you sure you want to discard them?</template>
+    </ConfirmDialog>
   </BasicPage>
 </template>

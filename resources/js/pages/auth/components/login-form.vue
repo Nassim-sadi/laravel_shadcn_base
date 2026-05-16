@@ -13,14 +13,30 @@ const { login, loading } = useAuth()
 
 const email = ref('')
 const password = ref('')
+const generalError = ref('')
+const fieldErrors = ref<Record<string, string[]>>({})
+
+function readErrorMessage(error: any) {
+  fieldErrors.value = error?.data?.errors ?? {}
+
+  const firstFieldError = Object.values(fieldErrors.value)
+    .flat()
+    .find(Boolean)
+
+  return firstFieldError || error?.data?.message || error?.message || 'Login failed'
+}
 
 async function handleLogin() {
+  generalError.value = ''
+  fieldErrors.value = {}
+
   try {
     await login({ email: email.value, password: password.value })
     toast.success('Welcome back!')
   }
   catch (error: any) {
-    toast.error(error.message || 'Login failed')
+    generalError.value = readErrorMessage(error)
+    toast.error(generalError.value)
   }
 }
 </script>
@@ -43,11 +59,19 @@ async function handleLogin() {
       </UiCardDescription>
     </UiCardHeader>
     <UiCardContent class="grid gap-4">
+      <UiAlert v-if="generalError" variant="destructive">
+        <UiAlertTitle>Login failed</UiAlertTitle>
+        <UiAlertDescription>{{ generalError }}</UiAlertDescription>
+      </UiAlert>
+
       <div class="grid gap-2">
         <UiLabel for="email">
           {{ $t('email') }}
         </UiLabel>
-        <UiInput id="email" v-model="email" type="email" placeholder="m@example.com" required />
+        <UiInput id="email" v-model="email" type="email" placeholder="m@example.com" required :aria-invalid="!!fieldErrors.email?.length" />
+        <p v-if="fieldErrors.email?.length" class="text-sm text-destructive">
+          {{ fieldErrors.email[0] }}
+        </p>
       </div>
       <div class="grid gap-2">
         <div class="flex items-center justify-between">
@@ -56,7 +80,10 @@ async function handleLogin() {
           </UiLabel>
           <ToForgotPasswordLink />
         </div>
-        <UiInput id="password" v-model="password" type="password" required placeholder="*********" />
+        <UiInput id="password" v-model="password" type="password" required placeholder="*********" :aria-invalid="!!fieldErrors.password?.length" />
+        <p v-if="fieldErrors.password?.length" class="text-sm text-destructive">
+          {{ fieldErrors.password[0] }}
+        </p>
       </div>
 
       <UiButton class="w-full" :disabled="loading" @click="handleLogin">

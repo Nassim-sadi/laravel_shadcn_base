@@ -1,4 +1,4 @@
-import { LayoutDashboardIcon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, UserIcon, UsersIcon, BriefcaseIcon, FolderKanbanIcon, StarIcon, HelpCircleIcon, MailIcon, FileTextIcon } from '@lucide/vue'
+import { BriefcaseIcon, FolderKanbanIcon, HelpCircleIcon, ImageIcon, LanguagesIcon, LayoutDashboardIcon, MailIcon, FileTextIcon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, StarIcon, UserIcon, UsersIcon } from '@lucide/vue'
 
 import type { NavGroup } from '@/components/app-sidebar/types'
 
@@ -25,6 +25,7 @@ export function useSidebar() {
         { title: 'Projects', url: '/admin/projects', icon: FolderKanbanIcon },
         { title: 'Testimonials', url: '/admin/testimonials', icon: StarIcon },
         { title: 'FAQs', url: '/admin/faqs', icon: HelpCircleIcon },
+        { title: 'Media', url: '/admin/media', icon: ImageIcon },
       ],
     },
     {
@@ -38,6 +39,7 @@ export function useSidebar() {
       title: 'System',
       items: [
         { title: 'Activity Logs', url: '/admin/activity-logs', icon: ScrollTextIcon },
+        { title: 'Translations', url: '/admin/translations', icon: LanguagesIcon },
         { title: 'Settings', url: '/admin/settings', icon: SettingsIcon },
       ],
     },
@@ -46,5 +48,6 @@ export function useSidebar() {
   return {
     navData: ref(navData),
     settingsNavItems: ref(settingsNavItems),
+    otherPages: ref([]),
   }
 }

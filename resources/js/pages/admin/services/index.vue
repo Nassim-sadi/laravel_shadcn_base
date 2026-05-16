@@ -6,45 +6,136 @@ import { Badge } from '@/components/ui/badge'
 import { useGetServicesQuery, useDeleteServiceMutation, useCreateServiceMutation, useUpdateServiceMutation } from '@/services/api/services.api'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
+import { languageMetadata } from '@/plugins/i18n'
+import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
+import type { TranslatedValue } from '@/composables/use-translated-form'
+import { translatedRequired } from '@/composables/use-validation'
+import { useVuelidate } from '@vuelidate/core'
+import { required, numeric, helpers } from '@vuelidate/validators'
+import ConfirmDialog from '@/components/confirm-dialog.vue'
+import ImagePickerField from '@/admin/components/ImagePickerField.vue'
+
+interface ServiceForm {
+  title: TranslatedValue
+  description: TranslatedValue
+  icon: string
+  image_id: number | null
+  image_url: string | null
+  url: string
+  order: number
+  is_active: boolean
+  seo_title: TranslatedValue
+  seo_description: TranslatedValue
+  seo_keywords: TranslatedValue
+}
 
 const { data: response, isLoading, refetch } = useGetServicesQuery()
 const services = computed(() => response.value?.data?.data ?? [])
 
-const showDialog = ref(false)
+const showSheet = ref(false)
 const editingId = ref<number | null>(null)
-const form = ref({ title: '', description: '', icon: '', url: '', order: 0, is_active: true })
-const { mutate: deleteService } = useDeleteServiceMutation()
+const activeFormLocale = ref('fr')
+const deleteTargetId = ref<number | null>(null)
+const showDeleteDialog = ref(false)
+const showUnsavedDialog = ref(false)
+const { mutate: deleteService, isPending: isDeleting } = useDeleteServiceMutation()
 const { mutate: createService } = useCreateServiceMutation()
-const { mutate: updateService } = useUpdateServiceMutation(0)
+const { mutate: updateService } = useUpdateServiceMutation()
+
+function createEmptyForm(): ServiceForm {
+  return {
+    title: emptyTranslations(),
+    description: emptyTranslations(),
+    icon: '',
+    image_id: null,
+    image_url: null,
+    url: '',
+    order: 0,
+    is_active: true,
+    seo_title: emptyTranslations(),
+    seo_description: emptyTranslations(),
+    seo_keywords: emptyTranslations(),
+  }
+}
+
+const form = ref<ServiceForm>(createEmptyForm())
+
+const rules = computed(() => ({
+  title: { required: translatedRequired() },
+  description: { required: translatedRequired() },
+  icon: { required: helpers.withMessage('Icon is required', required) },
+  order: { numeric },
+}))
+
+const v$ = useVuelidate(rules, form)
+
+function handleSheetClose(open: boolean) {
+  if (!open) {
+    showUnsavedDialog.value = true
+    return
+  }
+  showSheet.value = open
+}
 
 function openCreate() {
   editingId.value = null
-  form.value = { title: '', description: '', icon: '', url: '', order: 0, is_active: true }
-  showDialog.value = true
+  form.value = createEmptyForm()
+  activeFormLocale.value = 'fr'
+  showSheet.value = true
 }
 
 function openEdit(service: any) {
   editingId.value = service.id
-  form.value = { title: service.title, description: service.description || '', icon: service.icon || '', url: service.url || '', order: service.order, is_active: service.is_active }
-  showDialog.value = true
+  form.value = {
+    title: withLanguages(service.title_translations, service.title),
+    description: withLanguages(service.description_translations, service.description),
+    icon: service.icon || '',
+    image_id: service.image_id ?? null,
+    image_url: service.image_thumbnail_url ?? service.image_url ?? null,
+    url: service.url || '',
+    order: service.order,
+    is_active: service.is_active,
+    seo_title: withLanguages(service.seo_title_translations, service.seo_title),
+    seo_description: withLanguages(service.seo_description_translations, service.seo_description),
+    seo_keywords: withLanguages(service.seo_keywords_translations, service.seo_keywords),
+  }
+  activeFormLocale.value = 'fr'
+  showSheet.value = true
 }
 
-function save() {
+async function save() {
+  const isValid = await v$.value.$validate()
+  if (!isValid) return
+
+  const payload = { ...form.value, image_id: form.value.image_id ?? undefined }
   if (editingId.value) {
-    updateService({ id: editingId.value, ...form.value } as any)
+    updateService({ id: editingId.value, ...payload })
   } else {
-    createService(form.value)
+    createService(payload)
   }
-  showDialog.value = false
+  showSheet.value = false
+}
+
+function forceClose() {
+  showUnsavedDialog.value = false
+  showSheet.value = false
 }
 
 function confirmDelete(id: number) {
-  if (confirm('Are you sure you want to delete this service?')) {
-    deleteService(id)
+  deleteTargetId.value = id
+  showDeleteDialog.value = true
+}
+
+function handleDelete() {
+  if (deleteTargetId.value !== null) {
+    deleteService(deleteTargetId.value)
   }
+  showDeleteDialog.value = false
+  deleteTargetId.value = null
 }
 </script>
 
@@ -79,42 +170,114 @@ function confirmDelete(id: number) {
         No services found
       </div>
     </div>
-    <Dialog v-model:open="showDialog">
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{{ editingId ? 'Edit Service' : 'Create Service' }}</DialogTitle>
-        </DialogHeader>
-        <div class="space-y-4">
-          <div>
-            <Label>Title</Label>
-            <Input v-model="form.title" placeholder="Service title" />
+
+    <Sheet :open="showSheet" @update:open="handleSheetClose">
+      <SheetContent side="right" class="xl:max-w-2xl w-full">
+        <SheetHeader>
+          <SheetTitle>{{ editingId ? 'Edit Service' : 'Create Service' }}</SheetTitle>
+        </SheetHeader>
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+          <Tabs v-model="activeFormLocale">
+            <TabsList>
+              <TabsTrigger
+                v-for="language in languageMetadata"
+                :key="language.code"
+                :value="language.code"
+              >
+                <span>{{ language.flag }}</span>
+                <span>{{ language.name }}</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent
+              v-for="language in languageMetadata"
+              :key="language.code"
+              :value="language.code"
+              class="space-y-4 pt-4"
+            >
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="admin-form-field">
+                  <Label>Title</Label>
+                  <Input v-model="form.title[language.code]" placeholder="Service title" :class="{ 'border-destructive': v$.title.$error && language.code === activeFormLocale }" />
+                  <span v-if="v$.title.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.title.$errors[0]?.$message }}</span>
+                </div>
+                <div class="admin-form-field">
+                  <Label>SEO Title</Label>
+                  <Input v-model="form.seo_title[language.code]" placeholder="SEO title" />
+                </div>
+              </div>
+              <div class="admin-form-field">
+                <Label>Description</Label>
+                <Textarea v-model="form.description[language.code]" placeholder="Service description" :class="{ 'border-destructive': v$.description.$error && language.code === activeFormLocale }" />
+                <span v-if="v$.description.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.description.$errors[0]?.$message }}</span>
+              </div>
+              <div class="admin-form-field">
+                <Label>SEO Description</Label>
+                <Textarea v-model="form.seo_description[language.code]" placeholder="SEO description" />
+              </div>
+              <div class="admin-form-field">
+                <Label>SEO Keywords</Label>
+                <Input v-model="form.seo_keywords[language.code]" placeholder="keyword, another keyword" />
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="admin-form-field">
+              <Label>Icon</Label>
+              <Input v-model="form.icon" placeholder="Icon name" :class="{ 'border-destructive': v$.icon.$error }" />
+              <span v-if="v$.icon.$error" class="text-xs text-destructive">{{ v$.icon.$errors[0]?.$message }}</span>
+            </div>
+            <div class="admin-form-field">
+              <Label>URL</Label>
+              <Input v-model="form.url" placeholder="https://..." />
+            </div>
           </div>
-          <div>
-            <Label>Description</Label>
-            <Textarea v-model="form.description" placeholder="Service description" />
-          </div>
-          <div>
-            <Label>Icon</Label>
-            <Input v-model="form.icon" placeholder="Icon name" />
-          </div>
-          <div>
-            <Label>URL</Label>
-            <Input v-model="form.url" placeholder="https://..." />
-          </div>
-          <div>
-            <Label>Order</Label>
-            <Input v-model.number="form.order" type="number" />
-          </div>
-          <div class="flex items-center gap-2">
-            <Switch v-model:checked="form.is_active" />
-            <Label>Active</Label>
+          <ImagePickerField
+            v-model:image-id="form.image_id"
+            v-model:image-url="form.image_url"
+          />
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="admin-form-field">
+              <Label>Order</Label>
+              <Input v-model.number="form.order" type="number" :class="{ 'border-destructive': v$.order.$error }" />
+              <span v-if="v$.order.$error" class="text-xs text-destructive">{{ v$.order.$errors[0]?.$message }}</span>
+            </div>
+            <div class="flex items-center gap-2 pt-2">
+              <Switch v-model:checked="form.is_active" />
+              <Label>Active</Label>
+            </div>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" @click="showDialog = false">Cancel</Button>
+        <SheetFooter>
+          <Button variant="outline" @click="handleSheetClose(false)">Cancel</Button>
           <Button @click="save">{{ editingId ? 'Update' : 'Create' }}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+
+    <ConfirmDialog
+      v-model:open="showDeleteDialog"
+      :is-loading="isDeleting"
+      cancel-button-text="Cancel"
+      confirm-button-text="Delete"
+      destructive
+      @confirm="handleDelete"
+    >
+      <template #title>Delete Service</template>
+      <template #description>Are you sure you want to delete this service? This action cannot be undone.</template>
+    </ConfirmDialog>
+
+    <ConfirmDialog
+      v-model:open="showUnsavedDialog"
+      cancel-button-text="Stay"
+      confirm-button-text="Discard"
+      destructive
+      @confirm="forceClose"
+    >
+      <template #title>Unsaved Changes</template>
+      <template #description>You have unsaved changes. Are you sure you want to discard them?</template>
+    </ConfirmDialog>
   </BasicPage>
 </template>

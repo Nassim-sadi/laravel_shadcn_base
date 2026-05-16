@@ -17,7 +17,7 @@ export function useApiFetch() {
   const apiFetch = ofetch.create({
     baseURL: API_BASE_URL,
     timeout: API_TIMEOUT ?? 0,
-    async onRequest({ request, options }) {
+    async onRequest({ request: _request, options }) {
       const currentToken = getStoredToken()
       if (currentToken) {
         options.headers.set('Authorization', `Bearer ${currentToken}`)

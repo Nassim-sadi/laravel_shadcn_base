@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Str;
 
 class EmailTemplate extends Model
 {
+    use HasTranslatedAttributes;
+
     protected $fillable = [
         'key',
         'name',
@@ -18,6 +21,9 @@ class EmailTemplate extends Model
     ];
 
     protected $casts = [
+        'name' => 'array',
+        'subject' => 'array',
+        'body' => 'array',
         'variables' => 'array',
         'is_active' => 'boolean',
     ];
@@ -47,10 +53,10 @@ class EmailTemplate extends Model
     /**
      * Render the template with provided data.
      */
-    public function render(array $data = []): array
+    public function render(array $data = [], ?string $locale = null): array
     {
-        $subject = $this->subject;
-        $body = $this->body;
+        $subject = $this->translated('subject', $locale);
+        $body = $this->translated('body', $locale);
         
         foreach ($data as $key => $value) {
             $placeholder = '{' . $key . '}';

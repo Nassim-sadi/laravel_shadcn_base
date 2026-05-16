@@ -11,8 +11,6 @@ const { teams = [] } = defineProps<{
 
 const { isMobile, open } = useSidebar()
 
-const isOpen = ref(false)
-
 const activeTeam = computed(() => teams[0] ?? { name: 'Admin', logo: FolderIcon, plan: 'Admin' })
 </script>
 
@@ -48,7 +46,7 @@ const activeTeam = computed(() => teams[0] ?? { name: 'Admin', logo: FolderIcon,
             Teams
           </UiDropdownMenuLabel>
           <UiDropdownMenuItem
-            v-for="(team, index) in teams"
+            v-for="team in teams"
             :key="team.name"
             class="gap-2 p-2"
           >

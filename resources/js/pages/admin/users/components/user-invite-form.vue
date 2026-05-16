@@ -38,8 +38,6 @@ const rules = {
 const v$ = useVuelidate(rules, formData)
 const inviteUserMutation = useInviteUserMutation()
 
-const isEditing = computed(() => !!props.user?.id)
-
 async function onSubmit() {
   const isValid = await v$.value.$validate()
   if (!isValid) return
@@ -50,7 +48,7 @@ async function onSubmit() {
       name: formData.name,
       role: formData.role,
     })
-    toast.success(`User invited! Temporary password: ${result.temporary_password}`)
+    toast.success(`User invited! Temporary password: ${result.data?.temporary_password}`)
     emit('success')
     emit('close')
   }
@@ -66,7 +64,7 @@ async function onSubmit() {
       <FormItem>
         <FormLabel>Name</FormLabel>
         <FormControl>
-          <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = $event" :model-value="formData.name" />
+          <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" :model-value="formData.name" />
         </FormControl>
         <FormMessage v-if="v$.name.$error">
           {{ v$.name.$errors[0]?.$message }}
@@ -78,7 +76,7 @@ async function onSubmit() {
       <FormItem>
         <FormLabel>Email address</FormLabel>
         <FormControl>
-          <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = $event" :model-value="formData.email" />
+          <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = String($event)" :model-value="formData.email" />
         </FormControl>
         <FormMessage v-if="v$.email.$error">
           {{ v$.email.$errors[0]?.$message }}
@@ -90,7 +88,7 @@ async function onSubmit() {
       <FormItem>
         <FormLabel>Role</FormLabel>
         <FormControl>
-          <Select v-bind="componentField" @update:model-value="formData.role = $event" :model-value="formData.role">
+          <Select v-bind="componentField" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')" :model-value="formData.role">
             <FormControl>
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select a role" />

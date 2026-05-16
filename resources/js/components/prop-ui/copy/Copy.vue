@@ -49,9 +49,11 @@ const fallbackCopied = ref(false)
 const isCopied = computed(() => copied.value || fallbackCopied.value)
 
 async function copyContent() {
-  if (navigator.clipboard?.writeText) {
+  try {
     await copy(source.value)
     return
+  } catch (_e) {
+    // fall back to textarea method
   }
 
   const input = document.createElement('textarea')

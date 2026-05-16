@@ -11,12 +11,12 @@ import 'vue-sonner/style.css' // vue sonner style
 
 import '@/utils/env'
 
-function bootstrap() {
+async function bootstrap() {
   const app = createApp(App)
 
-  setupPlugins(app)
+  await setupPlugins(app)
 
   app.mount('#app')
 }
 
-bootstrap()
+void bootstrap()

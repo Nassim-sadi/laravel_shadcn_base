@@ -1206,3 +1206,59 @@ Current priority:
 5. Keep WordPress/WooCommerce as the default for e-commerce and normal blogs.
 
 The goal is to become faster, clearer, and less dependent on expensive AI.
+
+---
+
+## Current build progress (NsBase — Laravel Business Kit scaffold)
+
+### What is built
+
+| Area | Status |
+|------|--------|
+| Auth (login, register, profile, password change) | Done |
+| Users CRUD + invite + assign roles | Done |
+| Roles & permissions CRUD (Spatie) | Done |
+| Admin layout (sidebar, navbar, theme) | Done |
+| Activity log (custom queue-based) | Done |
+| Settings CRUD (general, SEO, mail, etc.) | Done |
+| Email templates CRUD + render() with placeholders | Done |
+| Contact messages (API CRUD, admin list) | Done |
+| Services CRUD (multilingual JSON fields, Sheet sidebar) | Done |
+| Projects CRUD (multilingual JSON fields, Sheet sidebar) | Done |
+| Testimonials CRUD (multilingual JSON fields, Sheet sidebar) | Done |
+| FAQs CRUD (multilingual JSON fields, Sheet sidebar) | Done |
+| Admin CRUD forms: Sheet sidebar + ConfirmDialog delete pattern | Done for 5 modules |
+| Multilingual: `HasTranslatedAttributes` trait, lang JSON files, Vue language tabs | Done |
+| Public Blade: Home, Services index/show, Projects index/show | Done |
+| About Blade page (static, content via `__('about.*')` lang files) | Done |
+| Contact Blade page (form + throttled store, POST to server) | Done |
+| Public nav updated (About, Contact, Services, Projects links) | Done |
+| Media manager: migration, model, Admin API CRUD + bulkDestroy + thumbnail (intervention/image v4) | Done |
+| Media Vue admin: grid, upload Sheet, edit Sheet, folders/types | Done |
+| MediaPickerModal + ImagePicker reusable components | Done |
+| `image_id` FK added to services, projects, testimonials | Done |
+| `ContactMessageRequest` FormRequest | Done |
+| `setting()` global helper | Done |
+| `useCreateContactMessageMutation` frontend mutation | Done |
+
+### Not built (ready when needed)
+
+- Catalog module
+- Booking-lite module
+- Blog-lite module
+- Team members CRUD
+- Partners CRUD
+- Landing pages with controlled sections
+- Galleries pivot table (`mediaables`)
+- Email sending integration (Mailhog/SMTP config)
+
+### Next steps
+
+1. **Integration / QA pass through all admin CRUDs** — verify each module loads, creates, edits, deletes correctly with the Sheet + ConfirmDialog pattern. Fix edge cases in the multilingual tabs.
+2. **Email sending** — wire `EmailTemplate::render()` into a Mailable/Notification class, test with Mailhog or SMTP.
+3. **Seo pass** — add sitemap, robots.txt, canonical URLs, OG tags to public Blade layouts.
+4. **Vite build & typecheck** — ensure `npm run build` and `vue-tsc --noEmit` pass (currently ~40 pre-existing TS errors in old files, none in new code).
+5. **Seeders** — create database seeders for test data (services, projects, testimonials, faqs, settings).
+6. **Deploy documentation** — document the one-command deploy flow for shared hosting.
+
+After these, the Business Kit scaffold is ready for the first real client project.

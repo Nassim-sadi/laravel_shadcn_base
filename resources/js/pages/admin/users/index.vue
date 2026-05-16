@@ -8,7 +8,7 @@ import DataTable from './components/data-table.vue'
 import UserCreate from './components/user-create.vue'
 import UserInvite from './components/user-invite.vue'
 
-const { data, isLoading, error, refetch } = useGetUsersQuery()
+const { data, isLoading, error: _error, refetch } = useGetUsersQuery()
 
 const users = computed(() => {
   const d = data.value as any

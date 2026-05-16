@@ -5,15 +5,23 @@ import type { IResponse } from '../types/response.type'
 export interface IService {
   id: number
   title: string
+  title_translations: Record<string, string | null>
   description?: string
+  description_translations?: Record<string, string | null>
   icon?: string
   image?: string
+  image_id?: number | null
+  image_url?: string | null
+  image_thumbnail_url?: string | null
   url?: string
   order: number
   is_active: boolean
   seo_title?: string
+  seo_title_translations?: Record<string, string | null>
   seo_description?: string
+  seo_description_translations?: Record<string, string | null>
   seo_keywords?: string
+  seo_keywords_translations?: Record<string, string | null>
   created_at: string
   updated_at: string
 }
@@ -27,12 +35,16 @@ export interface IServicesResponse {
 }
 
 export interface ICreateServiceRequest {
-  title: string
-  description?: string
+  title: Record<string, string | null>
+  description?: Record<string, string | null>
   icon?: string
+  image_id?: number | null
   url?: string
   order?: number
   is_active?: boolean
+  seo_title?: Record<string, string | null>
+  seo_description?: Record<string, string | null>
+  seo_keywords?: Record<string, string | null>
 }
 
 export function useGetServicesQuery() {
@@ -61,12 +73,17 @@ export function useCreateServiceMutation() {
   })
 }
 
-export function useUpdateServiceMutation(id: number) {
+export function useUpdateServiceMutation(id?: number) {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
-  return useMutation<IResponse<IService>, Error, Partial<ICreateServiceRequest>>({
+  return useMutation<IResponse<IService>, Error, Partial<ICreateServiceRequest> & { id?: number }>({
     mutationKey: ['useUpdateServiceMutation', id],
-    mutationFn: (data) => apiFetch(`/services/${id}`, { method: 'put', body: data }),
+    mutationFn: (data) => {
+      const serviceId = data.id ?? id
+      const { id: _id, ...body } = data
+
+      return apiFetch(`/services/${serviceId}`, { method: 'put', body })
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetServiceByIdQuery', id] })

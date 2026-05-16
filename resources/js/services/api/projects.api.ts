@@ -5,16 +5,25 @@ import type { IResponse } from '../types/response.type'
 export interface IProject {
   id: number
   title: string
+  title_translations: Record<string, string | null>
   description?: string
+  description_translations?: Record<string, string | null>
   client?: string
+  client_translations?: Record<string, string | null>
   image?: string
+  image_id?: number | null
+  image_url?: string | null
+  image_thumbnail_url?: string | null
   url?: string
   technologies?: string[]
   order: number
   is_active: boolean
   seo_title?: string
+  seo_title_translations?: Record<string, string | null>
   seo_description?: string
+  seo_description_translations?: Record<string, string | null>
   seo_keywords?: string
+  seo_keywords_translations?: Record<string, string | null>
   created_at: string
   updated_at: string
 }
@@ -28,13 +37,17 @@ export interface IProjectsResponse {
 }
 
 export interface ICreateProjectRequest {
-  title: string
-  description?: string
-  client?: string
+  title: Record<string, string | null>
+  description?: Record<string, string | null>
+  client?: Record<string, string | null>
+  image_id?: number | null
   url?: string
   technologies?: string[]
   order?: number
   is_active?: boolean
+  seo_title?: Record<string, string | null>
+  seo_description?: Record<string, string | null>
+  seo_keywords?: Record<string, string | null>
 }
 
 export function useGetProjectsQuery() {
@@ -63,12 +76,17 @@ export function useCreateProjectMutation() {
   })
 }
 
-export function useUpdateProjectMutation(id: number) {
+export function useUpdateProjectMutation(id?: number) {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
-  return useMutation<IResponse<IProject>, Error, Partial<ICreateProjectRequest>>({
+  return useMutation<IResponse<IProject>, Error, Partial<ICreateProjectRequest> & { id?: number }>({
     mutationKey: ['useUpdateProjectMutation', id],
-    mutationFn: (data) => apiFetch(`/projects/${id}`, { method: 'put', body: data }),
+    mutationFn: (data) => {
+      const projectId = data.id ?? id
+      const { id: _id, ...body } = data
+
+      return apiFetch(`/projects/${projectId}`, { method: 'put', body })
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetProjectByIdQuery', id] })

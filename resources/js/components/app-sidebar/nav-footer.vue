@@ -24,7 +24,7 @@ const { isMobile, open } = useSidebar()
             class="justify-start data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center"
           >
             <UiAvatar class="size-8 shrink-0 rounded-lg">
-              <UiAvatarImage :src="user.avatar" :alt="user.name" />
+              <UiAvatarImage :src="user.avatar ?? ''" :alt="user.name" />
               <UiAvatarFallback class="rounded-lg">
                 {{ user.name?.charAt(0) ?? 'A' }}
               </UiAvatarFallback>
@@ -45,7 +45,7 @@ const { isMobile, open } = useSidebar()
           <UiDropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <UiAvatar class="size-8 rounded-lg">
-                <UiAvatarImage :src="user.avatar" :alt="user.name" />
+                <UiAvatarImage :src="user.avatar ?? ''" :alt="user.name" />
                 <UiAvatarFallback class="rounded-lg">
                   {{ user.name?.charAt(0) ?? 'A' }}
                 </UiAvatarFallback>

@@ -24,6 +24,22 @@ export interface IContactMessagesResponse {
   total: number
 }
 
+export function useCreateContactMessageMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+  return useMutation<IResponse<IContactMessage>, Error, {
+    name: string
+    email: string
+    phone?: string
+    subject: string
+    message: string
+  }>({
+    mutationKey: ['useCreateContactMessageMutation'],
+    mutationFn: (data) => apiFetch('/contact-messages', { method: 'post', body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
+  })
+}
+
 export function useGetContactMessagesQuery() {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<IContactMessagesResponse>, Error>({

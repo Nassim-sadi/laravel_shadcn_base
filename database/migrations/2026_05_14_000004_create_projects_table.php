@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('client')->nullable();
+            $table->json('title');
+            $table->json('description')->nullable();
+            $table->json('client')->nullable();
             $table->string('image')->nullable();
             $table->string('url')->nullable();
             $table->json('technologies')->nullable();
@@ -23,9 +23,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             
             // SEO fields
-            $table->string('seo_title')->nullable();
-            $table->text('seo_description')->nullable();
-            $table->string('seo_keywords')->nullable();
+            $table->json('seo_title')->nullable();
+            $table->json('seo_description')->nullable();
+            $table->json('seo_keywords')->nullable();
             
             $table->softDeletes();
             $table->timestamps();

@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
 {
-    use SoftDeletes;
+    use HasTranslatedAttributes, SoftDeletes;
 
     protected $fillable = [
         'title',
         'description',
         'icon',
         'image',
+        'image_id',
         'url',
         'order',
         'is_active',
@@ -23,12 +25,19 @@ class Service extends Model
     ];
 
     protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
         'is_active' => 'boolean',
         'order' => 'integer',
-        'seo_title' => 'string',
-        'seo_description' => 'string',
-        'seo_keywords' => 'string',
+        'seo_title' => 'array',
+        'seo_description' => 'array',
+        'seo_keywords' => 'array',
     ];
+
+    public function image()
+    {
+        return $this->belongsTo(Media::class, 'image_id');
+    }
 
     public function scopeActive($query)
     {

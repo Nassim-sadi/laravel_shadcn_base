@@ -2,18 +2,29 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useApiFetch } from '@/composables/use-fetch'
 import type { IResponse } from '../types/response.type'
 
+export type TranslatedValue = Record<string, string>
+
 export interface ITestimonial {
   id: number
   name: string
+  name_translations: TranslatedValue
   position?: string
+  position_translations?: TranslatedValue
   company?: string
+  company_translations?: TranslatedValue
   content: string
+  content_translations: TranslatedValue
   image?: string
+  image_id?: number | null
+  image_url?: string | null
+  image_thumbnail_url?: string | null
   rating: number
   is_active: boolean
   order: number
   seo_title?: string
+  seo_title_translations?: TranslatedValue
   seo_description?: string
+  seo_description_translations?: TranslatedValue
   created_at: string
   updated_at: string
 }
@@ -27,13 +38,17 @@ export interface ITestimonialsResponse {
 }
 
 export interface ICreateTestimonialRequest {
-  name: string
-  position?: string
-  company?: string
-  content: string
+  name: TranslatedValue
+  position?: TranslatedValue
+  company?: TranslatedValue
+  content: TranslatedValue
+  image?: File
+  image_id?: number | null
   rating?: number
   order?: number
   is_active?: boolean
+  seo_title?: TranslatedValue
+  seo_description?: TranslatedValue
 }
 
 export function useGetTestimonialsQuery() {

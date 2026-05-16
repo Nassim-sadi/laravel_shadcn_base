@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Testimonial extends Model
 {
-    use SoftDeletes;
+    use HasTranslatedAttributes, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -15,6 +16,7 @@ class Testimonial extends Model
         'company',
         'content',
         'image',
+        'image_id',
         'rating',
         'is_active',
         'order',
@@ -23,12 +25,21 @@ class Testimonial extends Model
     ];
 
     protected $casts = [
+        'name' => 'array',
+        'position' => 'array',
+        'company' => 'array',
+        'content' => 'array',
+        'seo_title' => 'array',
+        'seo_description' => 'array',
         'is_active' => 'boolean',
         'order' => 'integer',
         'rating' => 'integer',
-        'seo_title' => 'string',
-        'seo_description' => 'string',
     ];
+
+    public function image()
+    {
+        return $this->belongsTo(Media::class, 'image_id');
+    }
 
     public function scopeActive($query)
     {

@@ -2,12 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useApiFetch } from '@/composables/use-fetch'
 import type { IResponse } from '../types/response.type'
 
+export type TranslatedValue = Record<string, string>
+
 export interface IEmailTemplate {
   id: number
   key: string
   name: string
+  name_translations: TranslatedValue
   subject: string
+  subject_translations: TranslatedValue
   body: string
+  body_translations: TranslatedValue
   variables?: string[]
   is_active: boolean
   created_at: string
@@ -24,9 +29,9 @@ export interface IEmailTemplatesResponse {
 
 export interface ICreateEmailTemplateRequest {
   key: string
-  name: string
-  subject: string
-  body: string
+  name: TranslatedValue
+  subject: TranslatedValue
+  body: TranslatedValue
   variables?: string[]
   is_active?: boolean
 }

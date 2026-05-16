@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ServiceRequest;
 use App\Http\Resources\ServiceResource;
 use App\Http\Resources\ServiceCollection;
 use App\Models\Service;
@@ -15,6 +16,7 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         $services = Service::query()
+            ->with('image')
             ->when($request->search, fn($q, $search) => $q->where('title', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%"))
             ->when($request->is_active !== null, fn($q) => $q->where('is_active', $request->is_active))
             ->when($request->icon, fn($q, $icon) => $q->where('icon', $icon))
@@ -24,20 +26,9 @@ class ServiceController extends Controller
         return new ServiceCollection($services);
     }
 
-    public function store(Request $request)
+    public function store(ServiceRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'icon' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'url' => 'nullable|url|max:255',
-            'order' => 'sometimes|integer|min:0',
-            'is_active' => 'sometimes|boolean',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string',
-            'seo_keywords' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -54,28 +45,17 @@ class ServiceController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        return new ServiceResource($service);
+        return new ServiceResource($service->load('image'));
     }
 
     public function show(Service $service)
     {
-        return new ServiceResource($service);
+        return new ServiceResource($service->load('image'));
     }
 
-    public function update(Request $request, Service $service)
+    public function update(ServiceRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'icon' => 'sometimes|string|max:255',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'url' => 'sometimes|url|max:255',
-            'order' => 'sometimes|integer|min:0',
-            'is_active' => 'sometimes|boolean',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string',
-            'seo_keywords' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
@@ -97,7 +77,7 @@ class ServiceController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        return new ServiceResource($service);
+        return new ServiceResource($service->load('image'));
     }
 
     public function destroy(Service $service)

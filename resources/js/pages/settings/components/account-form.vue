@@ -106,7 +106,7 @@ async function onAvatarChange(event: Event) {
 
     const response = await uploadAvatarMutation.mutateAsync(compressedFile)
     if (response.data) {
-      authStore.setUser(response.data)
+      authStore.setUser(response.data.data)
     }
     toast.success('Avatar uploaded successfully')
 

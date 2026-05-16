@@ -10,12 +10,12 @@ import { setupTanstackVueQuery } from './tanstack-vue-query/setup'
 
 import { vPermission } from '@/directives/permission'
 
-export function setupPlugins(app: App) {
+export async function setupPlugins(app: App) {
   setupDayjs()
   setupNProgress()
   setupAutoAnimate(app)
   setupTanstackVueQuery(app)
-  setupI18n(app)
+  await setupI18n(app)
   setupPinia(app)
   setupRouter(app)
 

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useGetContactMessagesQuery, useDeleteContactMessageMutation, useUpdateContactMessageMutation } from '@/services/api/contact-messages.api'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 
 const { data: response, isLoading, refetch } = useGetContactMessagesQuery()
@@ -70,6 +70,7 @@ function confirmDelete(id: number) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Reply to Message</DialogTitle>
+          <DialogDescription class="sr-only">Write a reply to this contact message.</DialogDescription>
         </DialogHeader>
         <div class="space-y-4">
           <div><Label>Reply</Label><Textarea v-model="replyText" placeholder="Type your reply..." rows="6" /></div>

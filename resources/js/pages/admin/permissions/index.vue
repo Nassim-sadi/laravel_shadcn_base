@@ -3,7 +3,7 @@ import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { useGetPermissionsQuery } from '@/services/api/permissions.api'
 
-const { data: permissionsResponse, isLoading, refetch } = useGetPermissionsQuery()
+const { data: permissionsResponse, isLoading: _isLoading, refetch } = useGetPermissionsQuery()
 
 const permissions = computed(() => permissionsResponse.value?.data?.data ?? [])
 

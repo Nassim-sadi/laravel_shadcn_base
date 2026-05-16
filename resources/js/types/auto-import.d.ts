@@ -27,6 +27,7 @@ declare global {
   const defineComponent: typeof import('vue').defineComponent
   const definePage: typeof import('vue-router/experimental').definePage
   const effectScope: typeof import('vue').effectScope
+  const emptyTranslations: typeof import('../composables/use-translated-form').emptyTranslations
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
@@ -72,6 +73,7 @@ declare global {
   const toRef: typeof import('vue').toRef
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
+  const translatedRequired: typeof import('../composables/use-validation').translatedRequired
   const triggerRef: typeof import('vue').triggerRef
   const unref: typeof import('vue').unref
   const useApiFetch: typeof import('../composables/use-fetch').useApiFetch
@@ -99,12 +101,16 @@ declare global {
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
   const watchSyncEffect: typeof import('vue').watchSyncEffect
+  const withLanguages: typeof import('../composables/use-translated-form').withLanguages
 }
 // for type re-export
 declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { TranslatedValue } from '../composables/use-translated-form'
+  import('../composables/use-translated-form')
   // @ts-ignore
   export type { Theme, Radius, ContentLayout } from '../constants/themes'
   import('../constants/themes')

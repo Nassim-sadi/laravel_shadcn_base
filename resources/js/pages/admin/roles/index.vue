@@ -3,9 +3,9 @@ import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { useGetRolesQuery } from '@/services/api/roles.api'
 
-const { data: rolesResponse, isLoading, refetch } = useGetRolesQuery()
+const { data: rolesResponse, isLoading: _isLoading, refetch } = useGetRolesQuery()
 
-const roles = computed(() => rolesResponse.value?.data?.data ?? [])
+const roles = computed(() => rolesResponse.value?.data ?? [])
 
 const columns = [
   {

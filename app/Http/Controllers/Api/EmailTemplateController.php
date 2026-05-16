@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\EmailTemplateRequest;
 use App\Http\Resources\EmailTemplateResource;
 use App\Http\Resources\EmailTemplateCollection;
 use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class EmailTemplateController extends Controller
 {
@@ -24,17 +24,9 @@ class EmailTemplateController extends Controller
         return new EmailTemplateCollection($query);
     }
 
-    public function store(Request $request)
+    public function store(EmailTemplateRequest $request)
     {
-        $validated = $request->validate([
-            'key' => 'required|string|max:255|unique:email_templates,key',
-            'name' => 'required|string|max:255',
-            'subject' => 'required|string',
-            'body' => 'required|string',
-            'variables' => 'sometimes|array',
-            'variables.*' => 'string',
-            'is_active' => 'sometimes|boolean',
-        ]);
+        $validated = $request->validated();
 
         $emailTemplate = EmailTemplate::create($validated);
 
@@ -46,17 +38,9 @@ class EmailTemplateController extends Controller
         return new EmailTemplateResource($emailTemplate);
     }
 
-    public function update(Request $request, EmailTemplate $emailTemplate)
+    public function update(EmailTemplateRequest $request, EmailTemplate $emailTemplate)
     {
-        $validated = $request->validate([
-            'key' => 'sometimes|string|max:255|unique:email_templates,key,' . $emailTemplate->id,
-            'name' => 'sometimes|string|max:255',
-            'subject' => 'sometimes|string',
-            'body' => 'sometimes|string',
-            'variables' => 'sometimes|array',
-            'variables.*' => 'string',
-            'is_active' => 'sometimes|boolean',
-        ]);
+        $validated = $request->validated();
 
         $emailTemplate->update($validated);
 

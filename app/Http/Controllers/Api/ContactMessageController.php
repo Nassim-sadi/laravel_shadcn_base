@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ContactMessageRequest;
 use App\Http\Resources\ContactMessageResource;
 use App\Http\Resources\ContactMessageCollection;
 use App\Models\ContactMessage;
@@ -24,15 +25,9 @@ class ContactMessageController extends Controller
         return new ContactMessageCollection($query);
     }
 
-    public function store(Request $request)
+    public function store(ContactMessageRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-        ]);
+        $validated = $request->validated();
 
         $contactMessage = ContactMessage::create($validated);
 

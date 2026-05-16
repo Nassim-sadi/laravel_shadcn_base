@@ -2,15 +2,21 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useApiFetch } from '@/composables/use-fetch'
 import type { IResponse } from '../types/response.type'
 
+export type TranslatedValue = Record<string, string>
+
 export interface IFaq {
   id: number
   question: string
+  question_translations: TranslatedValue
   answer: string
+  answer_translations: TranslatedValue
   category?: string
   order: number
   is_active: boolean
   seo_title?: string
+  seo_title_translations?: TranslatedValue
   seo_description?: string
+  seo_description_translations?: TranslatedValue
   created_at: string
   updated_at: string
 }
@@ -24,11 +30,13 @@ export interface IFaqsResponse {
 }
 
 export interface ICreateFaqRequest {
-  question: string
-  answer: string
+  question: TranslatedValue
+  answer: TranslatedValue
   category?: string
   order?: number
   is_active?: boolean
+  seo_title?: TranslatedValue
+  seo_description?: TranslatedValue
 }
 
 export function useGetFaqsQuery() {

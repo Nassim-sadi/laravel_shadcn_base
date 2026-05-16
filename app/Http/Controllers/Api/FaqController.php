@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\FaqRequest;
 use App\Http\Resources\FaqResource;
 use App\Http\Resources\FaqCollection;
 use App\Models\Faq;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class FaqController extends Controller
 {
@@ -23,17 +23,9 @@ class FaqController extends Controller
         return new FaqCollection($faqs);
     }
 
-    public function store(Request $request)
+    public function store(FaqRequest $request)
     {
-        $validated = $request->validate([
-            'question' => 'required|string|max:255',
-            'answer' => 'required|string',
-            'category' => 'nullable|string|max:255',
-            'order' => 'sometimes|integer|min:0',
-            'is_active' => 'sometimes|boolean',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $faq = Faq::create($validated);
 
@@ -51,17 +43,9 @@ class FaqController extends Controller
         return new FaqResource($faq);
     }
 
-    public function update(Request $request, Faq $faq)
+    public function update(FaqRequest $request, Faq $faq)
     {
-        $validated = $request->validate([
-            'question' => 'sometimes|string|max:255',
-            'answer' => 'sometimes|string',
-            'category' => 'sometimes|string|max:255',
-            'order' => 'sometimes|integer|min:0',
-            'is_active' => 'sometimes|boolean',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $faq->update($validated);
 

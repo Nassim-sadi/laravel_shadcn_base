@@ -6,42 +6,134 @@ import { Badge } from '@/components/ui/badge'
 import { useGetTestimonialsQuery, useDeleteTestimonialMutation, useCreateTestimonialMutation, useUpdateTestimonialMutation } from '@/services/api/testimonials.api'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
+import { languageMetadata } from '@/plugins/i18n'
+import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
+import type { TranslatedValue } from '@/services/api/testimonials.api'
+import { translatedRequired } from '@/composables/use-validation'
+import { useVuelidate } from '@vuelidate/core'
+import { minValue, maxValue } from '@vuelidate/validators'
+import ConfirmDialog from '@/components/confirm-dialog.vue'
+import ImagePickerField from '@/admin/components/ImagePickerField.vue'
+
+interface TestimonialForm {
+  name: TranslatedValue
+  position: TranslatedValue
+  company: TranslatedValue
+  content: TranslatedValue
+  image_id: number | null
+  image_url: string | null
+  rating: number
+  order: number
+  is_active: boolean
+  seo_title: TranslatedValue
+  seo_description: TranslatedValue
+}
 
 const { data: response, isLoading, refetch } = useGetTestimonialsQuery()
 const items = computed(() => response.value?.data?.data ?? [])
-const showDialog = ref(false)
+const showSheet = ref(false)
 const editingId = ref<number | null>(null)
-const form = ref({ name: '', position: '', company: '', content: '', rating: 5, order: 0, is_active: true })
-const { mutate: deleteItem } = useDeleteTestimonialMutation()
+const activeFormLocale = ref('fr')
+const deleteTargetId = ref<number | null>(null)
+const showDeleteDialog = ref(false)
+const { mutate: deleteItem, isPending: isDeleting } = useDeleteTestimonialMutation()
 const { mutate: createItem } = useCreateTestimonialMutation()
 const { mutate: updateItem } = useUpdateTestimonialMutation(0)
+const showUnsavedDialog = ref(false)
+
+function createEmptyForm(): TestimonialForm {
+  return {
+    name: emptyTranslations(),
+    position: emptyTranslations(),
+    company: emptyTranslations(),
+    content: emptyTranslations(),
+    image_id: null,
+    image_url: null,
+    rating: 5,
+    order: 0,
+    is_active: true,
+    seo_title: emptyTranslations(),
+    seo_description: emptyTranslations(),
+  }
+}
+
+const form = ref<TestimonialForm>(createEmptyForm())
+
+const rules = computed(() => ({
+  name: { required: translatedRequired() },
+  content: { required: translatedRequired() },
+  rating: { minValue: minValue(1), maxValue: maxValue(5) },
+}))
+
+const v$ = useVuelidate(rules, form)
+
+function handleSheetClose(open: boolean) {
+  if (!open) {
+    showUnsavedDialog.value = true
+    return
+  }
+  showSheet.value = open
+}
 
 function openCreate() {
   editingId.value = null
-  form.value = { name: '', position: '', company: '', content: '', rating: 5, order: 0, is_active: true }
-  showDialog.value = true
+  form.value = createEmptyForm()
+  activeFormLocale.value = 'fr'
+  showSheet.value = true
 }
 
 function openEdit(item: any) {
   editingId.value = item.id
-  form.value = { name: item.name, position: item.position || '', company: item.company || '', content: item.content, rating: item.rating, order: item.order, is_active: item.is_active }
-  showDialog.value = true
+  form.value = {
+    name: withLanguages(item.name_translations, item.name),
+    position: withLanguages(item.position_translations, item.position),
+    company: withLanguages(item.company_translations, item.company),
+    content: withLanguages(item.content_translations, item.content),
+    image_id: item.image_id ?? null,
+    image_url: item.image_thumbnail_url ?? item.image_url ?? null,
+    rating: item.rating,
+    order: item.order,
+    is_active: item.is_active,
+    seo_title: withLanguages(item.seo_title_translations, item.seo_title),
+    seo_description: withLanguages(item.seo_description_translations, item.seo_description),
+  }
+  activeFormLocale.value = 'fr'
+  showSheet.value = true
 }
 
-function save() {
+async function save() {
+  const isValid = await v$.value.$validate()
+  if (!isValid) return
+
+  const payload = { ...form.value, image_id: form.value.image_id ?? undefined }
   if (editingId.value) {
-    updateItem({ id: editingId.value, ...form.value } as any)
+    updateItem({ id: editingId.value, ...payload } as any)
   } else {
-    createItem(form.value)
+    createItem(payload)
   }
-  showDialog.value = false
+  showSheet.value = false
+}
+
+function forceClose() {
+  showUnsavedDialog.value = false
+  showSheet.value = false
 }
 
 function confirmDelete(id: number) {
-  if (confirm('Are you sure?')) deleteItem(id)
+  deleteTargetId.value = id
+  showDeleteDialog.value = true
+}
+
+function handleDelete() {
+  if (deleteTargetId.value !== null) {
+    deleteItem(deleteTargetId.value)
+  }
+  showDeleteDialog.value = false
+  deleteTargetId.value = null
 }
 </script>
 
@@ -71,27 +163,112 @@ function confirmDelete(id: number) {
       </div>
       <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">No testimonials found</div>
     </div>
-    <Dialog v-model:open="showDialog">
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{{ editingId ? 'Edit Testimonial' : 'Create Testimonial' }}</DialogTitle>
-        </DialogHeader>
-        <div class="space-y-4">
-          <div><Label>Name</Label><Input v-model="form.name" placeholder="Client name" /></div>
-          <div><Label>Position</Label><Input v-model="form.position" placeholder="CEO" /></div>
-          <div><Label>Company</Label><Input v-model="form.company" placeholder="Company name" /></div>
-          <div><Label>Content</Label><Textarea v-model="form.content" placeholder="Testimonial text" /></div>
-          <div><Label>Rating (1-5)</Label><Input v-model.number="form.rating" type="number" min="1" max="5" /></div>
-          <div><Label>Order</Label><Input v-model.number="form.order" type="number" /></div>
+
+    <Sheet :open="showSheet" @update:open="handleSheetClose">
+      <SheetContent side="right" class="xl:max-w-2xl w-full">
+        <SheetHeader>
+          <SheetTitle>{{ editingId ? 'Edit Testimonial' : 'Create Testimonial' }}</SheetTitle>
+        </SheetHeader>
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+          <Tabs v-model="activeFormLocale">
+            <TabsList>
+              <TabsTrigger
+                v-for="language in languageMetadata"
+                :key="language.code"
+                :value="language.code"
+              >
+                <span>{{ language.flag }}</span>
+                <span>{{ language.name }}</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent
+              v-for="language in languageMetadata"
+              :key="language.code"
+              :value="language.code"
+              class="space-y-4 pt-4"
+            >
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="admin-form-field">
+                  <Label>Name</Label>
+                  <Input v-model="form.name[language.code]" placeholder="Client name" :class="{ 'border-destructive': v$.name.$error && language.code === activeFormLocale }" />
+                  <span v-if="v$.name.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.name.$errors[0]?.$message }}</span>
+                </div>
+                <div class="admin-form-field">
+                  <Label>Company</Label>
+                  <Input v-model="form.company[language.code]" placeholder="Company name" />
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="admin-form-field">
+                  <Label>Position</Label>
+                  <Input v-model="form.position[language.code]" placeholder="CEO" />
+                </div>
+                <div class="admin-form-field">
+                  <Label>SEO Title</Label>
+                  <Input v-model="form.seo_title[language.code]" placeholder="SEO title" />
+                </div>
+              </div>
+              <div class="admin-form-field">
+                <Label>Content</Label>
+                <Textarea v-model="form.content[language.code]" placeholder="Testimonial text" :class="{ 'border-destructive': v$.content.$error && language.code === activeFormLocale }" />
+                <span v-if="v$.content.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.content.$errors[0]?.$message }}</span>
+              </div>
+              <div class="admin-form-field">
+                <Label>SEO Description</Label>
+                <Textarea v-model="form.seo_description[language.code]" placeholder="SEO description" />
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <ImagePickerField
+            v-model:image-id="form.image_id"
+            v-model:image-url="form.image_url"
+          />
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="admin-form-field">
+              <Label>Rating (1-5)</Label>
+              <Input v-model.number="form.rating" type="number" min="1" max="5" :class="{ 'border-destructive': v$.rating.$error }" />
+              <span v-if="v$.rating.$error" class="text-xs text-destructive">{{ v$.rating.$errors[0]?.$message }}</span>
+            </div>
+            <div class="admin-form-field">
+              <Label>Order</Label>
+              <Input v-model.number="form.order" type="number" />
+            </div>
+          </div>
           <div class="flex items-center gap-2">
             <Switch v-model:checked="form.is_active" /><Label>Active</Label>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" @click="showDialog = false">Cancel</Button>
+        <SheetFooter>
+          <Button variant="outline" @click="handleSheetClose(false)">Cancel</Button>
           <Button @click="save">{{ editingId ? 'Update' : 'Create' }}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+
+    <ConfirmDialog
+      v-model:open="showDeleteDialog"
+      :is-loading="isDeleting"
+      cancel-button-text="Cancel"
+      confirm-button-text="Delete"
+      destructive
+      @confirm="handleDelete"
+    >
+      <template #title>Delete Testimonial</template>
+      <template #description>Are you sure you want to delete this testimonial? This action cannot be undone.</template>
+    </ConfirmDialog>
+
+    <ConfirmDialog
+      v-model:open="showUnsavedDialog"
+      cancel-button-text="Stay"
+      confirm-button-text="Discard"
+      destructive
+      @confirm="forceClose"
+    >
+      <template #title>Unsaved Changes</template>
+      <template #description>You have unsaved changes. Are you sure you want to discard them?</template>
+    </ConfirmDialog>
   </BasicPage>
 </template>

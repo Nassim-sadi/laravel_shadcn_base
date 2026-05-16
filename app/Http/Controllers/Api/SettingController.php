@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\SettingRequest;
 use App\Http\Resources\SettingResource;
 use App\Http\Resources\SettingCollection;
 use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class SettingController extends Controller
 {
@@ -25,18 +25,9 @@ class SettingController extends Controller
         return new SettingCollection($query);
     }
 
-    public function store(Request $request)
+    public function store(SettingRequest $request)
     {
-        $validated = $request->validate([
-            'key' => 'required|string|max:255|unique:settings,key',
-            'group' => 'required|string|max:50',
-            'name' => 'required|string|max:255',
-            'value' => 'nullable',
-            'default_value' => 'nullable',
-            'type' => 'required|string|in:string,integer,boolean,json,array',
-            'description' => 'nullable|string',
-            'is_public' => 'sometimes|boolean',
-        ]);
+        $validated = $request->validated();
 
         $setting = Setting::create($validated);
 
@@ -48,18 +39,9 @@ class SettingController extends Controller
         return new SettingResource($setting);
     }
 
-    public function update(Request $request, Setting $setting)
+    public function update(SettingRequest $request, Setting $setting)
     {
-        $validated = $request->validate([
-            'key' => 'sometimes|string|max:255|unique:settings,key,' . $setting->id,
-            'group' => 'sometimes|string|max:50',
-            'name' => 'sometimes|string|max:255',
-            'value' => 'nullable',
-            'default_value' => 'nullable',
-            'type' => 'sometimes|string|in:string,integer,boolean,json,array',
-            'description' => 'nullable|string',
-            'is_public' => 'sometimes|boolean',
-        ]);
+        $validated = $request->validated();
 
         $setting->update($validated);
 

@@ -88,7 +88,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>Name</FormLabel>
           <FormControl>
-            <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = $event" :model-value="formData.name" />
+            <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" :model-value="formData.name" />
           </FormControl>
           <FormMessage v-if="v$.name.$error">
             {{ v$.name.$errors[0]?.$message }}
@@ -100,7 +100,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>Email</FormLabel>
           <FormControl>
-            <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = $event" :model-value="formData.email" />
+            <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = String($event)" :model-value="formData.email" />
           </FormControl>
           <FormMessage v-if="v$.email.$error">
             {{ v$.email.$errors[0]?.$message }}
@@ -112,7 +112,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>Password</FormLabel>
           <FormControl>
-            <Input type="password" v-bind="componentField" @blur="v$.password.$touch" @update:model-value="formData.password = $event" :model-value="formData.password" />
+            <Input type="password" v-bind="componentField" @blur="v$.password.$touch" @update:model-value="formData.password = String($event)" :model-value="formData.password" />
           </FormControl>
           <FormMessage v-if="v$.password.$error">
             {{ v$.password.$errors[0]?.$message }}
@@ -124,7 +124,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>New Password (optional)</FormLabel>
           <FormControl>
-            <Input type="password" v-bind="componentField" @update:model-value="formData.password = $event" :model-value="formData.password" />
+            <Input type="password" v-bind="componentField" @update:model-value="formData.password = String($event)" :model-value="formData.password" />
           </FormControl>
         </FormItem>
       </FormField>
@@ -133,7 +133,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>Role</FormLabel>
           <FormControl>
-            <Select v-bind="componentField" @update:model-value="formData.role = $event" :model-value="formData.role">
+            <Select v-bind="componentField" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')" :model-value="formData.role">
               <FormControl>
                 <SelectTrigger class="w-full">
                   <SelectValue placeholder="Select a role" />

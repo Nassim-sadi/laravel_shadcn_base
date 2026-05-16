@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 
 import type { Language } from '@/plugins/i18n'
 
-import { appLocale, DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/plugins/i18n'
+import { appLocale, DEFAULT_LOCALE, languageMetadata, SUPPORTED_LOCALES } from '@/plugins/i18n'
 
 const { locale } = useI18n()
 
@@ -41,17 +41,13 @@ function handleLocaleChange(val: AcceptableValue) {
         v-model="locale"
         @update:model-value="handleLocaleChange"
       >
-        <UiDropdownMenuRadioItem value="en">
-          <Icon icon="flag:us-4x3" />
-          <span class="ml-2">English</span>
-        </UiDropdownMenuRadioItem>
-        <UiDropdownMenuRadioItem value="fr">
-          <Icon icon="flag:fr-4x3" />
-          <span class="ml-2">Français</span>
-        </UiDropdownMenuRadioItem>
-        <UiDropdownMenuRadioItem value="ar">
-          <Icon icon="flag:dz-4x3" />
-          <span class="ml-2">العربية</span>
+        <UiDropdownMenuRadioItem
+          v-for="languageItem in languageMetadata"
+          :key="languageItem.code"
+          :value="languageItem.code"
+        >
+          <span>{{ languageItem.flag }}</span>
+          <span class="ml-2">{{ languageItem.name }}</span>
         </UiDropdownMenuRadioItem>
       </UiDropdownMenuRadioGroup>
     </UiDropdownMenuContent>

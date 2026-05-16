@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Faq extends Model
 {
-    use SoftDeletes;
+    use HasTranslatedAttributes, SoftDeletes;
 
     protected $fillable = [
         'question',
@@ -20,10 +21,12 @@ class Faq extends Model
     ];
 
     protected $casts = [
+        'question' => 'array',
+        'answer' => 'array',
+        'seo_title' => 'array',
+        'seo_description' => 'array',
         'is_active' => 'boolean',
         'order' => 'integer',
-        'seo_title' => 'string',
-        'seo_description' => 'string',
     ];
 
     public function scopeActive($query)

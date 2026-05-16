@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Str;
 
 class Setting extends Model
 {
+    use HasTranslatedAttributes;
+
     protected $fillable = [
         'key',
         'group',
@@ -45,7 +48,7 @@ class Setting extends Model
             return null;
         }
 
-        match ($type) {
+        return match ($type) {
             'integer' => intval($value),
             'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
             'json' => json_decode($value, true),
@@ -63,7 +66,7 @@ class Setting extends Model
             return null;
         }
 
-        match ($type) {
+        return match ($type) {
             'integer', 'boolean' => strval($value),
             'json', 'array' => json_encode($value),
             default => $value,

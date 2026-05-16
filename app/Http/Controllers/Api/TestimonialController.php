@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\TestimonialRequest;
 use App\Http\Resources\TestimonialResource;
 use App\Http\Resources\TestimonialCollection;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 
 class TestimonialController extends Controller
 {
     public function index(Request $request)
     {
         $testimonials = Testimonial::query()
+            ->with('image')
             ->when($request->search, fn($q, $search) => $q->where('name', 'like', "%{$search}%")->orWhere('company', 'like', "%{$search}%")->orWhere('content', 'like', "%{$search}%"))
             ->when($request->is_active !== null, fn($q) => $q->where('is_active', $request->is_active))
             ->when($request->rating, fn($q, $rating) => $q->where('rating', $rating))
@@ -24,20 +25,9 @@ class TestimonialController extends Controller
         return new TestimonialCollection($testimonials);
     }
 
-    public function store(Request $request)
+    public function store(TestimonialRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'position' => 'nullable|string|max:255',
-            'company' => 'nullable|string|max:255',
-            'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'rating' => 'sometimes|integer|min:1|max:5',
-            'is_active' => 'sometimes|boolean',
-            'order' => 'sometimes|integer|min:0',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -54,28 +44,17 @@ class TestimonialController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        return new TestimonialResource($testimonial);
+        return new TestimonialResource($testimonial->load('image'));
     }
 
     public function show(Testimonial $testimonial)
     {
-        return new TestimonialResource($testimonial);
+        return new TestimonialResource($testimonial->load('image'));
     }
 
-    public function update(Request $request, Testimonial $testimonial)
+    public function update(TestimonialRequest $request, Testimonial $testimonial)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'position' => 'sometimes|string|max:255',
-            'company' => 'sometimes|string|max:255',
-            'content' => 'sometimes|string',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'rating' => 'sometimes|integer|min:1|max:5',
-            'is_active' => 'sometimes|boolean',
-            'order' => 'sometimes|integer|min:0',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
@@ -97,7 +76,7 @@ class TestimonialController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        return new TestimonialResource($testimonial);
+        return new TestimonialResource($testimonial->load('image'));
     }
 
     public function destroy(Testimonial $testimonial)
