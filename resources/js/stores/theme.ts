@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import type { ContentLayout, Radius, Theme } from '@/constants/themes'
+import type { HoverPreset, Radius, ShadowPreset, Theme } from '@/constants/themes'
 
 export const useThemeStore = defineStore('system-config', () => {
   const radius = ref(0.5)
@@ -12,19 +12,25 @@ export const useThemeStore = defineStore('system-config', () => {
     theme.value = newTheme
   }
 
-  const contentLayout = ref<ContentLayout>('centered')
-  function setContentLayout(newContentLayout: ContentLayout) {
-    contentLayout.value = newContentLayout
+  const shadowPreset = ref<ShadowPreset>('medium')
+  function setShadowPreset(preset: ShadowPreset) {
+    shadowPreset.value = preset
   }
+
+  const hoverPreset = ref<HoverPreset>('medium')
+  function setHoverPreset(preset: HoverPreset) {
+    hoverPreset.value = preset
+  }
+
   return {
     radius,
     setRadius,
-
     theme,
     setTheme,
-
-    contentLayout,
-    setContentLayout,
+    shadowPreset,
+    setShadowPreset,
+    hoverPreset,
+    setHoverPreset,
   }
 }, {
   persist: true,

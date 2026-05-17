@@ -2,10 +2,12 @@
 import { ChevronRightIcon, LayoutListIcon } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 
+import { useI18n } from 'vue-i18n'
 import type { NavigationMode } from '@/stores/sidebar-config'
 
 import { useSidebarConfigStore } from '@/stores/sidebar-config'
 
+const { t } = useI18n()
 const sidebarConfigStore = useSidebarConfigStore()
 const { navigationMode } = storeToRefs(sidebarConfigStore)
 
@@ -17,15 +19,15 @@ const menuStyles: Array<{
 }> = [
   {
     value: 'collapsible',
-    label: 'Collapsible',
+    label: 'admin.theme.collapsible',
     icon: LayoutListIcon,
-    description: 'Traditional collapsible menu',
+    description: 'admin.theme.collapsibleDescription',
   },
   {
     value: 'vercel',
-    label: 'Vercel Style',
+    label: 'admin.theme.vercel',
     icon: ChevronRightIcon,
-    description: 'Click to navigate to the next level',
+    description: 'admin.theme.vercelDescription',
   },
 ]
 
@@ -36,8 +38,8 @@ function handleMenuStyleChange(style: NavigationMode) {
 
 <template>
   <div class="space-y-1.5 pt-6">
-    <UiLabel for="menu-style" class="text-xs">
-      Menu Style
+    <UiLabel class="text-xs">
+      {{ t('admin.theme.menuStyle') }}
     </UiLabel>
     <div class="grid grid-cols-2 gap-2 py-1.5">
       <UiButton
@@ -46,11 +48,11 @@ function handleMenuStyleChange(style: NavigationMode) {
         variant="outline"
         class="justify-center h-8 px-3"
         :class="navigationMode === style.value ? 'border-foreground border-2' : ''"
-        :title="style.description"
+        :title="t(style.description)"
         @click="handleMenuStyleChange(style.value)"
       >
         <component :is="style.icon" class="w-4 h-4" />
-        {{ style.label }}
+        {{ t(style.label) }}
       </UiButton>
     </div>
   </div>

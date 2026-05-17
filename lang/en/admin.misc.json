@@ -44,5 +44,14 @@
     "admin.misc.termsOfService": "Terms of Service",
     "admin.misc.uploading": "Uploading...",
     "admin.misc.urlPlaceholder": "https://...",
-    "admin.misc.writeReply": "Write your reply"
+    "admin.misc.writeReply": "Write your reply",
+    "admin.misc.selectCategory": "Select a category",
+    "admin.misc.none": "None",
+    "admin.misc.newTagName": "New tag name",
+    "admin.misc.newTagSlug": "New tag slug",
+    "admin.misc.slugPlaceholder": "my-post-slug",
+    "admin.misc.bodyPlaceholder": "Start writing...",
+    "admin.misc.noMenuFound": "No menu found.",
+    "admin.misc.trySearchCommand": "Try searching for a command or check the spelling.",
+    "admin.misc.pages": "Pages"
 }

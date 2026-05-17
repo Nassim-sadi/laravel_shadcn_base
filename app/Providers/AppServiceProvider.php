@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Models\ActivityLog;
+use App\Models\BlogCategory;
+use App\Models\BlogPost;
+use App\Models\BlogTag;
 use App\Models\ContactMessage;
 use App\Models\EmailTemplate;
 use App\Models\Faq;
@@ -13,6 +16,9 @@ use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Policies\ActivityLogPolicy;
+use App\Policies\BlogCategoryPolicy;
+use App\Policies\BlogPostPolicy;
+use App\Policies\BlogTagPolicy;
 use App\Policies\ContactMessagePolicy;
 use App\Policies\EmailTemplatePolicy;
 use App\Policies\FaqPolicy;
@@ -52,6 +58,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ContactMessage::class, ContactMessagePolicy::class);
         Gate::policy(EmailTemplate::class, EmailTemplatePolicy::class);
         Gate::policy(Setting::class, SettingPolicy::class);
+        Gate::policy(BlogPost::class, BlogPostPolicy::class);
+        Gate::policy(BlogCategory::class, BlogCategoryPolicy::class);
+        Gate::policy(BlogTag::class, BlogTagPolicy::class);
         Gate::policy(ActivityLog::class, ActivityLogPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);

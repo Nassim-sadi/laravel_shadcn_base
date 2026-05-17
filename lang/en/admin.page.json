@@ -24,5 +24,7 @@
     "admin.page.translations.description": "Edit Laravel JSON translation keys used by Blade and Vue.",
     "admin.page.translations.title": "Translations",
     "admin.page.users.description": "Manage your team members and their account permissions",
-    "admin.page.users.title": "Users"
+    "admin.page.users.title": "Users",
+    "admin.page.blog.title": "Blog",
+    "admin.page.blog.description": "Manage blog posts"
 }

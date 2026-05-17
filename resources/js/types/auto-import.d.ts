@@ -11,9 +11,11 @@ declare global {
   const CONTENT_LAYOUTS: typeof import('../constants/themes').CONTENT_LAYOUTS
   const DEFAULT_PAGE_SIZE: typeof import('../constants/pagination').DEFAULT_PAGE_SIZE
   const EffectScope: typeof import('vue').EffectScope
+  const HOVER_PRESETS: typeof import('../constants/themes').HOVER_PRESETS
   const PAGE_SIZES: typeof import('../constants/pagination').PAGE_SIZES
   const RADIUS: typeof import('../constants/themes').RADIUS
   const RouterPath: typeof import('../constants/route-path').RouterPath
+  const SHADOW_PRESETS: typeof import('../constants/themes').SHADOW_PRESETS
   const THEMES: typeof import('../constants/themes').THEMES
   const THEMES_COLOR: typeof import('../constants/themes')['THEMES_COLOR']
   const THEME_PRIMARY_COLORS: typeof import('../constants/themes').THEME_PRIMARY_COLORS
@@ -112,7 +114,7 @@ declare global {
   export type { TranslatedValue } from '../composables/use-translated-form'
   import('../composables/use-translated-form')
   // @ts-ignore
-  export type { Theme, Radius, ContentLayout } from '../constants/themes'
+  export type { Theme, Radius, ShadowPreset, HoverPreset } from '../constants/themes'
   import('../constants/themes')
   // @ts-ignore
   export type { NavigationMode } from '../stores/sidebar-config'

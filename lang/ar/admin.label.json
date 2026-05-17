@@ -32,5 +32,10 @@
     "admin.label.user": "المستخدم",
     "admin.label.event": "الحدث",
     "admin.label.date": "التاريخ",
-    "admin.label.system": "النظام"
+    "admin.label.system": "النظام",
+    "admin.label.excerpt": "مقتطف",
+    "admin.label.slug": "الرابط",
+    "admin.label.published": "منشور",
+    "admin.label.featured": "مميز",
+    "admin.label.tags": "وسوم"
 }

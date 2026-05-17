@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCookies } from '@vueuse/integrations/useCookies'
-import { storeToRefs } from 'pinia'
+import { watch } from 'vue'
 
 import AppSidebar from '@/components/app-sidebar/index.vue'
 import CommandMenuPanel from '@/components/command-menu-panel/index.vue'
@@ -8,12 +8,15 @@ import ThemePopover from '@/components/custom-theme/theme-popover.vue'
 import LanguageChange from '@/components/language-change.vue'
 import ToggleTheme from '@/components/toggle-theme.vue'
 import { SIDEBAR_COOKIE_NAME } from '@/components/ui/sidebar/utils'
-import { cn } from '@/lib/utils'
-import { useThemeStore } from '@/stores/theme'
-
+import { useUserQuery } from '@/services/api/auth.api'
+import { useAuthStore } from '@/stores/auth'
 const defaultOpen = useCookies([SIDEBAR_COOKIE_NAME])
-const themeStore = useThemeStore()
-const { contentLayout } = storeToRefs(themeStore)
+const authStore = useAuthStore()
+
+const { data: userData } = useUserQuery()
+watch(userData, (user) => {
+  if (user?.data) authStore.setUser(user.data)
+}, { immediate: true })
 </script>
 
 <template>
@@ -35,10 +38,7 @@ const { contentLayout } = storeToRefs(themeStore)
       </header>
 
       <main
-        :class="cn(
-          'p-4 grow',
-          contentLayout === 'centered' ? 'container mx-auto ' : '',
-        )"
+        class="p-4 grow"
       >
         <router-view />
       </main>

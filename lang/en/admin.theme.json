@@ -1,0 +1,23 @@
+{
+  "admin.theme.title": "Customize",
+  "admin.theme.description": "Pick a style and color for your components.",
+  "admin.theme.color": "Color",
+  "admin.theme.radius": "Radius",
+  "admin.theme.colorMode": "Color Mode",
+  "admin.theme.menuStyle": "Menu Style",
+  "admin.theme.light": "Light",
+  "admin.theme.dark": "Dark",
+  "admin.theme.system": "System",
+  "admin.theme.collapsible": "Collapsible",
+  "admin.theme.vercel": "Vercel Style",
+  "admin.theme.vercelDescription": "Click to navigate to the next level",
+  "admin.theme.shadow": "Shadow Intensity",
+  "admin.theme.shadowSubtle": "Subtle",
+  "admin.theme.shadowMedium": "Medium",
+  "admin.theme.shadowProminent": "Prominent",
+  "admin.theme.hover": "Hover Overlay",
+  "admin.theme.hoverSubtle": "Subtle",
+  "admin.theme.hoverMedium": "Medium",
+  "admin.theme.hoverStrong": "Strong",
+  "admin.theme.collapsibleDescription": "Traditional collapsible menu"
+}

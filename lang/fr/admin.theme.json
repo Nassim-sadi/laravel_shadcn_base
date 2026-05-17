@@ -1,0 +1,23 @@
+{
+  "admin.theme.title": "Personnaliser",
+  "admin.theme.description": "Choisissez un style et une couleur pour vos composants.",
+  "admin.theme.color": "Couleur",
+  "admin.theme.radius": "Rayon",
+  "admin.theme.colorMode": "Mode couleur",
+  "admin.theme.menuStyle": "Style de menu",
+  "admin.theme.light": "Clair",
+  "admin.theme.dark": "Sombre",
+  "admin.theme.system": "Système",
+  "admin.theme.collapsible": "Accordéon",
+  "admin.theme.vercel": "Style Vercel",
+  "admin.theme.vercelDescription": "Cliquez pour naviguer au niveau suivant",
+  "admin.theme.shadow": "Intensité de l'ombre",
+  "admin.theme.shadowSubtle": "Subtile",
+  "admin.theme.shadowMedium": "Moyenne",
+  "admin.theme.shadowProminent": "Forte",
+  "admin.theme.hover": "Surbrillance au survol",
+  "admin.theme.hoverSubtle": "Subtile",
+  "admin.theme.hoverMedium": "Moyenne",
+  "admin.theme.hoverStrong": "Forte",
+  "admin.theme.collapsibleDescription": "Menu accordéon traditionnel"
+}

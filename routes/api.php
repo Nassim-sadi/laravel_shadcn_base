@@ -15,6 +15,9 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\Api\BlogPostController;
+use App\Http\Controllers\Api\BlogCategoryController;
+use App\Http\Controllers\Api\BlogTagController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('json.response')->group(function () {
@@ -97,6 +100,15 @@ Route::middleware('json.response')->group(function () {
         // Contact Messages
         if (config('modules.contact', true)) {
             Route::apiResource('contact-messages', ContactMessageController::class);
+        }
+
+        // Blog Module
+        if (config('modules.blog', true)) {
+            Route::apiResource('blog-posts', BlogPostController::class);
+            Route::apiResource('blog-categories', BlogCategoryController::class);
+            Route::get('blog-tags', [BlogTagController::class, 'index']);
+            Route::post('blog-tags', [BlogTagController::class, 'store']);
+            Route::delete('blog-tags/{blogTag}', [BlogTagController::class, 'destroy']);
         }
 
         // Media

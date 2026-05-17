@@ -1,5 +1,5 @@
 import { FolderIcon } from '@lucide/vue'
-import { reactive } from 'vue'
+import { shallowRef, watch } from 'vue'
 
 import { useSidebar } from '@/composables/use-sidebar'
 import { useAuthStore } from '@/stores/auth'
@@ -25,10 +25,16 @@ const teams: Team[] = [
 
 const { navData } = useSidebar()
 
-export const sidebarData: SidebarData = reactive({
+const cachedNav = shallowRef<NavGroup[]>(navData.value as NavGroup[])
+
+watch(() => authStore.user, () => {
+  cachedNav.value = navData.value as NavGroup[]
+}, { immediate: true })
+
+export const sidebarData: SidebarData = {
   user,
   teams,
   get navMain() {
-    return navData.value as NavGroup[]
+    return cachedNav.value
   },
-})
+}

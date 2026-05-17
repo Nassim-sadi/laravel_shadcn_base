@@ -14,5 +14,7 @@
     "admin.sheet.editTemplate": "تعديل القالب",
     "admin.sheet.editTestimonial": "تعديل الشهادة",
     "admin.sheet.replyMessage": "الرد على الرسالة",
-    "admin.sheet.activityLogDetail": "تفاصيل سجل النشاط"
+    "admin.sheet.activityLogDetail": "تفاصيل سجل النشاط",
+    "admin.sheet.createBlogPost": "إنشاء مقال",
+    "admin.sheet.editBlogPost": "تعديل المقال"
 }

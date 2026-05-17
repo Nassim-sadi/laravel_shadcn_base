@@ -2,18 +2,21 @@
 import type { BasicColorSchema } from '@vueuse/core'
 import type { Component } from 'vue'
 
+import { useI18n } from 'vue-i18n'
 import { MoonIcon, SunIcon, SunMoonIcon } from '@lucide/vue'
 import { useColorMode } from '@vueuse/core'
 
+const { t } = useI18n()
 const mode = useColorMode()
 
 const colorModes: {
   colorMode: BasicColorSchema
   icon: Component
+  label: string
 }[] = [
-  { colorMode: 'light', icon: SunIcon },
-  { colorMode: 'dark', icon: MoonIcon },
-  { colorMode: 'auto', icon: SunMoonIcon },
+  { colorMode: 'light', icon: SunIcon, label: 'admin.theme.light' },
+  { colorMode: 'dark', icon: MoonIcon, label: 'admin.theme.dark' },
+  { colorMode: 'auto', icon: SunMoonIcon, label: 'admin.theme.system' },
 ]
 
 function setColorMode(colorMode: BasicColorSchema) {
@@ -23,8 +26,8 @@ function setColorMode(colorMode: BasicColorSchema) {
 
 <template>
   <div class="space-y-1.5 pt-6">
-    <UiLabel for="radius" class="text-xs">
-      Color Mode
+    <UiLabel class="text-xs">
+      {{ t('admin.theme.colorMode') }}
     </UiLabel>
     <div class="grid grid-cols-3 gap-2 py-1.5">
       <UiButton
@@ -35,7 +38,7 @@ function setColorMode(colorMode: BasicColorSchema) {
         @click="setColorMode(item.colorMode)"
       >
         <component :is="item.icon" />
-        <span class="text-xs">{{ item.colorMode }}</span>
+        <span class="text-xs">{{ t(item.label) }}</span>
       </UiButton>
     </div>
   </div>

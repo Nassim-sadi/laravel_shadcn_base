@@ -26,6 +26,14 @@ const uploadAvatarMutation = useUploadAvatarMutation()
 
 const user = computed(() => (userResponse.value as any)?.data)
 
+function getInitials(name: string | undefined | null): string {
+  if (!name) return '?'
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
+
 const languageOpen = ref(false)
 const passwordFormVisible = ref(false)
 
@@ -140,11 +148,10 @@ async function onAvatarChange(event: Event) {
 
     <!-- Avatar -->
     <div class="flex items-center gap-4 mb-6">
-      <img
-        :src="user?.avatar_url ?? '/placeholder-avatar.png'"
-        alt="Avatar"
-        class="w-20 h-20 rounded-full object-cover bg-muted"
-      >
+      <UiAvatar class="w-20 h-20">
+        <UiAvatarImage v-if="user?.avatar_url" :src="user.avatar_url" alt="Avatar" />
+        <UiAvatarFallback class="text-lg font-medium">{{ getInitials(user?.name) }}</UiAvatarFallback>
+      </UiAvatar>
       <div class="flex-1">
         <div class="flex items-center gap-2">
           <Input type="file" accept="image/*" class="w-auto" :disabled="isCompressing || isUploading" @change="onAvatarChange" />

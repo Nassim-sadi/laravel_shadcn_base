@@ -110,6 +110,7 @@ export function useUserQuery(enabled = true) {
       method: 'get',
     }),
     enabled: enabled && !!getToken(),
+    staleTime: 5 * 60 * 1000,
   })
 }
 

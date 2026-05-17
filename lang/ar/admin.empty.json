@@ -10,5 +10,6 @@
     "admin.empty.services": "لم يتم العثور على خدمات",
     "admin.empty.templates": "لم يتم العثور على قوالب",
     "admin.empty.testimonials": "لم يتم العثور على شهادات",
-    "admin.empty.translations": "لم يتم العثور على ترجمات مطابقة."
+    "admin.empty.translations": "لم يتم العثور على ترجمات مطابقة.",
+    "admin.empty.blogPosts": "لا توجد مقالات"
 }

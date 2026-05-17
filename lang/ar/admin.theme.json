@@ -1,0 +1,23 @@
+{
+  "admin.theme.title": "تخصيص",
+  "admin.theme.description": "اختر نمطاً ولوناً لمكوناتك.",
+  "admin.theme.color": "اللون",
+  "admin.theme.radius": "نصف القطر",
+  "admin.theme.colorMode": "وضع الألوان",
+  "admin.theme.menuStyle": "نمط القائمة",
+  "admin.theme.light": "فاتح",
+  "admin.theme.dark": "داكن",
+  "admin.theme.system": "النظام",
+  "admin.theme.collapsible": "قابلة للطي",
+  "admin.theme.vercel": "نمط Vercel",
+  "admin.theme.vercelDescription": "انقر للتنقل إلى المستوى التالي",
+  "admin.theme.shadow": "كثافة الظل",
+  "admin.theme.shadowSubtle": "خفيف",
+  "admin.theme.shadowMedium": "متوسط",
+  "admin.theme.shadowProminent": "قوي",
+  "admin.theme.hover": "تأثير التمرير",
+  "admin.theme.hoverSubtle": "خفيف",
+  "admin.theme.hoverMedium": "متوسط",
+  "admin.theme.hoverStrong": "قوي",
+  "admin.theme.collapsibleDescription": "قائمة قابلة للطي تقليدية"
+}

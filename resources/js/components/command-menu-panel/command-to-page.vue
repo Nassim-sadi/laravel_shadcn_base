@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useSidebar } from '@/composables/use-sidebar'
@@ -7,6 +8,7 @@ import type { NavGroup, NavItem } from '../app-sidebar/types'
 
 import CommandItemHasIcon from './command-item-has-icon.vue'
 
+const { t } = useI18n()
 const emit = defineEmits<{
   (e: 'click'): void
 }>()
@@ -28,7 +30,13 @@ function getFlatNavItems(navData: NavGroup[]): NavItem[] {
   return flatItems
 }
 
-const commands = getFlatNavItems([...navData.value!, ...otherPages.value!])
+const commands = computed(() => {
+  const items = getFlatNavItems([...navData.value!, ...otherPages.value!])
+  return items.map(item => ({
+    ...item,
+    translatedTitle: t(item.title),
+  }))
+})
 
 const router = useRouter()
 const route = useRoute()
@@ -41,14 +49,14 @@ function commandItemClick(url: string) {
 </script>
 
 <template>
-  <UiCommandGroup heading="Pages">
+  <UiCommandGroup :heading="$t('admin.misc.pages')">
     <UiCommandItem
       v-for="command in commands"
       :key="command.title"
-      :value="command.title"
+      :value="command.translatedTitle"
       @click="commandItemClick(command.url!)"
     >
-      <CommandItemHasIcon :name="command.title" :icon="command.icon" />
+      <CommandItemHasIcon :name="command.translatedTitle" :icon="command.icon" />
     </UiCommandItem>
   </UiCommandGroup>
 </template>

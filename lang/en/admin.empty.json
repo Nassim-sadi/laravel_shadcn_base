@@ -10,5 +10,6 @@
     "admin.empty.services": "No services found",
     "admin.empty.templates": "No templates found",
     "admin.empty.testimonials": "No testimonials found",
-    "admin.empty.translations": "No matching translations."
+    "admin.empty.translations": "No matching translations.",
+    "admin.empty.blogPosts": "No blog posts found"
 }

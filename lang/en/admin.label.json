@@ -32,5 +32,10 @@
     "admin.label.user": "User",
     "admin.label.event": "Event",
     "admin.label.date": "Date",
-    "admin.label.system": "System"
+    "admin.label.system": "System",
+    "admin.label.excerpt": "Excerpt",
+    "admin.label.slug": "Slug",
+    "admin.label.published": "Published",
+    "admin.label.featured": "Featured",
+    "admin.label.tags": "Tags"
 }

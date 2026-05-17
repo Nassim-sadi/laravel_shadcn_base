@@ -31,6 +31,7 @@ const router = createRouter({
         ...(isEnabled('contact') ? [{ path: 'contact-messages', component: () => import('../pages/admin/contact-messages/index.vue'), meta: { requiredPermission: 'contact-messages.view' } }] : []),
         ...(isEnabled('email_templates') ? [{ path: 'email-templates', component: () => import('../pages/admin/email-templates/index.vue'), meta: { requiredPermission: 'email-templates.view' } }] : []),
         ...(isEnabled('media') ? [{ path: 'media', component: () => import('../admin/views/media/Index.vue'), meta: { requiredPermission: 'media.view' } }] : []),
+        ...(isEnabled('blog') ? [{ path: 'blog', component: () => import('../pages/admin/blog/Index.vue'), meta: { requiredPermission: 'blogs.view' } }] : []),
         ...(isEnabled('activity_logs') ? [{ path: 'activity-logs', component: () => import('../pages/admin/activity-logs/index.vue'), meta: { requiredPermission: 'logs.view' } }] : []),
         { path: ':pathMatch(.*)*', redirect: '/admin' },
       ],

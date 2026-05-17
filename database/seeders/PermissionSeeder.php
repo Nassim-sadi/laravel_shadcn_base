@@ -23,6 +23,7 @@ class PermissionSeeder extends Seeder
             'faqs' => ['faqs.view', 'faqs.create', 'faqs.edit', 'faqs.delete'],
             'contact-messages' => ['contact-messages.view', 'contact-messages.create', 'contact-messages.edit', 'contact-messages.delete'],
             'email-templates' => ['email-templates.view', 'email-templates.create', 'email-templates.edit', 'email-templates.delete'],
+            'blog' => ['blogs.view', 'blogs.create', 'blogs.edit', 'blogs.delete'],
         ];
 
         $modules = config('modules', []);
@@ -70,6 +71,7 @@ class PermissionSeeder extends Seeder
             'faqs.view', 'faqs.create', 'faqs.edit',
             'contact-messages.view', 'contact-messages.create', 'contact-messages.edit',
             'email-templates.view', 'email-templates.create', 'email-templates.edit',
+            'blogs.view', 'blogs.create', 'blogs.edit',
         ]);
 
         $user = Role::firstOrCreate([

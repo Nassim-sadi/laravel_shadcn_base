@@ -44,5 +44,14 @@
     "admin.misc.termsOfService": "Conditions d'utilisation",
     "admin.misc.uploading": "Téléchargement...",
     "admin.misc.urlPlaceholder": "https://...",
-    "admin.misc.writeReply": "Écrivez votre réponse"
+    "admin.misc.writeReply": "Écrivez votre réponse",
+    "admin.misc.selectCategory": "Sélectionnez une catégorie",
+    "admin.misc.none": "Aucun",
+    "admin.misc.newTagName": "Nouvelle étiquette",
+    "admin.misc.newTagSlug": "Slug de l'étiquette",
+    "admin.misc.slugPlaceholder": "slug-de-mon-article",
+    "admin.misc.bodyPlaceholder": "Commencez à écrire...",
+    "admin.misc.noMenuFound": "Aucun menu trouvé.",
+    "admin.misc.trySearchCommand": "Essayez de rechercher une commande ou vérifiez l'orthographe.",
+    "admin.misc.pages": "Pages"
 }

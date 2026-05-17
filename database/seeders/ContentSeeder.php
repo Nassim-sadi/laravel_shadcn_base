@@ -2,12 +2,16 @@
 
 namespace Database\Seeders;
 
+use App\Models\BlogCategory;
+use App\Models\BlogPost;
+use App\Models\BlogTag;
 use App\Models\EmailTemplate;
 use App\Models\Faq;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Models\Testimonial;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ContentSeeder extends Seeder
@@ -122,6 +126,25 @@ class ContentSeeder extends Seeder
             'variables' => ['name', 'email', 'subject', 'message'],
             'is_active' => true,
         ]);
+
+        $general = BlogCategory::create(['name' => ['fr' => 'Général', 'en' => 'General', 'ar' => 'عام'], 'slug' => 'general', 'description' => ['fr' => 'Articles généraux', 'en' => 'General articles', 'ar' => 'مقالات عامة'], 'is_published' => true]);
+        $tech = BlogCategory::create(['name' => ['fr' => 'Technologie', 'en' => 'Technology', 'ar' => 'تقنية'], 'slug' => 'technology', 'description' => ['fr' => 'Articles sur la technologie', 'en' => 'Technology articles', 'ar' => 'مقالات تقنية'], 'is_published' => true]);
+        $business = BlogCategory::create(['name' => ['fr' => 'Business', 'en' => 'Business', 'ar' => 'أعمال'], 'slug' => 'business', 'description' => ['fr' => 'Articles business', 'en' => 'Business articles', 'ar' => 'مقالات أعمال'], 'is_published' => true]);
+
+        $laravel = BlogTag::create(['name' => 'Laravel', 'slug' => 'laravel']);
+        $vue = BlogTag::create(['name' => 'Vue.js', 'slug' => 'vuejs']);
+        $seo = BlogTag::create(['name' => 'SEO', 'slug' => 'seo']);
+        $design = BlogTag::create(['name' => 'Design', 'slug' => 'design']);
+
+        $user = User::first() ?? User::factory()->create();
+
+        $post1 = BlogPost::create(['title' => ['fr' => 'Bienvenue sur NsBase', 'en' => 'Welcome to NsBase', 'ar' => 'مرحباً بك في NsBase'], 'slug' => 'welcome-to-nsbase', 'excerpt' => ['fr' => 'Notre plateforme de développement', 'en' => 'Our development platform', 'ar' => 'منصة التطوير لدينا'], 'is_published' => true, 'featured' => true, 'user_id' => $user->id, 'category_id' => $general->id]);
+        $post1->body()->create(['body' => ['fr' => '<p>Bienvenue sur NsBase, notre plateforme de développement web.</p>', 'en' => '<p>Welcome to NsBase, our web development platform.</p>', 'ar' => '<p>مرحباً بك في NsBase، منصة تطوير الويب الخاصة بنا.</p>']]);
+        $post1->tags()->sync([$laravel->id, $vue->id]);
+
+        $post2 = BlogPost::create(['title' => ['fr' => 'Pourquoi choisir Laravel', 'en' => 'Why Choose Laravel', 'ar' => 'لماذا تختار Laravel'], 'slug' => 'why-choose-laravel', 'excerpt' => ['fr' => 'Les avantages de Laravel', 'en' => 'The benefits of Laravel', 'ar' => 'فوائد Laravel'], 'is_published' => true, 'featured' => false, 'user_id' => $user->id, 'category_id' => $tech->id]);
+        $post2->body()->create(['body' => ['fr' => '<p>Laravel est le framework PHP le plus populaire.</p>', 'en' => '<p>Laravel is the most popular PHP framework.</p>', 'ar' => '<p>Laravel هو إطار عمل PHP الأكثر شهرة.</p>']]);
+        $post2->tags()->sync([$laravel->id]);
 
         Setting::create([
             'key' => 'site_name',

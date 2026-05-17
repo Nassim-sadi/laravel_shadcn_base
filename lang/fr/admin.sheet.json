@@ -14,5 +14,7 @@
     "admin.sheet.editTemplate": "Modifier le modèle",
     "admin.sheet.editTestimonial": "Modifier le témoignage",
     "admin.sheet.replyMessage": "Répondre au message",
-    "admin.sheet.activityLogDetail": "Détail de l'activité"
+    "admin.sheet.activityLogDetail": "Détail de l'activité",
+    "admin.sheet.createBlogPost": "Créer un article",
+    "admin.sheet.editBlogPost": "Modifier l'article"
 }

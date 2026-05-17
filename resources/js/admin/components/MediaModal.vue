@@ -189,7 +189,7 @@ watch(() => props.open, (isOpen) => {
 
 <template>
   <Teleport defer to="body">
-    <div v-if="open" class="fixed inset-0 z-50" @keydown.escape="emit('close')">
+    <div v-show="open" class="fixed inset-0 z-50" @keydown.escape="emit('close')">
       <div class="fixed inset-0 bg-black/50" @click="emit('close')" />
 
       <div

@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 
+import { useI18n } from 'vue-i18n'
 import { RADIUS } from '@/constants/themes'
 import { useThemeStore } from '@/stores/theme'
 
+const { t } = useI18n()
 const themeStore = useThemeStore()
 const { setRadius } = themeStore
 const { radius } = storeToRefs(themeStore)
@@ -15,8 +17,8 @@ watchEffect(() => {
 
 <template>
   <div class="space-y-1.5 pt-6">
-    <UiLabel for="radius" class="text-xs">
-      Radius
+    <UiLabel class="text-xs">
+      {{ t('admin.theme.radius') }}
     </UiLabel>
     <div class="grid grid-cols-5 gap-2 py-1.5">
       <UiButton

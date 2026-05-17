@@ -3,23 +3,25 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
     "jsx": "preserve",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "moduleDetection": "force",
     "useDefineForClassFields": true,
-
-    "baseUrl": ".",
     "module": "ESNext",
-
     /* Bundler mode */
     "moduleResolution": "Bundler",
     "paths": {
-      "@/*": ["./resources/js/*"]
+      "@/*": [
+        "./resources/js/*"
+      ]
     },
     "types": [
       "vite-plugin-vue-layouts/client"
     ],
     "allowImportingTsExtensions": true,
-
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,
@@ -30,6 +32,12 @@
     "skipLibCheck": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.vue"],
-  "exclude": ["resources/js/components/ui"]
+  "include": [
+    "resources/js/**/*.ts",
+    "resources/js/**/*.tsx",
+    "resources/js/**/*.vue"
+  ],
+  "exclude": [
+    "resources/js/components/ui"
+  ]
 }

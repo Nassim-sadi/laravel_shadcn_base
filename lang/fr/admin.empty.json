@@ -10,5 +10,6 @@
     "admin.empty.services": "Aucun service trouvé",
     "admin.empty.templates": "Aucun modèle trouvé",
     "admin.empty.testimonials": "Aucun témoignage trouvé",
-    "admin.empty.translations": "Aucune traduction correspondante."
+    "admin.empty.translations": "Aucune traduction correspondante.",
+    "admin.empty.blogPosts": "Aucun article trouvé"
 }

@@ -33,8 +33,21 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
+        $user->load('roles', 'permissions');
+
         return response()->json([
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'is_active' => $user->is_active,
+                'locale' => $user->locale,
+                'avatar' => $user->avatar,
+                'avatar_url' => $user->avatar ? \Illuminate\Support\Facades\Storage::url($user->avatar) : null,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+            ],
             'token' => $token,
             'token_type' => 'Bearer',
         ], 201);
@@ -71,9 +84,21 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token')->plainTextToken;
         Log::info('AuthController: token created');
 
-        Log::info('AuthController: returning response');
+        $user->load('roles', 'permissions');
+
         return response()->json([
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'is_active' => $user->is_active,
+                'locale' => $user->locale,
+                'avatar' => $user->avatar,
+                'avatar_url' => $user->avatar ? \Illuminate\Support\Facades\Storage::url($user->avatar) : null,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+            ],
             'token' => $token,
             'token_type' => 'Bearer',
         ]);

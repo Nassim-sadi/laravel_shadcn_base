@@ -44,5 +44,14 @@
     "admin.misc.termsOfService": "شروط الخدمة",
     "admin.misc.uploading": "جارٍ الرفع...",
     "admin.misc.urlPlaceholder": "https://...",
-    "admin.misc.writeReply": "اكتب ردك"
+    "admin.misc.writeReply": "اكتب ردك",
+    "admin.misc.selectCategory": "اختر تصنيفاً",
+    "admin.misc.none": "لا شيء",
+    "admin.misc.newTagName": "اسم الوسم الجديد",
+    "admin.misc.newTagSlug": "Slug الوسم الجديد",
+    "admin.misc.slugPlaceholder": "my-post-slug",
+    "admin.misc.bodyPlaceholder": "ابدأ الكتابة...",
+    "admin.misc.noMenuFound": "لم يتم العثور على قائمة.",
+    "admin.misc.trySearchCommand": "حاول البحث عن أمر أو تحقق من الإملاء.",
+    "admin.misc.pages": "الصفحات"
 }

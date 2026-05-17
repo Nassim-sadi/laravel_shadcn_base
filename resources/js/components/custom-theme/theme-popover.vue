@@ -8,9 +8,10 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
-import ContentLayout from './content-layout.vue'
 import CustomColor from './custom-color.vue'
+import CustomHover from './custom-hover.vue'
 import CustomRadius from './custom-radius.vue'
+import CustomShadow from './custom-shadow.vue'
 import CustomThemeTitle from './custom-theme-title.vue'
 import MenuStyle from './menu-style.vue'
 import ToggleColorMode from './toggle-color-mode.vue'
@@ -28,7 +29,8 @@ import ToggleColorMode from './toggle-color-mode.vue'
       <CustomColor />
       <CustomRadius />
       <ToggleColorMode />
-      <ContentLayout />
+      <CustomShadow />
+      <CustomHover />
       <MenuStyle />
     </PopoverContent>
   </Popover>

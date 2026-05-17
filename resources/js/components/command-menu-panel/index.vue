@@ -41,7 +41,7 @@ const firstKey = computed(() => navigator?.userAgent.includes('Mac OS') ? '⌘' 
     </UiButton>
 
     <UiCommandDialog v-model:open="open">
-      <UiCommandInput placeholder="Type a command or search..." />
+      <UiCommandInput :placeholder="$t('admin.misc.searchPlaceholder')" />
       <UiCommandList>
         <UiCommandEmpty>
           <Empty>
@@ -49,9 +49,9 @@ const firstKey = computed(() => navigator?.userAgent.includes('Mac OS') ? '⌘' 
               <EmptyMedia variant="icon">
                 <MenuIcon />
               </EmptyMedia>
-              <EmptyTitle>No menu found.</EmptyTitle>
+              <EmptyTitle>{{ $t('admin.misc.noMenuFound') }}</EmptyTitle>
               <EmptyDescription>
-                Try searching for a command or check the spelling.
+                {{ $t('admin.misc.trySearchCommand') }}
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
