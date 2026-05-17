@@ -4,14 +4,14 @@ import { useI18n } from 'vue-i18n'
 
 import type { NavItem } from './types'
 
-const { t } = useI18n()
-
 defineProps<{
   isActive: boolean
   tooltip?: string
   isExternalUrl?: boolean
   menu: NavItem
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>

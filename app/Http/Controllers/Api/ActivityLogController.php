@@ -13,6 +13,8 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', ActivityLog::class);
+
         $activityLogs = ActivityLog::query()
             ->when($request->search, fn($q, $search) => $q->where('description', 'like', "%{$search}%")
                 ->orWhereHas('user', function ($q) use ($search) {
@@ -24,12 +26,14 @@ class ActivityLogController extends Controller
             ->with('user')
             ->orderBy($request->sort_by ?? 'created_at', $request->sort_order ?? 'desc')
             ->paginate($request->per_page ?? 15);
-
+   
         return new ActivityLogCollection($activityLogs);
     }
 
     public function show(ActivityLog $activityLog)
     {
+        $this->authorize('view', $activityLog);
+
         $activityLog->load('user');
         return new ActivityLogResource($activityLog);
     }

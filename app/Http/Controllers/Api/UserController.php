@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
 use App\Models\User;
@@ -15,6 +16,8 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
+
         $users = User::query()
             ->when($request->search, fn($q, $search) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"))
             ->when($request->role, fn($q, $role) => $q->where('role', $role))
@@ -25,41 +28,39 @@ class UserController extends Controller
         return new UserCollection($users);
     }
 
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-            'role' => 'sometimes|string|in:admin,user,guest',
-            'locale' => 'sometimes|string|in:en,fr,ar',
-            'is_active' => 'sometimes|boolean',
-        ]);
+        $this->authorize('create', User::class);
+
+        $validated = $request->validated();
 
         $validated['password'] = Hash::make($validated['password']);
         $validated['role'] = $validated['role'] ?? 'user';
 
         $user = User::create($validated);
 
+        activity_log('user.created', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+        ]);
+
         return new UserResource($user);
     }
 
     public function show(User $user)
     {
+        $this->authorize('view', $user);
+
         $user->load('roles', 'permissions');
         return new UserResource($user);
     }
 
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'password' => 'sometimes|string|min:8',
-            'role' => 'sometimes|string|in:super_admin,admin,user,guest',
-            'locale' => 'sometimes|string|in:en,fr,ar',
-            'is_active' => 'sometimes|boolean',
-        ]);
+        $this->authorize('update', $user);
+
+        $validated = $request->validated();
 
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
@@ -67,24 +68,38 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        activity_log('user.updated', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+        ]);
+
         return new UserResource($user);
     }
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+
         if ($user->id === auth()->id()) {
             throw ValidationException::withMessages([
                 'id' => ['You cannot delete your own account.'],
             ]);
         }
 
+        $userName = $user->name;
         $user->delete();
+
+        activity_log('user.deleted', [
+            'user_name' => $userName,
+        ]);
 
         return response()->json(['message' => 'User deleted successfully']);
     }
 
     public function invite(Request $request)
     {
+        $this->authorize('create', User::class);
+
         $validated = $request->validate([
             'email' => 'required|email|unique:users,email',
             'name' => 'required|string|max:255',
@@ -101,49 +116,76 @@ class UserController extends Controller
             'is_active' => true,
         ]);
 
+        activity_log('user.invited', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+        ]);
+
         // TODO: Send invitation email with password
 
         return response()->json([
             'message' => 'User invited successfully',
-            'temporary_password' => $password,
         ])->setStatusCode(201);
     }
 
     public function assignRole(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $validated = $request->validate([
             'role' => 'required|string|exists:roles,name',
         ]);
 
         $user->assignRole($validated['role']);
 
+        activity_log('user.role_assigned', [
+            'user_id' => $user->id,
+            'role' => $validated['role'],
+        ]);
+
         return new UserResource($user);
     }
 
     public function givePermission(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $validated = $request->validate([
             'permission' => 'required|string|exists:permissions,name',
         ]);
 
         $user->givePermissionTo($validated['permission']);
 
+        activity_log('user.permission_granted', [
+            'user_id' => $user->id,
+            'permission' => $validated['permission'],
+        ]);
+
         return new UserResource($user);
     }
 
     public function revokePermission(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $validated = $request->validate([
             'permission' => 'required|string|exists:permissions,name',
         ]);
 
         $user->revokePermissionTo($validated['permission']);
 
+        activity_log('user.permission_revoked', [
+            'user_id' => $user->id,
+            'permission' => $validated['permission'],
+        ]);
+
         return new UserResource($user);
     }
 
     public function uploadAvatar(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $validated = $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
@@ -154,6 +196,11 @@ class UserController extends Controller
             $path = $file->storeAs('avatars', $filename, 'public');
 
             $user->update(['avatar' => $path]);
+
+            activity_log('user.avatar_uploaded', [
+                'user_id' => $user->id,
+                'avatar_path' => $path,
+            ]);
 
             return response()->json([
                 'message' => 'Avatar uploaded successfully',
@@ -166,11 +213,17 @@ class UserController extends Controller
 
     public function deleteAvatar(User $user)
     {
+        $this->authorize('update', $user);
+
         if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
             \Storage::disk('public')->delete($user->avatar);
         }
 
         $user->update(['avatar' => null]);
+
+        activity_log('user.avatar_deleted', [
+            'user_id' => $user->id,
+        ]);
 
         return response()->json(['message' => 'Avatar deleted successfully']);
     }

@@ -3,17 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\AdminContactMessageRequest;
 use App\Http\Requests\Api\ContactMessageRequest;
 use App\Http\Resources\ContactMessageResource;
 use App\Http\Resources\ContactMessageCollection;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class ContactMessageController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', ContactMessage::class);
+
         $query = ContactMessage::query()
             ->when($request->search, fn($q, $search) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%")->orWhere('subject', 'like', "%{$search}%"))
             ->when($request->is_read !== null, fn($q) => $q->where('is_read', $request->is_read))
@@ -41,21 +43,16 @@ class ContactMessageController extends Controller
 
     public function show(ContactMessage $contactMessage)
     {
+        $this->authorize('view', $contactMessage);
+
         return new ContactMessageResource($contactMessage);
     }
 
-    public function update(Request $request, ContactMessage $contactMessage)
+    public function update(AdminContactMessageRequest $request, ContactMessage $contactMessage)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|max:255',
-            'phone' => 'sometimes|string|max:20',
-            'subject' => 'sometimes|string|max:255',
-            'message' => 'sometimes|string',
-            'is_read' => 'sometimes|boolean',
-            'reply' => 'sometimes|string',
-            'replied_at' => 'sometimes|date',
-        ]);
+        $this->authorize('update', $contactMessage);
+
+        $validated = $request->validated();
 
         $contactMessage->update($validated);
 
@@ -77,6 +74,8 @@ class ContactMessageController extends Controller
 
     public function destroy(ContactMessage $contactMessage)
     {
+        $this->authorize('delete', $contactMessage);
+
         $contactMessage->delete();
 
         // Log activity

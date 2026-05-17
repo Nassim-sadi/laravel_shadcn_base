@@ -14,6 +14,8 @@ class TestimonialController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Testimonial::class);
+
         $testimonials = Testimonial::query()
             ->with('image')
             ->when($request->search, fn($q, $search) => $q->where('name', 'like', "%{$search}%")->orWhere('company', 'like', "%{$search}%")->orWhere('content', 'like', "%{$search}%"))
@@ -27,6 +29,8 @@ class TestimonialController extends Controller
 
     public function store(TestimonialRequest $request)
     {
+        $this->authorize('create', Testimonial::class);
+
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -49,11 +53,15 @@ class TestimonialController extends Controller
 
     public function show(Testimonial $testimonial)
     {
+        $this->authorize('view', $testimonial);
+
         return new TestimonialResource($testimonial->load('image'));
     }
 
     public function update(TestimonialRequest $request, Testimonial $testimonial)
     {
+        $this->authorize('update', $testimonial);
+
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -81,6 +89,8 @@ class TestimonialController extends Controller
 
     public function destroy(Testimonial $testimonial)
     {
+        $this->authorize('delete', $testimonial);
+
         // Delete associated image
         if ($testimonial->image && Storage::disk('public')->exists($testimonial->image)) {
             Storage::disk('public')->delete($testimonial->image);

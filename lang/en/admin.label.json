@@ -28,5 +28,9 @@
     "admin.label.subject": "Subject",
     "admin.label.technologies": "Technologies",
     "admin.label.title": "Title",
-    "admin.label.url": "URL"
+    "admin.label.url": "URL",
+    "admin.label.user": "User",
+    "admin.label.event": "Event",
+    "admin.label.date": "Date",
+    "admin.label.system": "System"
 }

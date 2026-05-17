@@ -9,6 +9,8 @@ class PermissionController extends Controller
 {
     public function getAllPermissions()
     {
+        abort_unless(request()->user()?->isAdmin(), 403);
+
         $permissions = Permission::all();
 
         return response()->json($permissions);

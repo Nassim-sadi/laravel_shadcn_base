@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
+import { toast } from 'vue-sonner'
 
 import { useRegisterMutation } from '@/services/api/auth.api'
 

@@ -13,5 +13,6 @@
     "admin.sheet.editService": "Edit Service",
     "admin.sheet.editTemplate": "Edit Template",
     "admin.sheet.editTestimonial": "Edit Testimonial",
-    "admin.sheet.replyMessage": "Reply to Message"
+    "admin.sheet.replyMessage": "Reply to Message",
+    "admin.sheet.activityLogDetail": "Activity Log Detail"
 }

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+
 import { Button } from '@/components/ui/button'
+
 import MediaPickerModal from './MediaPickerModal.vue'
 
 defineProps<{
@@ -14,7 +16,7 @@ const emit = defineEmits<{
 
 const showPicker = ref(false)
 
-function selectMedia(media: { id: number; url: string; alt_text: string | null }) {
+function selectMedia(media: { id: number, url: string, alt_text: string | null }) {
   emit('update:modelValue', media.id)
 }
 
@@ -29,7 +31,7 @@ function clear() {
       v-if="modelValue && previewUrl"
       class="relative w-32 h-32 rounded-lg border overflow-hidden group"
     >
-      <img :src="previewUrl" class="w-full h-full object-cover" />
+      <img :src="previewUrl" class="w-full h-full object-cover">
       <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
         <Button size="icon" variant="ghost" class="h-8 w-8 text-white" @click="showPicker = true">
           <PencilIcon class="h-4 w-4" />

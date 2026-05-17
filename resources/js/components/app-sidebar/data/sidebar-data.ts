@@ -1,9 +1,10 @@
 import { FolderIcon } from '@lucide/vue'
+import { reactive } from 'vue'
 
 import { useSidebar } from '@/composables/use-sidebar'
 import { useAuthStore } from '@/stores/auth'
 
-import type { SidebarData, Team, User } from '../types'
+import type { NavGroup, SidebarData, Team, User } from '../types'
 
 const authStore = useAuthStore()
 const currentUser = authStore.user
@@ -24,8 +25,10 @@ const teams: Team[] = [
 
 const { navData } = useSidebar()
 
-export const sidebarData: SidebarData = {
+export const sidebarData: SidebarData = reactive({
   user,
   teams,
-  navMain: navData.value!,
-}
+  get navMain() {
+    return navData.value as NavGroup[]
+  },
+})

@@ -15,6 +15,8 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Project::class);
+
         $projects = Project::query()
             ->with('image')
             ->when($request->search, fn($q, $search) => $q->where('title', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%")->orWhere('client', 'like', "%{$search}%"))
@@ -28,6 +30,8 @@ class ProjectController extends Controller
 
     public function store(ProjectRequest $request)
     {
+        $this->authorize('create', Project::class);
+
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -50,11 +54,15 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
+        $this->authorize('view', $project);
+
         return new ProjectResource($project->load('image'));
     }
 
     public function update(ProjectRequest $request, Project $project)
     {
+        $this->authorize('update', $project);
+
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -82,6 +90,8 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        $this->authorize('delete', $project);
+
         // Delete associated image
         if ($project->image && Storage::disk('public')->exists($project->image)) {
             Storage::disk('public')->delete($project->image);

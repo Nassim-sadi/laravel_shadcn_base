@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { toast } from 'vue-sonner'
-import { useI18n } from 'vue-i18n'
-
 import { Eye, EyeOff } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
+import { toast } from 'vue-sonner'
+
 import { useAuth } from '@/composables/use-auth'
 
 import GitHubButton from './github-button.vue'
@@ -86,7 +86,7 @@ async function handleLogin() {
         </div>
         <div class="relative">
           <UiInput id="password" v-model="password" :type="showPassword ? 'text' : 'password'" required placeholder="*********" :aria-invalid="!!fieldErrors.password?.length" class="pe-9" />
-          <button type="button" class="absolute end-1 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground" @click="showPassword = !showPassword" tabindex="-1">
+          <button type="button" class="absolute end-1 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground" tabindex="-1" @click="showPassword = !showPassword">
             <Eye v-if="showPassword" class="size-4" />
             <EyeOff v-else class="size-4" />
           </button>

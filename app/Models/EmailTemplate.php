@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Models\Concerns\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class EmailTemplate extends Model
 {
-    use HasTranslatedAttributes;
+    use HasTranslatedAttributes, SoftDeletes;
 
     protected $fillable = [
         'key',

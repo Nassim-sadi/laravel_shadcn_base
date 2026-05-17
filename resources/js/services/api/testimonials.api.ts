@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export type TranslatedValue = Record<string, string>
@@ -72,7 +74,7 @@ export function useCreateTestimonialMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<ITestimonial>, Error, ICreateTestimonialRequest>({
     mutationKey: ['useCreateTestimonialMutation'],
-    mutationFn: (data) => apiFetch('/testimonials', { method: 'post', body: data }),
+    mutationFn: data => apiFetch('/testimonials', { method: 'post', body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] }),
   })
 }
@@ -82,7 +84,7 @@ export function useUpdateTestimonialMutation(id: number) {
   const queryClient = useQueryClient()
   return useMutation<IResponse<ITestimonial>, Error, Partial<ICreateTestimonialRequest>>({
     mutationKey: ['useUpdateTestimonialMutation', id],
-    mutationFn: (data) => apiFetch(`/testimonials/${id}`, { method: 'put', body: data }),
+    mutationFn: data => apiFetch(`/testimonials/${id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetTestimonialByIdQuery', id] })
@@ -95,7 +97,7 @@ export function useDeleteTestimonialMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteTestimonialMutation'],
-    mutationFn: (id) => apiFetch(`/testimonials/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/testimonials/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] }),
   })
 }

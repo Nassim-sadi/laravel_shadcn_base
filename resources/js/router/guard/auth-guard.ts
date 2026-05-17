@@ -2,8 +2,8 @@ import type { Router } from 'vue-router'
 
 import { storeToRefs } from 'pinia'
 
-import pinia from '@/plugins/pinia/setup'
 import { hasPermission, hasRole } from '@/composables/use-role'
+import pinia from '@/plugins/pinia/setup'
 import { useAuthStore } from '@/stores/auth'
 
 export function setupAuthGuard(router: Router) {

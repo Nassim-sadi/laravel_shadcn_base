@@ -1,13 +1,15 @@
 <script lang="ts" setup>
+import { Trash2Icon } from '@lucide/vue'
 import { ref, watch } from 'vue'
+
+import type { IMedia } from '@/services/api/media.api'
+
+import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Trash2Icon } from '@lucide/vue'
+import { Textarea } from '@/components/ui/textarea'
 import { useDeleteMediaMutation } from '@/services/api/media.api'
-import type { IMedia } from '@/services/api/media.api'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
 
 const props = defineProps<{
   item: IMedia | null
@@ -47,7 +49,8 @@ function confirmDelete() {
 }
 
 function handleDelete() {
-  if (!props.item) return
+  if (!props.item)
+    return
   deleteMedia(props.item.id)
   showDeleteDialog.value = false
   emit('deleted')
@@ -62,7 +65,7 @@ function handleDelete() {
         :src="item.url"
         :alt="item.alt_text || item.name"
         class="w-full h-full object-contain"
-      />
+      >
       <div v-else class="text-muted-foreground text-sm">
         {{ item.original_name }}
       </div>
@@ -107,7 +110,9 @@ function handleDelete() {
     </div>
 
     <div class="flex gap-2">
-      <Button class="flex-1" @click="emit('close')">Done</Button>
+      <Button class="flex-1" @click="emit('close')">
+        Done
+      </Button>
       <Button variant="destructive" size="icon" @click="confirmDelete">
         <Trash2Icon class="h-4 w-4" />
       </Button>

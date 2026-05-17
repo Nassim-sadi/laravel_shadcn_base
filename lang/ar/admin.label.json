@@ -28,5 +28,9 @@
     "admin.label.subject": "الموضوع",
     "admin.label.technologies": "التقنيات",
     "admin.label.title": "العنوان",
-    "admin.label.url": "الرابط"
+    "admin.label.url": "الرابط",
+    "admin.label.user": "المستخدم",
+    "admin.label.event": "الحدث",
+    "admin.label.date": "التاريخ",
+    "admin.label.system": "النظام"
 }

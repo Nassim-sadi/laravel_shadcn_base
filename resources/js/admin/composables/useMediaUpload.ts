@@ -1,6 +1,7 @@
-import { ref, computed } from 'vue'
-import { API_BASE_URL } from '@/constants/app-config'
 import { useQueryClient } from '@tanstack/vue-query'
+import { computed, ref } from 'vue'
+
+import { API_BASE_URL } from '@/constants/app-config'
 
 export interface UploadFileEntry {
   id: string
@@ -33,7 +34,8 @@ export function useMediaUpload() {
 
   function removeFile(id: string) {
     const entry = files.value.find(f => f.id === id)
-    if (entry?.xhr) entry.xhr.abort()
+    if (entry?.xhr)
+      entry.xhr.abort()
     files.value = files.value.filter(f => f.id !== id)
   }
 
@@ -41,8 +43,10 @@ export function useMediaUpload() {
     return new Promise((resolve) => {
       const formData = new FormData()
       formData.append('file', entry.file)
-      if (entry.name) formData.append('name', entry.name)
-      if (entry.alt) formData.append('alt_text', entry.alt)
+      if (entry.name)
+        formData.append('name', entry.name)
+      if (entry.alt)
+        formData.append('alt_text', entry.alt)
 
       const xhr = new XMLHttpRequest()
       entry.xhr = xhr
@@ -58,7 +62,8 @@ export function useMediaUpload() {
         if (xhr.status >= 200 && xhr.status < 300) {
           entry.status = 'done'
           entry.progress = 100
-        } else {
+        }
+        else {
           entry.status = 'error'
           entry.error = `Upload failed (${xhr.status})`
         }
@@ -79,7 +84,8 @@ export function useMediaUpload() {
 
       const token = localStorage.getItem('auth_token')
       xhr.open('POST', `${API_BASE_URL}/media`)
-      if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+      if (token)
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`)
       xhr.send(formData)
     })
   }

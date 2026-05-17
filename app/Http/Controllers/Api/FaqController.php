@@ -13,6 +13,8 @@ class FaqController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Faq::class);
+
         $faqs = Faq::query()
             ->when($request->search, fn($q, $search) => $q->where('question', 'like', "%{$search}%")->orWhere('answer', 'like', "%{$search}%")->orWhere('category', 'like', "%{$search}%"))
             ->when($request->is_active !== null, fn($q) => $q->where('is_active', $request->is_active))
@@ -25,6 +27,8 @@ class FaqController extends Controller
 
     public function store(FaqRequest $request)
     {
+        $this->authorize('create', Faq::class);
+
         $validated = $request->validated();
 
         $faq = Faq::create($validated);
@@ -40,11 +44,15 @@ class FaqController extends Controller
 
     public function show(Faq $faq)
     {
+        $this->authorize('view', $faq);
+
         return new FaqResource($faq);
     }
 
     public function update(FaqRequest $request, Faq $faq)
     {
+        $this->authorize('update', $faq);
+
         $validated = $request->validated();
 
         $faq->update($validated);
@@ -60,6 +68,8 @@ class FaqController extends Controller
 
     public function destroy(Faq $faq)
     {
+        $this->authorize('delete', $faq);
+
         $faq->delete();
 
         // Log activity

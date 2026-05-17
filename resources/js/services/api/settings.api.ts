@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export interface ISetting {
@@ -45,7 +47,7 @@ export function useGetSettingsQuery() {
 
 export function useGetSettingByKeyQuery(key: string) {
   const { apiFetch } = useApiFetch()
-  return useQuery<IResponse<{ key: string; value: string; type: string }>, Error>({
+  return useQuery<IResponse<{ key: string, value: string, type: string }>, Error>({
     queryKey: ['useGetSettingByKeyQuery', key],
     queryFn: () => apiFetch(`/settings/value/${key}`, { method: 'get' }),
   })
@@ -56,7 +58,7 @@ export function useCreateSettingMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<ISetting>, Error, ICreateSettingRequest>({
     mutationKey: ['useCreateSettingMutation'],
-    mutationFn: (data) => apiFetch('/settings', { method: 'post', body: data }),
+    mutationFn: data => apiFetch('/settings', { method: 'post', body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] }),
   })
 }
@@ -66,7 +68,7 @@ export function useUpdateSettingMutation(id: number) {
   const queryClient = useQueryClient()
   return useMutation<IResponse<ISetting>, Error, Partial<ICreateSettingRequest>>({
     mutationKey: ['useUpdateSettingMutation', id],
-    mutationFn: (data) => apiFetch(`/settings/${id}`, { method: 'put', body: data }),
+    mutationFn: data => apiFetch(`/settings/${id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] })
     },
@@ -78,7 +80,7 @@ export function useDeleteSettingMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteSettingMutation'],
-    mutationFn: (id) => apiFetch(`/settings/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/settings/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] }),
   })
 }

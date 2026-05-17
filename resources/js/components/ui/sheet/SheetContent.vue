@@ -6,14 +6,14 @@ import { X } from "@lucide/vue"
 import {
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogPortal,
+  DialogTitle,
   useForwardPropsEmits,
 } from "reka-ui"
 import { cn } from "@/lib/utils"
 import SheetOverlay from "./SheetOverlay.vue"
-import SheetHeader from "./SheetHeader.vue"
-import SheetTitle from "./SheetTitle.vue"
-import SheetDescription from "./SheetDescription.vue"
+
 
 interface SheetContentProps extends DialogContentProps {
   class?: HTMLAttributes["class"]
@@ -52,10 +52,10 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         props.class)"
       v-bind="{ ...$attrs, ...forwarded }"
     >
-      <SheetHeader class="sr-only">
-        <SheetTitle>Sheet</SheetTitle>
-        <SheetDescription>Dialog sheet content.</SheetDescription>
-      </SheetHeader>
+      <div class="sr-only">
+        <DialogTitle>Sheet</DialogTitle>
+        <DialogDescription>Dialog sheet content.</DialogDescription>
+      </div>
 
       <slot />
 

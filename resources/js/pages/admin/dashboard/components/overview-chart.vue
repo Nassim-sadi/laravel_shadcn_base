@@ -254,6 +254,8 @@ const filterRange = computed(() => {
           />
           <ChartTooltip />
           <ChartCrosshair
+            :x="(d: Data) => d.date"
+            :y="[(d: Data) => d.mobile, (d: Data) => d.desktop]"
             :template="componentToString(chartConfig, ChartTooltipContent, {
               labelFormatter: (d) => {
                 return new Date(d).toLocaleDateString('en-US', {

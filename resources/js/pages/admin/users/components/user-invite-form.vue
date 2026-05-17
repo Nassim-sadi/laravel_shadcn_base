@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useVuelidate } from '@vuelidate/core'
-import { required, email, helpers } from '@vuelidate/validators'
 import { Send as SendIcon } from '@lucide/vue'
+import { useVuelidate } from '@vuelidate/core'
+import { email, helpers, required } from '@vuelidate/validators'
 import { toast } from 'vue-sonner'
 
 import Button from '@/components/ui/button/Button.vue'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-
 import { useInviteUserMutation } from '@/services/api/users.api'
+
 import type { User } from '../data/schema'
 
 const props = defineProps<{
@@ -40,7 +40,8 @@ const inviteUserMutation = useInviteUserMutation()
 
 async function onSubmit() {
   const isValid = await v$.value.$validate()
-  if (!isValid) return
+  if (!isValid)
+    return
 
   try {
     const result = await inviteUserMutation.mutateAsync({
@@ -64,7 +65,7 @@ async function onSubmit() {
       <FormItem>
         <FormLabel>{{ $t('admin.label.name') }}</FormLabel>
         <FormControl>
-          <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" :model-value="formData.name" />
+          <Input type="text" v-bind="componentField" :model-value="formData.name" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" />
         </FormControl>
         <FormMessage v-if="v$.name.$error">
           {{ v$.name.$errors[0]?.$message }}
@@ -76,7 +77,7 @@ async function onSubmit() {
       <FormItem>
         <FormLabel>Email address</FormLabel>
         <FormControl>
-          <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = String($event)" :model-value="formData.email" />
+          <Input type="email" v-bind="componentField" :model-value="formData.email" @blur="v$.email.$touch" @update:model-value="formData.email = String($event)" />
         </FormControl>
         <FormMessage v-if="v$.email.$error">
           {{ v$.email.$errors[0]?.$message }}
@@ -88,7 +89,7 @@ async function onSubmit() {
       <FormItem>
         <FormLabel>{{ $t('admin.label.roleName') }}</FormLabel>
         <FormControl>
-          <Select v-bind="componentField" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')" :model-value="formData.role">
+          <Select v-bind="componentField" :model-value="formData.role" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')">
             <FormControl>
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select a role" />

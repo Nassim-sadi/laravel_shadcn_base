@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { useGetMediaQuery } from '@/services/api/media.api'
+import { computed, ref } from 'vue'
+
 import type { IMedia } from '@/services/api/media.api'
+
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { useGetMediaQuery } from '@/services/api/media.api'
+
 import MediaGrid from '../../views/media/partials/MediaGrid.vue'
 
 const emit = defineEmits<{
-  select: [media: { id: number; url: string; alt_text: string | null }]
+  select: [media: { id: number, url: string, alt_text: string | null }]
   close: []
 }>()
 
@@ -16,17 +19,22 @@ const search = ref('')
 
 const queryParams = computed(() => {
   const params: Record<string, any> = { per_page: 24 }
-  if (search.value) params.search = search.value
+  if (search.value)
+    params.search = search.value
   return params
 })
 
 const { data: response } = useGetMediaQuery(queryParams)
 const mediaItems = computed(() => {
   const r = response.value
-  if (!r) return []
-  if (Array.isArray(r)) return r
-  if (r.data && Array.isArray(r.data)) return r.data
-  if (Array.isArray((r as any)?.data?.data)) return (r as any).data.data
+  if (!r)
+    return []
+  if (Array.isArray(r))
+    return r
+  if (r.data && Array.isArray(r.data))
+    return r.data
+  if (Array.isArray((r as any)?.data?.data))
+    return (r as any).data.data
   return []
 })
 
@@ -42,7 +50,8 @@ function doSelect(id: number) {
 }
 
 function confirm() {
-  if (!selectedItem.value) return
+  if (!selectedItem.value)
+    return
   emit('select', {
     id: selectedItem.value.id,
     url: selectedItem.value.url,
@@ -56,7 +65,9 @@ function confirm() {
     <DialogContent class="max-w-3xl max-h-[80vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Select Media</DialogTitle>
-        <DialogDescription class="sr-only">Choose a media file from the library.</DialogDescription>
+        <DialogDescription class="sr-only">
+          Choose a media file from the library.
+        </DialogDescription>
       </DialogHeader>
 
       <div class="space-y-4">
@@ -76,8 +87,12 @@ function confirm() {
         </div>
 
         <div class="flex justify-end gap-2 pt-4 border-t">
-          <Button variant="outline" @click="$emit('close')">Cancel</Button>
-          <Button :disabled="!selectedItem" @click="confirm">Select</Button>
+          <Button variant="outline" @click="$emit('close')">
+            Cancel
+          </Button>
+          <Button :disabled="!selectedItem" @click="confirm">
+            Select
+          </Button>
         </div>
       </div>
     </DialogContent>

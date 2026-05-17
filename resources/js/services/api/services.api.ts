@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export interface IService {
@@ -68,7 +70,7 @@ export function useCreateServiceMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IService>, Error, ICreateServiceRequest>({
     mutationKey: ['useCreateServiceMutation'],
-    mutationFn: (data) => apiFetch('/services', { method: 'post', body: data }),
+    mutationFn: data => apiFetch('/services', { method: 'post', body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] }),
   })
 }
@@ -96,7 +98,7 @@ export function useDeleteServiceMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteServiceMutation'],
-    mutationFn: (id) => apiFetch(`/services/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/services/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] }),
   })
 }

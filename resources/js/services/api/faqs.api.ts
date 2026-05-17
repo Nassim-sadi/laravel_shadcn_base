@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export type TranslatedValue = Record<string, string>
@@ -60,7 +62,7 @@ export function useCreateFaqMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IFaq>, Error, ICreateFaqRequest>({
     mutationKey: ['useCreateFaqMutation'],
-    mutationFn: (data) => apiFetch('/faqs', { method: 'post', body: data }),
+    mutationFn: data => apiFetch('/faqs', { method: 'post', body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] }),
   })
 }
@@ -70,7 +72,7 @@ export function useUpdateFaqMutation(id: number) {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IFaq>, Error, Partial<ICreateFaqRequest>>({
     mutationKey: ['useUpdateFaqMutation', id],
-    mutationFn: (data) => apiFetch(`/faqs/${id}`, { method: 'put', body: data }),
+    mutationFn: data => apiFetch(`/faqs/${id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetFaqByIdQuery', id] })
@@ -83,7 +85,7 @@ export function useDeleteFaqMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteFaqMutation'],
-    mutationFn: (id) => apiFetch(`/faqs/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/faqs/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] }),
   })
 }

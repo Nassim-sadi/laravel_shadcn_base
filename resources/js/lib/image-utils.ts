@@ -5,8 +5,8 @@ export async function compressImage(
     maxHeight?: number
     quality?: number
     mimeType?: string
-  } = {}
-): Promise<{ blob: Blob; width: number; height: number }> {
+  } = {},
+): Promise<{ blob: Blob, width: number, height: number }> {
   const { maxWidth = 800, maxHeight = 800, quality = 0.8, mimeType = 'image/jpeg' } = options
 
   return new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ export async function compressImage(
           }
         },
         mimeType,
-        quality
+        quality,
       )
     }
 
@@ -53,9 +53,10 @@ export async function compressImage(
 }
 
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes'
+  if (bytes === 0)
+    return '0 Bytes'
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
 }

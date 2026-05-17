@@ -17,5 +17,6 @@
     "admin.btn.signIn": "Sign In",
     "admin.btn.signUp": "Sign Up",
     "admin.btn.stay": "Stay",
-    "admin.btn.update": "Update"
+    "admin.btn.update": "Update",
+    "admin.btn.viewDetails": "View Details"
 }

@@ -1,19 +1,22 @@
 <script lang="ts" setup>
+import { PencilIcon, Trash2Icon } from '@lucide/vue'
+import { useVuelidate } from '@vuelidate/core'
+import { helpers, required } from '@vuelidate/validators'
 import { computed, ref } from 'vue'
+
+import type { IPermission } from '@/services/api/permissions.api'
+
+import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { PencilIcon, Trash2Icon } from '@lucide/vue'
-import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
-import { useGetRolesQuery, useCreateRoleMutation, useUpdateRoleMutation, useDeleteRoleMutation } from '@/services/api/roles.api'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useGetAllPermissionsQuery } from '@/services/api/permissions.api'
-import { useVuelidate } from '@vuelidate/core'
-import { required, helpers } from '@vuelidate/validators'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import type { IPermission } from '@/services/api/permissions.api'
+import { hasPermission } from '@/composables/use-role'
+import { useCreateRoleMutation, useDeleteRoleMutation, useGetRolesQuery, useUpdateRoleMutation } from '@/services/api/roles.api'
 
 const { data: rolesResponse, isLoading: _isLoading, refetch } = useGetRolesQuery()
 const { data: allPermissionsResponse } = useGetAllPermissionsQuery()
@@ -22,9 +25,12 @@ const roles = computed(() => rolesResponse.value?.data ?? [])
 
 const allPermissions = computed(() => {
   const r = allPermissionsResponse.value
-  if (!r) return []
-  if (Array.isArray(r)) return r
-  if (r.data && Array.isArray(r.data)) return r.data
+  if (!r)
+    return []
+  if (Array.isArray(r))
+    return r
+  if (r.data && Array.isArray(r.data))
+    return r.data
   return []
 })
 
@@ -32,7 +38,8 @@ const permissionGroups = computed(() => {
   const groups: Record<string, IPermission[]> = {}
   for (const p of allPermissions.value) {
     const group = p.name.includes('.') ? p.name.split('.')[0] : 'other'
-    if (!groups[group]) groups[group] = []
+    if (!groups[group])
+      groups[group] = []
     groups[group].push(p)
   }
   return groups
@@ -59,7 +66,8 @@ function togglePermission(permName: string) {
   const idx = form.value.permissions.indexOf(permName)
   if (idx === -1) {
     form.value.permissions.push(permName)
-  } else {
+  }
+  else {
     form.value.permissions.splice(idx, 1)
   }
 }
@@ -84,13 +92,15 @@ function openEdit(role: any) {
 
 async function save() {
   const isValid = await v$.value.$validate()
-  if (!isValid) return
+  if (!isValid)
+    return
 
   const payload = { name: form.value.name, description: form.value.description || undefined, permissions: form.value.permissions }
 
   if (editingId.value) {
     updateRole({ id: editingId.value, ...payload })
-  } else {
+  }
+  else {
     createRole(payload)
   }
   showSheet.value = false
@@ -115,20 +125,36 @@ const systemRoles = ['super_admin', 'admin', 'user']
 <template>
   <BasicPage :title="$t('admin.page.roles.title')" :description="$t('admin.page.roles.description')" sticky>
     <template #actions>
-      <Button @click="refetch" variant="outline">{{ $t('admin.btn.refresh') }}</Button>
-      <Button @click="openCreate">{{ $t('admin.sheet.createRole') }}</Button>
+      <Button variant="outline" @click="refetch">
+        {{ $t('admin.btn.refresh') }}
+      </Button>
+      <Button v-if="hasPermission('roles.create')" @click="openCreate">
+        {{ $t('admin.sheet.createRole') }}
+      </Button>
     </template>
     <div class="overflow-x-auto">
-      <div v-if="roles.length === 0" class="text-center py-8 text-muted-foreground">{{ $t('admin.empty.roles') }}</div>
+      <div v-if="roles.length === 0" class="text-center py-8 text-muted-foreground">
+        {{ $t('admin.empty.roles') }}
+      </div>
       <div v-else class="rounded-md border">
         <table class="w-full">
           <thead>
             <tr class="border-b bg-muted/50">
-              <th class="px-4 py-3 text-left text-sm font-medium">{{ $t('admin.label.name') }}</th>
-              <th class="px-4 py-3 text-left text-sm font-medium">Guard</th>
-              <th class="px-4 py-3 text-left text-sm font-medium">{{ $t('admin.label.description') }}</th>
-              <th class="px-4 py-3 text-left text-sm font-medium">{{ $t('admin.label.permissionName') }}</th>
-              <th class="px-4 py-3 text-right text-sm font-medium">{{ $t('admin.btn.edit') }}</th>
+              <th class="px-4 py-3 text-left text-sm font-medium">
+                {{ $t('admin.label.name') }}
+              </th>
+              <th class="px-4 py-3 text-left text-sm font-medium">
+                Guard
+              </th>
+              <th class="px-4 py-3 text-left text-sm font-medium">
+                {{ $t('admin.label.description') }}
+              </th>
+              <th class="px-4 py-3 text-left text-sm font-medium">
+                {{ $t('admin.label.permissionName') }}
+              </th>
+              <th class="px-4 py-3 text-right text-sm font-medium">
+                {{ $t('admin.btn.edit') }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -151,13 +177,13 @@ const systemRoles = ['super_admin', 'admin', 'user']
                   <div class="flex gap-1 justify-end">
                     <Tooltip>
                       <TooltipTrigger as-child>
-                        <Button variant="ghost" size="icon" class="size-8" @click="openEdit(role)">
+                        <Button v-if="hasPermission('roles.edit')" variant="ghost" size="icon" class="size-8" @click="openEdit(role)">
                           <PencilIcon class="size-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent><p>{{ $t('admin.btn.edit') }}</p></TooltipContent>
                     </Tooltip>
-                    <Tooltip v-if="!systemRoles.includes(role.name)">
+                    <Tooltip v-if="hasPermission('roles.delete') && !systemRoles.includes(role.name)">
                       <TooltipTrigger as-child>
                         <Button variant="destructive" size="icon" class="size-8" @click="confirmDelete(role.id)">
                           <Trash2Icon class="size-4" />
@@ -199,7 +225,9 @@ const systemRoles = ['super_admin', 'admin', 'user']
             </div>
             <div v-else class="space-y-4">
               <div v-for="(perms, group) in permissionGroups" :key="group" class="rounded-md border p-3">
-                <h4 class="text-sm font-medium mb-2 capitalize">{{ group }}</h4>
+                <h4 class="text-sm font-medium mb-2 capitalize">
+                  {{ group }}
+                </h4>
                 <div class="flex flex-wrap gap-3">
                   <label
                     v-for="perm in perms"
@@ -218,8 +246,12 @@ const systemRoles = ['super_admin', 'admin', 'user']
           </div>
         </div>
         <SheetFooter>
-          <Button variant="outline" @click="showSheet = false">{{ $t('admin.btn.cancel') }}</Button>
-          <Button @click="save">{{ editingId ? $t('admin.btn.update') : $t('admin.btn.create') }}</Button>
+          <Button variant="outline" @click="showSheet = false">
+            {{ $t('admin.btn.cancel') }}
+          </Button>
+          <Button @click="save">
+            {{ editingId ? $t('admin.btn.update') : $t('admin.btn.create') }}
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -232,8 +264,12 @@ const systemRoles = ['super_admin', 'admin', 'user']
       destructive
       @confirm="handleDelete"
     >
-      <template #title>{{ $t('admin.dialog.deleteTitle', { item: $t('admin.nav.roles') }) }}</template>
-      <template #description>{{ $t('admin.dialog.deleteDescription', { item: $t('admin.nav.roles').toLowerCase() }) }}</template>
+      <template #title>
+        {{ $t('admin.dialog.deleteTitle', { item: $t('admin.nav.roles') }) }}
+      </template>
+      <template #description>
+        {{ $t('admin.dialog.deleteDescription', { item: $t('admin.nav.roles').toLowerCase() }) }}
+      </template>
     </ConfirmDialog>
   </BasicPage>
 </template>

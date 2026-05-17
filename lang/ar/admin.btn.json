@@ -17,5 +17,6 @@
     "admin.btn.signIn": "تسجيل الدخول",
     "admin.btn.signUp": "تسجيل",
     "admin.btn.stay": "البقاء",
-    "admin.btn.update": "تحديث"
+    "admin.btn.update": "تحديث",
+    "admin.btn.viewDetails": "عرض التفاصيل"
 }

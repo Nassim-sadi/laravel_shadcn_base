@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export interface IMedia {
@@ -44,7 +46,7 @@ export function useUploadMediaMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IMedia>, Error, FormData>({
     mutationKey: ['useUploadMediaMutation'],
-    mutationFn: (formData) => apiFetch('/media', { method: 'post', body: formData, headers: {} }),
+    mutationFn: formData => apiFetch('/media', { method: 'post', body: formData, headers: {} }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] }),
   })
 }
@@ -54,7 +56,7 @@ export function useUpdateMediaMutation(id?: number) {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IMedia>, Error, Record<string, any>>({
     mutationKey: ['useUpdateMediaMutation', id],
-    mutationFn: (data) => apiFetch(`/media/${id ?? data.id}`, { method: 'put', body: data }),
+    mutationFn: data => apiFetch(`/media/${id ?? data.id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] })
     },
@@ -66,7 +68,7 @@ export function useDeleteMediaMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteMediaMutation'],
-    mutationFn: (id) => apiFetch(`/media/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/media/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] }),
   })
 }
@@ -76,7 +78,7 @@ export function useBulkDeleteMediaMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<any>, Error, number[]>({
     mutationKey: ['useBulkDeleteMediaMutation'],
-    mutationFn: (ids) => apiFetch('/media/bulk-delete', { method: 'post', body: { ids } }),
+    mutationFn: ids => apiFetch('/media/bulk-delete', { method: 'post', body: { ids } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] }),
   })
 }

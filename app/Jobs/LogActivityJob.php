@@ -34,22 +34,48 @@ class LogActivityJob implements ShouldQueue
         $activityLog = new ActivityLog();
         $activityLog->event = $this->event;
         
-        // Set user if authenticated
-        if (Auth::check()) {
-            $activityLog->user_id = Auth::id();
+        // Set user from context (captured in Logger before queuing)
+        if (isset($this->context['user_id'])) {
+            $activityLog->user_id = $this->context['user_id'];
         }
         
-        // Set subject if provided
-        if (!empty($this->context['subject_type']) && !empty($this->context['subject_id'])) {
-            $activityLog->subject_type = $this->context['subject_type'];
-            $activityLog->subject_id = $this->context['subject_id'];
+        // Try to infer subject if not explicitly provided
+        $subjectType = $this->context['subject_type'] ?? null;
+        $subjectId = $this->context['subject_id'] ?? null;
+        
+        if (!$subjectType && !$subjectId) {
+            $parts = explode('.', $this->event);
+            if (count($parts) >= 2) {
+                $modelName = $parts[0]; // e.g. 'media', 'service', 'user'
+                $idKey = $modelName . '_id';
+                if (isset($this->context[$idKey])) {
+                    $subjectId = $this->context[$idKey];
+                    // Convert snake_case model name to StudlyCase class name
+                    $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $modelName)));
+                    $subjectType = 'App\\Models\\' . $className;
+                }
+            }
         }
         
-        // Set description
-        $activityLog->description = $this->context['description'] ?? null;
+        $activityLog->subject_type = $subjectType;
+        $activityLog->subject_id = $subjectId;
         
-        // Set properties (excluding reserved keys)
-        $reservedKeys = ['subject_type', 'subject_id', 'description', 'ip_address', 'user_agent'];
+        // Set description, generate fallback if needed
+        $description = $this->context['description'] ?? null;
+        if (!$description) {
+            $parts = explode('.', $this->event);
+            $action = count($parts) > 1 ? ucfirst($parts[1]) : 'Performed';
+            $model = count($parts) > 1 ? ucfirst(str_replace('_', ' ', $parts[0])) : $this->event;
+            $description = "{$action} {$model}";
+        }
+        $activityLog->description = $description;
+        
+        // Set properties (excluding reserved keys and dynamically inferred subject keys)
+        $reservedKeys = ['user_id', 'subject_type', 'subject_id', 'description', 'ip_address', 'user_agent'];
+        if ($subjectId && isset($idKey)) {
+            $reservedKeys[] = $idKey;
+        }
+        
         $properties = array_diff_key($this->context, array_flip($reservedKeys));
         $activityLog->properties = !empty($properties) ? $properties : null;
         

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { sidebarData } from './data/sidebar-data'
 import AppIdentity from './app-identity.vue'
+import { sidebarData } from './data/sidebar-data'
 import NavFooter from './nav-footer.vue'
 import NavTeam from './nav-team.vue'
 </script>

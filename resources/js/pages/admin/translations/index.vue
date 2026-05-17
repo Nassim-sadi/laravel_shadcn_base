@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useDebounceFn, useLocalStorage } from '@vueuse/core'
 import { CheckIcon, Loader2Icon, SearchIcon, Settings2Icon } from '@lucide/vue'
+import { useDebounceFn, useLocalStorage } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
 
 import type { LanguageMeta } from '@/plugins/i18n'
-import { useI18n } from 'vue-i18n'
 
 import { useTranslationsApi } from '@/services/api/translations.api'
 
@@ -31,8 +31,10 @@ const hiddenNamespaces = useLocalStorage<Record<string, string[]>>('ns-translati
 
 function fileNameForKey(key: string): string {
   const parts = key.split('.')
-  if (parts.length === 1) return 'common'
-  if (parts[0] === 'admin') return `admin.${parts[1]}`
+  if (parts.length === 1)
+    return 'common'
+  if (parts[0] === 'admin')
+    return `admin.${parts[1]}`
   return parts[0]
 }
 
@@ -73,7 +75,8 @@ const displayedFallback = computed(() => {
 
 const visibleKeys = computed(() => {
   return allKeys.value.filter((key) => {
-    if (fileNameForKey(key) !== activeFileTab.value) return false
+    if (fileNameForKey(key) !== activeFileTab.value)
+      return false
     const matchesSearch = key.toLowerCase().includes(search.value.toLowerCase())
       || String(localeTranslations.value[key] ?? '').toLowerCase().includes(search.value.toLowerCase())
       || String(displayedFallback.value[key] ?? '').toLowerCase().includes(search.value.toLowerCase())
@@ -129,7 +132,7 @@ function toggleNamespace(file: string) {
     hiddenNamespaces.value[key].push(file)
   }
   // ensure active tab is still visible
-  if (fileTabs.value.length > 0 && !fileTabs.value.find(t => t.file === activeFileTab.value)) {
+  if (fileTabs.value.length > 0 && !fileTabs.value.some(t => t.file === activeFileTab.value)) {
     activeFileTab.value = fileTabs.value[0].file
   }
 }
@@ -169,7 +172,7 @@ onMounted(async () => {
 watch(activeLocale, () => {
   // remove stale locale entries from hiddenNamespaces
   const valid = Object.keys(hiddenNamespaces.value).filter(k =>
-    languages.value.some(l => l.code === k)
+    languages.value.some(l => l.code === k),
   )
   for (const k of Object.keys(hiddenNamespaces.value)) {
     if (!valid.includes(k)) {
@@ -214,7 +217,7 @@ watch(activeLocale, () => {
 
       <div class="flex flex-col gap-2 sm:flex-row">
         <div class="relative">
-          <SearchIcon class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <SearchIcon class="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <UiInput v-model="search" class="pl-9 sm:w-72" :placeholder="$t('admin.misc.searchKeysOrValues')" />
         </div>
         <label class="flex h-10 items-center gap-2 rounded-md border px-3 text-sm">
@@ -241,7 +244,9 @@ watch(activeLocale, () => {
           v-if="showNamespaceFilter"
           class="absolute end-0 top-full z-50 mt-1 w-56 rounded-lg border bg-popover p-2 shadow-md"
         >
-          <div class="mb-1 px-2 py-1 text-xs font-medium text-muted-foreground">Toggle tabs</div>
+          <div class="mb-1 px-2 py-1 text-xs font-medium text-muted-foreground">
+            Toggle tabs
+          </div>
           <label
             v-for="tab in allFileTabs"
             :key="tab.file"
@@ -286,7 +291,7 @@ watch(activeLocale, () => {
             :class="{ 'border-amber-400': activeLocale !== fallbackLocale && !localeTranslations[key] }"
             @update:model-value="value => updateTranslation(key, String(value))"
           />
-          <div :class="['min-h-10 rounded-md px-3 py-2 text-sm', activeLocale === fallbackLocale ? 'bg-muted/20 text-muted-foreground/60' : 'bg-muted/50 text-muted-foreground']">
+          <div class="min-h-10 rounded-md px-3 py-2 text-sm" :class="[activeLocale === fallbackLocale ? 'bg-muted/20 text-muted-foreground/60' : 'bg-muted/50 text-muted-foreground']">
             {{ displayedFallback[key] || '-' }}
           </div>
         </div>

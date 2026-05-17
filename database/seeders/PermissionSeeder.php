@@ -13,9 +13,10 @@ class PermissionSeeder extends Seeder
         $groups = [
             'users' => ['users.view', 'users.create', 'users.edit', 'users.delete'],
             'roles' => ['roles.view', 'roles.create', 'roles.edit', 'roles.delete'],
-            'permissions' => ['permissions.view', 'permissions.manage'],
+            'permissions' => ['permissions.view', 'permissions.create', 'permissions.edit', 'permissions.delete'],
             'settings' => ['settings.view', 'settings.edit'],
             'logs' => ['logs.view'],
+            'media' => ['media.view', 'media.create', 'media.edit', 'media.delete'],
             'services' => ['services.view', 'services.create', 'services.edit', 'services.delete'],
             'projects' => ['projects.view', 'projects.create', 'projects.edit', 'projects.delete'],
             'testimonials' => ['testimonials.view', 'testimonials.create', 'testimonials.edit', 'testimonials.delete'],
@@ -25,8 +26,9 @@ class PermissionSeeder extends Seeder
         ];
 
         $modules = config('modules', []);
+        $standardModules = ['services', 'projects', 'testimonials', 'faqs', 'media'];
         foreach ($modules as $module => $enabled) {
-            if ($enabled) {
+            if ($enabled && in_array($module, $standardModules, true)) {
                 $groups[$module] = [
                     "{$module}.view",
                     "{$module}.create",
@@ -49,18 +51,19 @@ class PermissionSeeder extends Seeder
             'name' => 'super_admin',
             'guard_name' => 'web',
         ]);
-        $superAdmin->givePermissionTo(Permission::all());
+        $superAdmin->syncPermissions(Permission::all());
 
         $admin = Role::firstOrCreate([
             'name' => 'admin',
             'guard_name' => 'web',
         ]);
-        $admin->givePermissionTo([
+        $admin->syncPermissions([
             'users.view', 'users.create', 'users.edit',
             'roles.view', 'roles.create', 'roles.edit',
             'permissions.view',
             'settings.view', 'settings.edit',
             'logs.view',
+            'media.view', 'media.create', 'media.edit',
             'services.view', 'services.create', 'services.edit',
             'projects.view', 'projects.create', 'projects.edit',
             'testimonials.view', 'testimonials.create', 'testimonials.edit',
@@ -73,7 +76,7 @@ class PermissionSeeder extends Seeder
             'name' => 'user',
             'guard_name' => 'web',
         ]);
-        $user->givePermissionTo([
+        $user->syncPermissions([
             'settings.view',
         ]);
     }

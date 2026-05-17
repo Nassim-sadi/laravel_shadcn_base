@@ -25,10 +25,12 @@ export interface IActivityLog {
 
 export interface IActivityLogsResponse {
   data: IActivityLog[]
-  current_page: number
-  last_page: number
-  per_page: number
-  total: number
+  meta?: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
 }
 
 export function useGetActivityLogsQuery(options?: {
@@ -38,17 +40,24 @@ export function useGetActivityLogsQuery(options?: {
 }) {
   const { apiFetch } = useApiFetch()
 
-  return useQuery<IResponse<IActivityLogsResponse>, Error>({
+  return useQuery<IActivityLogsResponse, Error>({
     queryKey: ['useGetActivityLogsQuery', options],
+    // console log the options to see what is being passed to the query function
+    
     queryFn: async () => {
       const params = new URLSearchParams()
-      if (options?.event) params.append('event', options.event)
-      if (options?.user_id) params.append('user_id', String(options.user_id))
-      if (options?.search) params.append('search', options.search)
+      if (options?.event)
+        params.append('event', options.event)
+      if (options?.user_id)
+        params.append('user_id', String(options.user_id))
+      if (options?.search)
+        params.append('search', options.search)
 
       const queryString = params.toString()
       const url = `/activity-logs${queryString ? `?${queryString}` : ''}`
-      return await apiFetch<IResponse<IActivityLogsResponse>>(url, { method: 'get' })
+      const response = await apiFetch<IActivityLogsResponse>(url, { method: 'get' })
+    
+      return response;
     },
   })
 }

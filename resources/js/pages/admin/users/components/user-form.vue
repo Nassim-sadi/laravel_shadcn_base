@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, minLength, helpers } from '@vuelidate/validators'
+import { email, helpers, minLength, required } from '@vuelidate/validators'
 import { toast } from 'vue-sonner'
 
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useCreateUserMutation, useUpdateUserMutation } from '@/services/api/users.api'
 
 import type { User } from '../data/schema'
-import { useCreateUserMutation, useUpdateUserMutation } from '@/services/api/users.api'
 
 const props = defineProps<{
   user?: User
@@ -47,9 +47,10 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, formData)
 
-const onSubmit = async () => {
+async function onSubmit() {
   const isValid = await v$.value.$validate()
-  if (!isValid) return
+  if (!isValid)
+    return
 
   try {
     if (isEditing.value && props.user?.id) {
@@ -88,7 +89,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>{{ $t('admin.label.name') }}</FormLabel>
           <FormControl>
-            <Input type="text" v-bind="componentField" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" :model-value="formData.name" />
+            <Input type="text" v-bind="componentField" :model-value="formData.name" @blur="v$.name.$touch" @update:model-value="formData.name = String($event)" />
           </FormControl>
           <FormMessage v-if="v$.name.$error">
             {{ v$.name.$errors[0]?.$message }}
@@ -100,7 +101,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>Email</FormLabel>
           <FormControl>
-            <Input type="email" v-bind="componentField" @blur="v$.email.$touch" @update:model-value="formData.email = String($event)" :model-value="formData.email" />
+            <Input type="email" v-bind="componentField" :model-value="formData.email" @blur="v$.email.$touch" @update:model-value="formData.email = String($event)" />
           </FormControl>
           <FormMessage v-if="v$.email.$error">
             {{ v$.email.$errors[0]?.$message }}
@@ -112,7 +113,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>{{ $t('admin.label.newPassword') }}</FormLabel>
           <FormControl>
-            <Input type="password" v-bind="componentField" @blur="v$.password.$touch" @update:model-value="formData.password = String($event)" :model-value="formData.password" />
+            <Input type="password" v-bind="componentField" :model-value="formData.password" @blur="v$.password.$touch" @update:model-value="formData.password = String($event)" />
           </FormControl>
           <FormMessage v-if="v$.password.$error">
             {{ v$.password.$errors[0]?.$message }}
@@ -124,7 +125,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>{{ $t('admin.label.newPassword') }} (optional)</FormLabel>
           <FormControl>
-            <Input type="password" v-bind="componentField" @update:model-value="formData.password = String($event)" :model-value="formData.password" />
+            <Input type="password" v-bind="componentField" :model-value="formData.password" @update:model-value="formData.password = String($event)" />
           </FormControl>
         </FormItem>
       </FormField>
@@ -133,7 +134,7 @@ const onSubmit = async () => {
         <FormItem>
           <FormLabel>{{ $t('admin.label.roleName') }}</FormLabel>
           <FormControl>
-            <Select v-bind="componentField" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')" :model-value="formData.role">
+            <Select v-bind="componentField" :model-value="formData.role" @update:model-value="formData.role = ($event as 'super_admin' | 'admin' | 'user' | 'guest')">
               <FormControl>
                 <SelectTrigger class="w-full">
                   <SelectValue placeholder="Select a role" />

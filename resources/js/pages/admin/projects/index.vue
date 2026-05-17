@@ -1,142 +1,35 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import { BasicPage } from '@/components/global-layout'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { PencilIcon, Trash2Icon } from '@lucide/vue'
-import { useGetProjectsQuery, useDeleteProjectMutation, useCreateProjectMutation, useUpdateProjectMutation } from '@/services/api/projects.api'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
-import { languageMetadata } from '@/plugins/i18n'
-import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
-import type { TranslatedValue } from '@/composables/use-translated-form'
-import { translatedRequired } from '@/composables/use-validation'
-import { useVuelidate } from '@vuelidate/core'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import ImagePickerField from '@/admin/components/ImagePickerField.vue'
+import { computed, ref } from 'vue'
 
-interface ProjectForm {
-  title: TranslatedValue
-  description: TranslatedValue
-  client: TranslatedValue
-  image_id: number | null
-  image_url: string | null
-  url: string
-  technologies: string[]
-  order: number
-  is_active: boolean
-  seo_title: TranslatedValue
-  seo_description: TranslatedValue
-  seo_keywords: TranslatedValue
-}
+import ConfirmDialog from '@/components/confirm-dialog.vue'
+import { BasicPage } from '@/components/global-layout'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useDeleteProjectMutation, useGetProjectsQuery } from '@/services/api/projects.api'
+import { hasPermission } from '@/composables/use-role'
+import Form from './partials/Form.vue'
 
 const { data: response, isLoading, refetch } = useGetProjectsQuery()
 const items = computed(() => response.value?.data?.data ?? [])
 const showSheet = ref(false)
 const editingId = ref<number | null>(null)
-const activeFormLocale = ref('fr')
-const techInput = ref('')
+const editingItem = ref<any>(null)
 const deleteTargetId = ref<number | null>(null)
 const showDeleteDialog = ref(false)
 const { mutate: deleteItem, isPending: isDeleting } = useDeleteProjectMutation()
-const { mutate: createItem } = useCreateProjectMutation()
-const { mutate: updateItem } = useUpdateProjectMutation()
-const showUnsavedDialog = ref(false)
-
-function createEmptyForm(): ProjectForm {
-  return {
-    title: emptyTranslations(),
-    description: emptyTranslations(),
-    client: emptyTranslations(),
-    image_id: null,
-    image_url: null,
-    url: '',
-    technologies: [],
-    order: 0,
-    is_active: true,
-    seo_title: emptyTranslations(),
-    seo_description: emptyTranslations(),
-    seo_keywords: emptyTranslations(),
-  }
-}
-
-const form = ref<ProjectForm>(createEmptyForm())
-
-const rules = computed(() => ({
-  title: { required: translatedRequired() },
-  description: { required: translatedRequired() },
-  client: { required: translatedRequired() },
-}))
-
-const v$ = useVuelidate(rules, form)
-
-function handleSheetClose(open: boolean) {
-  if (!open) {
-    showUnsavedDialog.value = true
-    return
-  }
-  showSheet.value = open
-}
 
 function openCreate() {
   editingId.value = null
-  form.value = createEmptyForm()
-  activeFormLocale.value = 'fr'
+  editingItem.value = null
   showSheet.value = true
 }
 
 function openEdit(item: any) {
   editingId.value = item.id
-  form.value = {
-    title: withLanguages(item.title_translations, item.title),
-    description: withLanguages(item.description_translations, item.description),
-    client: withLanguages(item.client_translations, item.client),
-    image_id: item.image_id ?? null,
-    image_url: item.image_thumbnail_url ?? item.image_url ?? null,
-    url: item.url || '',
-    technologies: item.technologies || [],
-    order: item.order,
-    is_active: item.is_active,
-    seo_title: withLanguages(item.seo_title_translations, item.seo_title),
-    seo_description: withLanguages(item.seo_description_translations, item.seo_description),
-    seo_keywords: withLanguages(item.seo_keywords_translations, item.seo_keywords),
-  }
-  activeFormLocale.value = 'fr'
+  editingItem.value = item
   showSheet.value = true
-}
-
-function addTech() {
-  if (techInput.value && !form.value.technologies.includes(techInput.value)) {
-    form.value.technologies.push(techInput.value)
-    techInput.value = ''
-  }
-}
-
-function removeTech(index: number) {
-  form.value.technologies.splice(index, 1)
-}
-
-async function save() {
-  const isValid = await v$.value.$validate()
-  if (!isValid) return
-
-  const payload = { ...form.value, image_id: form.value.image_id ?? undefined }
-  if (editingId.value) {
-    updateItem({ id: editingId.value, ...payload } as any)
-  } else {
-    createItem(payload)
-  }
-  showSheet.value = false
-}
-
-function forceClose() {
-  showUnsavedDialog.value = false
-  showSheet.value = false
 }
 
 function confirmDelete(id: number) {
@@ -156,8 +49,12 @@ function handleDelete() {
 <template>
   <BasicPage :title="$t('admin.page.projects.title')" :description="$t('admin.page.projects.description')" sticky>
     <template #actions>
-      <Button @click="refetch" variant="outline">{{ $t('admin.btn.refresh') }}</Button>
-      <Button @click="openCreate">{{ $t('admin.sheet.createProject') }}</Button>
+      <Button variant="outline" @click="refetch">
+        {{ $t('admin.btn.refresh') }}
+      </Button>
+      <Button v-if="hasPermission('projects.create')" @click="openCreate">
+        {{ $t('admin.sheet.createProject') }}
+      </Button>
     </template>
     <div class="space-y-4">
       <div v-for="item in items" :key="item.id" class="flex items-start gap-4 rounded-lg border p-4">
@@ -168,17 +65,23 @@ function handleDelete() {
               {{ item.is_active ? $t('admin.status.active') : $t('admin.status.inactive') }}
             </Badge>
           </div>
-          <p class="text-sm text-muted-foreground">{{ item.description?.slice(0, 100) || $t('admin.misc.noDescription') }}</p>
-          <p class="text-xs text-muted-foreground">{{ $t('admin.misc.clientLabel', { value: item.client || '-' }) }} | {{ $t('admin.misc.orderLabel', { value: item.order }) }}</p>
+          <p class="text-sm text-muted-foreground">
+            {{ item.description?.slice(0, 100) || $t('admin.misc.noDescription') }}
+          </p>
+          <p class="text-xs text-muted-foreground">
+            {{ $t('admin.misc.clientLabel', { value: item.client || '-' }) }} | {{ $t('admin.misc.orderLabel', { value: item.order }) }}
+          </p>
           <div v-if="item.technologies?.length" class="flex gap-1 flex-wrap">
-            <Badge v-for="tech in item.technologies" :key="tech" variant="outline">{{ tech }}</Badge>
+            <Badge v-for="tech in item.technologies" :key="tech" variant="outline">
+              {{ tech }}
+            </Badge>
           </div>
         </div>
         <TooltipProvider>
           <div class="flex gap-1">
             <Tooltip>
               <TooltipTrigger as-child>
-                <Button variant="ghost" size="icon" class="size-8" @click="openEdit(item)">
+                <Button v-if="hasPermission('projects.edit')" variant="ghost" size="icon" class="size-8" @click="openEdit(item)">
                   <PencilIcon class="size-4" />
                 </Button>
               </TooltipTrigger>
@@ -186,7 +89,7 @@ function handleDelete() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger as-child>
-                <Button variant="destructive" size="icon" class="size-8" @click="confirmDelete(item.id)">
+                <Button v-if="hasPermission('projects.delete')" variant="destructive" size="icon" class="size-8" @click="confirmDelete(item.id)">
                   <Trash2Icon class="size-4" />
                 </Button>
               </TooltipTrigger>
@@ -195,102 +98,10 @@ function handleDelete() {
           </div>
         </TooltipProvider>
       </div>
-      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">{{ $t('admin.empty.projects') }}</div>
+      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">
+        {{ $t('admin.empty.projects') }}
+      </div>
     </div>
-
-    <Sheet :open="showSheet" @update:open="handleSheetClose">
-      <SheetContent side="right" class="xl:max-w-2xl w-full" @interact-outside.prevent>
-        <SheetHeader>
-          <SheetTitle>{{ editingId ? $t('admin.sheet.editProject') : $t('admin.sheet.createProject') }}</SheetTitle>
-        </SheetHeader>
-        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
-          <Tabs v-model="activeFormLocale">
-            <TabsList>
-              <TabsTrigger
-                v-for="language in languageMetadata"
-                :key="language.code"
-                :value="language.code"
-              >
-                <span>{{ language.flag }}</span>
-                <span>{{ language.name }}</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent
-              v-for="language in languageMetadata"
-              :key="language.code"
-              :value="language.code"
-              class="space-y-4 pt-4"
-            >
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="admin-form-field">
-                  <Label>{{ $t('admin.label.title') }}</Label>
-                  <Input v-model="form.title[language.code]" :placeholder="$t('admin.misc.projectTitlePlaceholder')" :class="{ 'border-destructive': v$.title.$error && language.code === activeFormLocale }" />
-                  <span v-if="v$.title.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.title.$errors[0]?.$message }}</span>
-                </div>
-                <div class="admin-form-field">
-                  <Label>{{ $t('admin.label.client') }}</Label>
-                  <Input v-model="form.client[language.code]" :placeholder="$t('admin.misc.clientNamePlaceholder')" :class="{ 'border-destructive': v$.client.$error && language.code === activeFormLocale }" />
-                  <span v-if="v$.client.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.client.$errors[0]?.$message }}</span>
-                </div>
-              </div>
-              <div class="admin-form-field">
-                <Label>{{ $t('admin.label.description') }}</Label>
-                <Textarea v-model="form.description[language.code]" placeholder="Project description" :class="{ 'border-destructive': v$.description.$error && language.code === activeFormLocale }" />
-                <span v-if="v$.description.$error && language.code === activeFormLocale" class="text-xs text-destructive">{{ v$.description.$errors[0]?.$message }}</span>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="admin-form-field">
-                  <Label>{{ $t('admin.label.seoTitle') }}</Label>
-                  <Input v-model="form.seo_title[language.code]" placeholder="SEO title" />
-                </div>
-                <div class="admin-form-field">
-                  <Label>{{ $t('admin.label.seoKeywords') }}</Label>
-                  <Input v-model="form.seo_keywords[language.code]" placeholder="keyword, another keyword" />
-                </div>
-              </div>
-              <div class="admin-form-field">
-                <Label>{{ $t('admin.label.seoDescription') }}</Label>
-                <Textarea v-model="form.seo_description[language.code]" placeholder="SEO description" />
-              </div>
-            </TabsContent>
-          </Tabs>
-
-          <ImagePickerField
-            v-model:image-id="form.image_id"
-            v-model:image-url="form.image_url"
-          />
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="admin-form-field">
-              <Label>{{ $t('admin.label.url') }}</Label>
-              <Input v-model="form.url" :placeholder="$t('admin.misc.urlPlaceholder')" />
-            </div>
-            <div class="admin-form-field">
-              <Label>{{ $t('admin.label.order') }}</Label>
-              <Input v-model.number="form.order" type="number" />
-            </div>
-          </div>
-          <div>
-            <Label>{{ $t('admin.label.technologies') }}</Label>
-            <div class="flex gap-2 mt-1">
-              <Input v-model="techInput" placeholder="Add tech" @keydown.enter.prevent="addTech" />
-              <Button @click="addTech" size="sm">{{ $t('admin.btn.add') }}</Button>
-            </div>
-            <div class="flex gap-1 flex-wrap mt-2">
-              <Badge v-for="(tech, i) in form.technologies" :key="i" variant="secondary" class="cursor-pointer" @click="removeTech(i)">{{ tech }} ×</Badge>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <Switch v-model:checked="form.is_active" /><Label>{{ $t('admin.label.active') }}</Label>
-          </div>
-        </div>
-        <SheetFooter>
-          <Button variant="outline" @click="handleSheetClose(false)">{{ $t('admin.btn.cancel') }}</Button>
-          <Button @click="save">{{ editingId ? $t('admin.btn.update') : $t('admin.btn.create') }}</Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
 
     <ConfirmDialog
       v-model:open="showDeleteDialog"
@@ -300,19 +111,14 @@ function handleDelete() {
       destructive
       @confirm="handleDelete"
     >
-      <template #title>{{ $t('admin.dialog.deleteTitle', { item: $t('admin.nav.projects') }) }}</template>
-      <template #description>{{ $t('admin.dialog.deleteDescription', { item: $t('admin.nav.projects').toLowerCase() }) }}</template>
+      <template #title>
+        {{ $t('admin.dialog.deleteTitle', { item: $t('admin.nav.projects') }) }}
+      </template>
+      <template #description>
+        {{ $t('admin.dialog.deleteDescription', { item: $t('admin.nav.projects').toLowerCase() }) }}
+      </template>
     </ConfirmDialog>
 
-    <ConfirmDialog
-      v-model:open="showUnsavedDialog"
-      :cancel-button-text="$t('admin.btn.stay')"
-      :confirm-button-text="$t('admin.btn.discard')"
-      destructive
-      @confirm="forceClose"
-    >
-      <template #title>{{ $t('admin.dialog.unsavedTitle') }}</template>
-      <template #description>{{ $t('admin.dialog.unsavedDescription') }}</template>
-    </ConfirmDialog>
+    <Form v-model:open="showSheet" :editingId="editingId" :item="editingItem" />
   </BasicPage>
 </template>

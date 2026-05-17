@@ -1,6 +1,6 @@
 import { useCookies } from '@vueuse/integrations/useCookies'
-import { useRouter } from 'vue-router'
 import { ofetch } from 'ofetch'
+import { useRouter } from 'vue-router'
 
 import { API_BASE_URL, API_TIMEOUT } from '@/constants/app-config'
 

@@ -15,6 +15,8 @@ class ServiceController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Service::class);
+
         $services = Service::query()
             ->with('image')
             ->when($request->search, fn($q, $search) => $q->where('title', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%"))
@@ -28,6 +30,8 @@ class ServiceController extends Controller
 
     public function store(ServiceRequest $request)
     {
+        $this->authorize('create', Service::class);
+
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -55,6 +59,8 @@ class ServiceController extends Controller
 
     public function update(ServiceRequest $request, Service $service)
     {
+        $this->authorize('update', $service);
+
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -82,6 +88,8 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
+        $this->authorize('delete', $service);
+
         // Delete associated image
         if ($service->image && Storage::disk('public')->exists($service->image)) {
             Storage::disk('public')->delete($service->image);

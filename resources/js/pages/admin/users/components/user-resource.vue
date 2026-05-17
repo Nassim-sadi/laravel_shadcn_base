@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
+
 import { ModalDescription, ModalHeader, ModalTitle } from '@/components/prop-ui/modal'
 
 import type { User } from '../data/schema'

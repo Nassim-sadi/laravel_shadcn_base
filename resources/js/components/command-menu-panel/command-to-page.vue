@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router'
+
 import { useSidebar } from '@/composables/use-sidebar'
-import { useRouter, useRoute } from 'vue-router'
 
 import type { NavGroup, NavItem } from '../app-sidebar/types'
 

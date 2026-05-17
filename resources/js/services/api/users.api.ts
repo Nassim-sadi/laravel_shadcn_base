@@ -99,9 +99,9 @@ export function useInviteUserMutation() {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IResponse<{ message: string; temporary_password: string }>, Error, IInviteUserRequest>({
+  return useMutation<IResponse<{ message: string, temporary_password: string }>, Error, IInviteUserRequest>({
     mutationKey: ['useInviteUserMutation'],
-    mutationFn: async (data: IInviteUserRequest) => apiFetch<IResponse<{ message: string; temporary_password: string }>>('/users/invite', { method: 'post', body: data }),
+    mutationFn: async (data: IInviteUserRequest) => apiFetch<IResponse<{ message: string, temporary_password: string }>>('/users/invite', { method: 'post', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
     },
@@ -112,7 +112,7 @@ export function useAssignRoleMutation() {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IResponse<IUser>, Error, { userId: number; role: string }>({
+  return useMutation<IResponse<IUser>, Error, { userId: number, role: string }>({
     mutationKey: ['useAssignRoleMutation'],
     mutationFn: async ({ userId, role }) => apiFetch<IResponse<IUser>>(`/users/${userId}/assign-role`, { method: 'post', body: { role } }),
     onSuccess: () => {
@@ -124,7 +124,7 @@ export function useAssignRoleMutation() {
 export function useGivePermissionMutation() {
   const { apiFetch } = useApiFetch()
 
-  return useMutation<IResponse<IUser>, Error, { userId: number; permission: string }>({
+  return useMutation<IResponse<IUser>, Error, { userId: number, permission: string }>({
     mutationKey: ['useGivePermissionMutation'],
     mutationFn: async ({ userId, permission }) => apiFetch<IResponse<IUser>>(`/users/${userId}/give-permission`, { method: 'post', body: { permission } }),
   })
@@ -133,7 +133,7 @@ export function useGivePermissionMutation() {
 export function useRevokePermissionMutation() {
   const { apiFetch } = useApiFetch()
 
-  return useMutation<IResponse<IUser>, Error, { userId: number; permission: string }>({
+  return useMutation<IResponse<IUser>, Error, { userId: number, permission: string }>({
     mutationKey: ['useRevokePermissionMutation'],
     mutationFn: async ({ userId, permission }) => apiFetch<IResponse<IUser>>(`/users/${userId}/revoke-permission`, { method: 'post', body: { permission } }),
   })
@@ -143,12 +143,12 @@ export function useUploadAvatarMutation() {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IResponse<{ message: string; avatar: string }>, Error, { userId: number; file: File }>({
+  return useMutation<IResponse<{ message: string, avatar: string }>, Error, { userId: number, file: File }>({
     mutationKey: ['useUploadAvatarMutation'],
     mutationFn: async ({ userId, file }) => {
       const formData = new FormData()
       formData.append('avatar', file)
-      return apiFetch<IResponse<{ message: string; avatar: string }>>(`/users/${userId}/avatar`, { method: 'post', body: formData })
+      return apiFetch<IResponse<{ message: string, avatar: string }>>(`/users/${userId}/avatar`, { method: 'post', body: formData })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUserByIdQuery'] })

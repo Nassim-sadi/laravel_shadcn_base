@@ -7,6 +7,7 @@ import { Copy } from '@/components/prop-ui/copy'
 import Badge from '@/components/ui/badge/Badge.vue'
 
 import type { User } from '../data/schema'
+
 import DataTableRowActions from './data-table-row-actions.vue'
 
 export const columns: ColumnDef<User>[] = [

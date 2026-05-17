@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
 import { ChevronRightIcon, ExternalLinkIcon } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 
 import { useSidebar } from '@/components/ui/sidebar'
 import { isExternalUrl } from '@/utils/is-external-url'

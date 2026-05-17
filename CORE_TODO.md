@@ -44,37 +44,45 @@ php artisan migrate
 
 ## Phase 4: Admin Translation Polish
 
-- [ ] Confirm translation namespace tabs load all available `lang/{locale}/*.json` files.
-- [ ] Confirm `TRANSLATION_NAMESPACES` filters initial visible namespaces.
-- [ ] Confirm UI dropdown hidden namespace state works per locale.
-- [ ] Show missing keys/fallbacks clearly in the admin editor.
-- [ ] Confirm save/update behavior preserves JSON formatting safely.
-- [ ] Verify Arabic RTL rendering in the translation admin.
+- [x] Confirm translation namespace tabs load all available `lang/{locale}/*.json` files.
+- [x] Confirm `TRANSLATION_NAMESPACES` filters initial visible namespaces.
+- [x] Confirm UI dropdown hidden namespace state works per locale.
+- [x] Show missing keys/fallbacks clearly in the admin editor.
+- [x] Confirm save/update behavior preserves JSON formatting safely.
+- [x] Verify Arabic RTL rendering in the translation admin.
 
 ## Phase 5: Core CRUD Quality Pass
 
-Review each built-in module for validation, permissions, empty states, delete behavior, activity logging, tests, and module toggle behavior.
+Review each built-in module for validation, permissions, empty states, delete behavior, activity logging, and module toggle behavior.
 
-- [ ] Services
-- [ ] Projects
-- [ ] Testimonials
-- [ ] FAQs
-- [ ] Media
-- [ ] Contact messages
-- [ ] Email templates
-- [ ] Activity logs
-- [ ] Settings
-- [ ] Users
-- [ ] Roles and permissions
+**Permissions & Policies:** All modules now have Spatie Permission-based policies with view/create/edit/delete checks.
+
+Security fixes applied: added missing `$this->authorize()` to RoleController, ContactMessageController, PermissionController, and 8 `show()` methods. Replaced native `confirm()` with `ConfirmDialog` in contact messages. Wired up Testimonials create/update mutations (were dead code). Added `SoftDeletes` to Media and EmailTemplate models (+ migration). Added `SettingPolicy::create()`/`delete()` methods. Fixed `UserRequest` hardcoded locales.
+
+Tests live in downstream projects (core modules are a shared framework, not per-project features).
+
+- [x] Services — validation, permissions, empty states, delete, activity logging
+- [x] Projects — validation, permissions, empty states, delete, activity logging
+- [x] Testimonials — validation, permissions, empty states, delete, activity logging
+- [x] FAQs — validation, permissions, empty states, delete, activity logging
+- [x] Media — validation, permissions, empty states, delete, activity logging
+- [x] Contact messages — validation, permissions, empty states, delete, activity logging
+- [x] Email templates — validation, permissions, empty states, delete, activity logging
+- [x] Activity logs — read-only checks
+- [x] Settings — validation, permissions, empty states, activity logging
+- [x] Users — validation, permissions, empty states, delete, activity logging
+- [x] Roles and permissions — validation, permissions, empty states, delete, activity logging
 
 ## Phase 6: Roles and Permissions
 
-- [ ] Define default core roles.
-- [ ] Define permissions per module.
-- [ ] Ensure permission seeders can be safely re-run.
-- [ ] Hide admin UI actions when the user lacks permission.
-- [ ] Deny backend actions through policies or explicit permission checks.
-- [ ] Remove or avoid dead permissions for disabled or unbuilt modules.
+- [x] Define default core roles (super_admin, admin, user).
+- [x] Define permissions per module (view/create/edit/delete).
+- [x] Ensure permission seeders can be safely re-run (syncPermissions).
+- [x] Hide admin UI actions when the user lacks permission (sidebar + Vue buttons).
+- [x] Deny backend actions through policies or explicit permission checks.
+- [x] Remove or avoid dead permissions for disabled or unbuilt modules.
+- [x] Add router permission guards (meta.requiredPermission).
+- [x] Only generate standard-module permissions dynamically; keep hardcoded groups for non-standard names.
 
 ## Phase 7: Settings System
 
@@ -116,8 +124,8 @@ Review each built-in module for validation, permissions, empty states, delete be
 - [x] Add API route disabled tests.
 - [x] Add Vue route/sidebar expectations where practical.
 
-## First Work Item
+## Next Work Item
 
-Continue with Phase 4: Admin Translation Polish.
+Continue with Phase 7: Settings System.
 
-Reason: public Blade pages now use the namespace JSON source, so the admin translation editor should be polished next to manage that source safely.
+Phases 4-6 are complete. Phase 7 confirms all settings groups (general, SEO, mail, business, contact, appearance, social).

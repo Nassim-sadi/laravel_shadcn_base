@@ -16,6 +16,8 @@ class MediaController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Media::class);
+
         $media = Media::query()
             ->when($request->search, fn($q, $search) => $q->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -32,6 +34,8 @@ class MediaController extends Controller
 
     public function store(StoreMediaRequest $request)
     {
+        $this->authorize('create', Media::class);
+
         $file = $request->file('file');
         $originalName = $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
@@ -93,11 +97,15 @@ class MediaController extends Controller
 
     public function show(Media $medium)
     {
+        $this->authorize('view', $medium);
+
         return new MediaResource($medium);
     }
 
     public function update(UpdateMediaRequest $request, Media $medium)
     {
+        $this->authorize('update', $medium);
+
         $medium->update($request->validated());
 
         activity_log('media.updated', [
@@ -110,6 +118,8 @@ class MediaController extends Controller
 
     public function destroy(Media $medium)
     {
+        $this->authorize('delete', $medium);
+
         // Check if media is referenced by any model
         $references = $this->getReferences($medium);
         if (!empty($references)) {
@@ -139,6 +149,8 @@ class MediaController extends Controller
 
     public function bulkDestroy(Request $request)
     {
+        $this->authorize('delete', Media::class);
+
         $request->validate([
             'ids' => ['required', 'array'],
             'ids.*' => ['required', 'integer', 'exists:media,id'],

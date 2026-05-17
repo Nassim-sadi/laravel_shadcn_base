@@ -52,7 +52,8 @@ async function copyContent() {
   try {
     await copy(source.value)
     return
-  } catch (_e) {
+  }
+  catch (_e) {
     // fall back to textarea method
   }
 
@@ -88,8 +89,12 @@ async function copyContent() {
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p v-if="!isCopied">{{ props.copyTooltipText }}: {{ props.content }}</p>
-        <p v-else>{{ props.copiedTooltipText }}: {{ props.content }}</p>
+        <p v-if="!isCopied">
+          {{ props.copyTooltipText }}: {{ props.content }}
+        </p>
+        <p v-else>
+          {{ props.copiedTooltipText }}: {{ props.content }}
+        </p>
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>

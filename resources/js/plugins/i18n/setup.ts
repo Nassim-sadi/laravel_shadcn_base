@@ -3,10 +3,11 @@ import type { App } from 'vue'
 import { ofetch } from 'ofetch'
 import { createI18n } from 'vue-i18n'
 
+import { API_BASE_URL } from '@/constants/app-config'
+
 import type { Language, LanguageMeta } from '.'
 
 import { appLocale, DEFAULT_LOCALE, FALLBACK_LOCALE, setLanguageConfig } from '.'
-import { API_BASE_URL } from '@/constants/app-config'
 
 interface LocalizationResponse {
   languages: LanguageMeta[]

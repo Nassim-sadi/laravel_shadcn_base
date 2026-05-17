@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { useUploadMediaMutation } from '@/services/api/media.api'
 import { Loader2Icon, UploadIcon } from '@lucide/vue'
+import { ref } from 'vue'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useUploadMediaMutation } from '@/services/api/media.api'
 
 const emit = defineEmits<{
   uploaded: []
@@ -37,22 +38,28 @@ function triggerFileInput() {
 }
 
 async function upload() {
-  if (!selectedFile.value) return
+  if (!selectedFile.value)
+    return
   isUploading.value = true
 
   const formData = new FormData()
   formData.append('file', selectedFile.value)
-  if (name.value) formData.append('name', name.value)
-  if (altText.value) formData.append('alt_text', altText.value)
-  if (folder.value) formData.append('folder', folder.value)
+  if (name.value)
+    formData.append('name', name.value)
+  if (altText.value)
+    formData.append('alt_text', altText.value)
+  if (folder.value)
+    formData.append('folder', folder.value)
 
   try {
     await uploadMedia(formData)
     emit('uploaded')
     emit('close')
-  } catch (e) {
+  }
+  catch (e) {
     console.error('Upload failed', e)
-  } finally {
+  }
+  finally {
     isUploading.value = false
   }
 }
@@ -70,18 +77,22 @@ async function upload() {
         class="hidden"
         accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.mp4,.avi,.mov"
         @change="onFileChange"
-      />
+      >
       <div v-if="!previewUrl" class="space-y-2">
         <UploadIcon class="h-10 w-10 mx-auto text-muted-foreground" />
-        <p class="text-sm text-muted-foreground">Click to select a file</p>
-        <p class="text-xs text-muted-foreground">JPG, PNG, GIF, WebP, SVG, PDF, DOC, XLS, MP4 (max 10MB)</p>
+        <p class="text-sm text-muted-foreground">
+          Click to select a file
+        </p>
+        <p class="text-xs text-muted-foreground">
+          JPG, PNG, GIF, WebP, SVG, PDF, DOC, XLS, MP4 (max 10MB)
+        </p>
       </div>
       <img
         v-else
         :src="previewUrl"
         class="max-h-48 mx-auto rounded object-contain"
         alt="Preview"
-      />
+      >
     </div>
 
     <div class="space-y-4">

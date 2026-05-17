@@ -4,9 +4,9 @@ import type { Component } from 'vue'
 
 import { PencilIcon, Trash2Icon } from '@lucide/vue'
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-
+import { hasPermission } from '@/composables/use-role'
 import { Modal, ModalContent } from '@/components/prop-ui/modal'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import type { User } from '../data/schema'
 
@@ -43,7 +43,7 @@ async function handleSelect(command: TCommand) {
       <div class="flex gap-1">
         <Tooltip>
           <TooltipTrigger as-child>
-            <UiButton variant="ghost" size="icon" class="size-8" @click.stop="handleSelect('edit')">
+            <UiButton v-if="hasPermission('users.edit')" variant="ghost" size="icon" class="size-8" @click.stop="handleSelect('edit')">
               <PencilIcon class="size-4" />
             </UiButton>
           </TooltipTrigger>
@@ -51,7 +51,7 @@ async function handleSelect(command: TCommand) {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
-            <UiButton variant="destructive" size="icon" class="size-8" @click.stop="handleSelect('delete')">
+            <UiButton v-if="hasPermission('users.delete')" variant="destructive" size="icon" class="size-8" @click.stop="handleSelect('delete')">
               <Trash2Icon class="size-4" />
             </UiButton>
           </TooltipTrigger>

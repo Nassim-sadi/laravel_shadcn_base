@@ -13,5 +13,6 @@
     "admin.sheet.editService": "تعديل الخدمة",
     "admin.sheet.editTemplate": "تعديل القالب",
     "admin.sheet.editTestimonial": "تعديل الشهادة",
-    "admin.sheet.replyMessage": "الرد على الرسالة"
+    "admin.sheet.replyMessage": "الرد على الرسالة",
+    "admin.sheet.activityLogDetail": "تفاصيل سجل النشاط"
 }

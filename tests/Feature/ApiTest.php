@@ -9,6 +9,7 @@ use App\Models\Service;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,9 @@ class ApiTest extends TestCase
     {
         parent::setUp();
 
+        // Seed permissions
+        $this->seed(PermissionSeeder::class);
+
         $this->admin = User::factory()->create([
             'role' => 'super_admin',
             'is_active' => true,
@@ -34,6 +38,12 @@ class ApiTest extends TestCase
             'role' => 'user',
             'is_active' => true,
         ]);
+
+        // Assign roles with permissions
+        $superAdminRole = \Spatie\Permission\Models\Role::where('name', 'super_admin')->first();
+        if ($superAdminRole) {
+            $this->admin->assignRole($superAdminRole);
+        }
     }
 
     // ─── Auth ───────────────────────────────────────────────────

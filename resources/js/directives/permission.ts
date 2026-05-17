@@ -1,4 +1,5 @@
 import type { Directive } from 'vue'
+
 import { hasPermission as checkPermission } from '@/composables/use-role'
 
 export const vPermission: Directive = {

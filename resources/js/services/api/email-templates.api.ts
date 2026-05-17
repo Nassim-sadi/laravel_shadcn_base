@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export type TranslatedValue = Record<string, string>
@@ -57,7 +59,7 @@ export function useCreateEmailTemplateMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IEmailTemplate>, Error, ICreateEmailTemplateRequest>({
     mutationKey: ['useCreateEmailTemplateMutation'],
-    mutationFn: (data) => apiFetch('/email-templates', { method: 'post', body: data }),
+    mutationFn: data => apiFetch('/email-templates', { method: 'post', body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] }),
   })
 }
@@ -67,7 +69,7 @@ export function useUpdateEmailTemplateMutation(id: number) {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IEmailTemplate>, Error, Partial<ICreateEmailTemplateRequest>>({
     mutationKey: ['useUpdateEmailTemplateMutation', id],
-    mutationFn: (data) => apiFetch(`/email-templates/${id}`, { method: 'put', body: data }),
+    mutationFn: data => apiFetch(`/email-templates/${id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplateByIdQuery', id] })
@@ -80,7 +82,7 @@ export function useDeleteEmailTemplateMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteEmailTemplateMutation'],
-    mutationFn: (id) => apiFetch(`/email-templates/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/email-templates/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] }),
   })
 }

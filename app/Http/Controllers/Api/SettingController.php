@@ -13,6 +13,8 @@ class SettingController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Setting::class);
+
         $query = Setting::query()
             ->when($request->group, fn($q, $group) => $q->group($group))
             ->when($request->search, fn($q, $search) => $q->where('name', 'like', "%{$search}%")
@@ -27,30 +29,56 @@ class SettingController extends Controller
 
     public function store(SettingRequest $request)
     {
+        $this->authorize('create', Setting::class);
+
         $validated = $request->validated();
 
         $setting = Setting::create($validated);
+
+        activity_log('setting.created', [
+            'setting_id' => $setting->id,
+            'setting_key' => $setting->key,
+            'user_id' => auth()->id(),
+        ]);
 
         return new SettingResource($setting);
     }
 
     public function show(Setting $setting)
     {
+        $this->authorize('view', $setting);
+
         return new SettingResource($setting);
     }
 
     public function update(SettingRequest $request, Setting $setting)
     {
+        $this->authorize('update', $setting);
+
         $validated = $request->validated();
 
         $setting->update($validated);
+
+        activity_log('setting.updated', [
+            'setting_id' => $setting->id,
+            'setting_key' => $setting->key,
+            'user_id' => auth()->id(),
+        ]);
 
         return new SettingResource($setting);
     }
 
     public function destroy(Setting $setting)
     {
+        $this->authorize('delete', $setting);
+
         $setting->delete();
+
+        activity_log('setting.deleted', [
+            'setting_id' => $setting->id,
+            'setting_key' => $setting->key,
+            'user_id' => auth()->id(),
+        ]);
 
         return response()->json(['message' => 'Setting deleted successfully']);
     }

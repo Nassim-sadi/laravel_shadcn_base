@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+import { ImageIcon, XIcon } from '@lucide/vue'
 import { ref } from 'vue'
+
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { ImageIcon, XIcon } from '@lucide/vue'
+
 import MediaModal from './MediaModal.vue'
 
 defineProps<{
@@ -17,7 +19,7 @@ const emit = defineEmits<{
 
 const showPicker = ref(false)
 
-function handleSelect(data: { id: number; url: string; thumbnail_url?: string }) {
+function handleSelect(data: { id: number, url: string, thumbnail_url?: string }) {
   emit('update:imageId', data.id)
   emit('update:imageUrl', data.thumbnail_url ?? data.url)
   showPicker.value = false
@@ -37,7 +39,7 @@ function removeImage() {
         v-if="imageUrl"
         class="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border"
       >
-        <img :src="imageUrl" alt="Preview" class="h-full w-full object-cover" />
+        <img :src="imageUrl" alt="Preview" class="h-full w-full object-cover">
       </div>
       <div
         v-else

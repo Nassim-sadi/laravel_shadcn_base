@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export interface IProject {
@@ -71,7 +73,7 @@ export function useCreateProjectMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<IProject>, Error, ICreateProjectRequest>({
     mutationKey: ['useCreateProjectMutation'],
-    mutationFn: (data) => apiFetch('/projects', { method: 'post', body: data }),
+    mutationFn: data => apiFetch('/projects', { method: 'post', body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] }),
   })
 }
@@ -99,7 +101,7 @@ export function useDeleteProjectMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteProjectMutation'],
-    mutationFn: (id) => apiFetch(`/projects/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/projects/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] }),
   })
 }

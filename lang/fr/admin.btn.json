@@ -17,5 +17,6 @@
     "admin.btn.signIn": "Se connecter",
     "admin.btn.signUp": "S'inscrire",
     "admin.btn.stay": "Rester",
-    "admin.btn.update": "Mettre à jour"
+    "admin.btn.update": "Mettre à jour",
+    "admin.btn.viewDetails": "Voir les détails"
 }

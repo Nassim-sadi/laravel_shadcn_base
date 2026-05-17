@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import type { IMedia } from '@/services/api/media.api'
 import { CheckIcon, FileIcon } from '@lucide/vue'
+
+import type { IMedia } from '@/services/api/media.api'
 
 defineProps<{
   items: IMedia[]
@@ -15,9 +16,11 @@ const emit = defineEmits<{
 }>()
 
 function formatSize(bytes: number): string {
-  if (bytes < 1024) return bytes + ' B'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB'
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  if (bytes < 1024)
+    return `${bytes} B`
+  if (bytes < 1024 * 1024)
+    return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 function isImage(item: IMedia): boolean {
@@ -41,7 +44,7 @@ function isImage(item: IMedia): boolean {
           class="h-4 w-4 rounded border-gray-300"
           @click.stop
           @change="emit('toggleSelect', item.id)"
-        />
+        >
       </div>
 
       <div class="aspect-square bg-muted flex items-center justify-center overflow-hidden">
@@ -51,7 +54,7 @@ function isImage(item: IMedia): boolean {
           :alt="item.alt_text || item.name"
           class="w-full h-full object-cover"
           loading="lazy"
-        />
+        >
         <div v-else class="flex flex-col items-center gap-1 text-muted-foreground">
           <FileIcon class="h-8 w-8" />
           <span class="text-xs font-medium uppercase">{{ item.extension }}</span>
@@ -59,8 +62,12 @@ function isImage(item: IMedia): boolean {
       </div>
 
       <div class="p-2 space-y-1">
-        <p class="text-xs font-medium truncate">{{ item.name }}</p>
-        <p class="text-[10px] text-muted-foreground">{{ formatSize(item.size) }}</p>
+        <p class="text-xs font-medium truncate">
+          {{ item.name }}
+        </p>
+        <p class="text-[10px] text-muted-foreground">
+          {{ formatSize(item.size) }}
+        </p>
       </div>
 
       <div

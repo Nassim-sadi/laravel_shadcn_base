@@ -1,5 +1,7 @@
 import type { App } from 'vue'
 
+import { vPermission } from '@/directives/permission'
+
 import { setupAutoAnimate } from './auto-animate/setup'
 import { setupDayjs } from './dayjs/setup'
 import { setupI18n } from './i18n/setup'
@@ -7,8 +9,6 @@ import { setupNProgress } from './nprogress/setup'
 import { setupPinia } from './pinia/setup'
 import { setupRouter } from './router/setup'
 import { setupTanstackVueQuery } from './tanstack-vue-query/setup'
-
-import { vPermission } from '@/directives/permission'
 
 export async function setupPlugins(app: App) {
   setupDayjs()

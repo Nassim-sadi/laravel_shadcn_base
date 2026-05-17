@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+
+import { hasPermission } from '@/composables/use-role'
 import { BasicPage } from '@/components/global-layout'
 import { useGetUsersQuery } from '@/services/api/users.api'
 
@@ -24,8 +26,8 @@ const loading = isLoading
     sticky
   >
     <template #actions>
-      <UserInvite />
-      <UserCreate />
+      <UserInvite v-if="hasPermission('users.create')" />
+      <UserCreate v-if="hasPermission('users.create')" />
     </template>
     <div class="overflow-x-auto">
       <DataTable :loading="loading" :data="users" :columns="columns" @refresh="refetch" />

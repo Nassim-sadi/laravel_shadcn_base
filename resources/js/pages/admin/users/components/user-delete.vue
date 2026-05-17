@@ -1,14 +1,12 @@
 <script lang="ts" setup>
-import { toast } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
+import { toast } from 'vue-sonner'
 
 import { ModalClose, ModalDescription, ModalFooter, ModalHeader, ModalTitle } from '@/components/prop-ui/modal'
 import { Button } from '@/components/ui/button'
-
-import type { User } from '../data/schema'
 import { useDeleteUserMutation } from '@/services/api/users.api'
 
-const { t } = useI18n()
+import type { User } from '../data/schema'
 
 const props = defineProps<{
   user: User
@@ -18,6 +16,8 @@ const emit = defineEmits<{
   (e: 'remove'): void
   (e: 'close'): void
 }>()
+
+const { t } = useI18n()
 
 const deleteUserMutation = useDeleteUserMutation()
 
@@ -53,7 +53,7 @@ async function handleRemove() {
         </Button>
       </ModalClose>
 
-      <Button variant="destructive" @click="handleRemove" :disabled="deleteUserMutation.isPending.value">
+      <Button variant="destructive" :disabled="deleteUserMutation.isPending.value" @click="handleRemove">
         {{ deleteUserMutation.isPending.value ? $t('admin.misc.deleting') : $t('admin.btn.delete') }}
       </Button>
     </ModalFooter>

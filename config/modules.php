@@ -14,17 +14,17 @@ return [
     |
     */
 
-    'services'       => env('MODULE_SERVICES', true),
-    'projects'       => env('MODULE_PROJECTS', true),
-    'testimonials'   => env('MODULE_TESTIMONIALS', true),
-    'faqs'           => env('MODULE_FAQS', true),
-    'media'          => env('MODULE_MEDIA', true),
-    'contact'        => env('MODULE_CONTACT', true),
-    'email_templates' => env('MODULE_EMAIL_TEMPLATES', true),
-    'activity_logs'  => env('MODULE_ACTIVITY_LOGS', true),
-    'translations'   => env('MODULE_TRANSLATIONS', true),
+    'services'       => filter_var(env('MODULE_SERVICES', true), FILTER_VALIDATE_BOOLEAN),
+    'projects'       => filter_var(env('MODULE_PROJECTS', true), FILTER_VALIDATE_BOOLEAN),
+    'testimonials'   => filter_var(env('MODULE_TESTIMONIALS', true), FILTER_VALIDATE_BOOLEAN),
+    'faqs'           => filter_var(env('MODULE_FAQS', true), FILTER_VALIDATE_BOOLEAN),
+    'media'          => filter_var(env('MODULE_MEDIA', true), FILTER_VALIDATE_BOOLEAN),
+    'contact'        => filter_var(env('MODULE_CONTACT', true), FILTER_VALIDATE_BOOLEAN),
+    'email_templates' => filter_var(env('MODULE_EMAIL_TEMPLATES', true), FILTER_VALIDATE_BOOLEAN),
+    'activity_logs'  => filter_var(env('MODULE_ACTIVITY_LOGS', true), FILTER_VALIDATE_BOOLEAN),
+    'translations'   => filter_var(env('MODULE_TRANSLATIONS', true), FILTER_VALIDATE_BOOLEAN),
 
-    'catalog' => env('MODULE_CATALOG', false),
-    'booking' => env('MODULE_BOOKING', false),
-    'blog'    => env('MODULE_BLOG', false),
+    'catalog' => filter_var(env('MODULE_CATALOG', false), FILTER_VALIDATE_BOOLEAN),
+    'booking' => filter_var(env('MODULE_BOOKING', false), FILTER_VALIDATE_BOOLEAN),
+    'blog'    => filter_var(env('MODULE_BLOG', false), FILTER_VALIDATE_BOOLEAN),
 ];

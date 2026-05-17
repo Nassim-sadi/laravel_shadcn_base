@@ -156,12 +156,12 @@ export function useUploadAvatarMutation() {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IResponse<{ message: string; avatar: string; avatar_url: string; data: IUser }>, Error, File>({
+  return useMutation<IResponse<{ message: string, avatar: string, avatar_url: string, data: IUser }>, Error, File>({
     mutationKey: ['useUploadAvatarMutation'],
     mutationFn: async (file: File) => {
       const formData = new FormData()
       formData.append('avatar', file)
-      return apiFetch<IResponse<{ message: string; avatar: string; avatar_url: string; data: IUser }>>('/profile/avatar', { method: 'post', body: formData })
+      return apiFetch<IResponse<{ message: string, avatar: string, avatar_url: string, data: IUser }>>('/profile/avatar', { method: 'post', body: formData })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })

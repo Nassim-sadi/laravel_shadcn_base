@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 import { useApiFetch } from '@/composables/use-fetch'
+
 import type { IResponse } from '../types/response.type'
 
 export interface IContactMessage {
@@ -35,7 +37,7 @@ export function useCreateContactMessageMutation() {
     message: string
   }>({
     mutationKey: ['useCreateContactMessageMutation'],
-    mutationFn: (data) => apiFetch('/contact-messages', { method: 'post', body: data }),
+    mutationFn: data => apiFetch('/contact-messages', { method: 'post', body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
   })
 }
@@ -65,7 +67,7 @@ export function useUpdateContactMessageMutation(id: number) {
     replied_at: string
   }>>({
     mutationKey: ['useUpdateContactMessageMutation', id],
-    mutationFn: (data) => apiFetch(`/contact-messages/${id}`, { method: 'put', body: data }),
+    mutationFn: data => apiFetch(`/contact-messages/${id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetContactMessageByIdQuery', id] })
@@ -78,7 +80,7 @@ export function useDeleteContactMessageMutation() {
   const queryClient = useQueryClient()
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteContactMessageMutation'],
-    mutationFn: (id) => apiFetch(`/contact-messages/${id}`, { method: 'delete' }),
+    mutationFn: id => apiFetch(`/contact-messages/${id}`, { method: 'delete' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
   })
 }
