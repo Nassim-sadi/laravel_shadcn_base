@@ -26,7 +26,7 @@ export function useAuth() {
   async function logout() {
     await logoutMutation.mutateAsync()
     authStore.clearUser()
-    router.push({ path: '/auth/sign-in' })
+    router.push({ path: '/auth/login' })
   }
 
   function toHome() {
@@ -34,8 +34,8 @@ export function useAuth() {
   }
 
   async function login(credentials: { email: string, password: string }) {
-    const response = await loginMutation.mutateAsync(credentials)
-    authStore.setUser(response.user)
+    const userData = await loginMutation.mutateAsync(credentials)
+    authStore.setUser(userData)
     await refetchUser()
 
     const redirect = router.currentRoute.value.query.redirect as string

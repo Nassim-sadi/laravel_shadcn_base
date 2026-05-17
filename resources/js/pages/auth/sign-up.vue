@@ -3,15 +3,16 @@ import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
 
 import { useRegisterMutation } from '@/services/api/auth.api'
+import { useAuthStore } from '@/stores/auth'
 
 import AuthTitle from './components/auth-title.vue'
-import GitHubButton from './components/github-button.vue'
 import GoogleButton from './components/google-button.vue'
 import PrivacyPolicyButton from './components/privacy-policy-button.vue'
 import TermsOfServiceButton from './components/terms-of-service-button.vue'
 
 const { t } = useI18n()
 const router = useRouter()
+const authStore = useAuthStore()
 const registerMutation = useRegisterMutation()
 
 const name = ref('')
@@ -22,14 +23,15 @@ const loading = computed(() => registerMutation.isPending.value)
 
 async function handleRegister() {
   try {
-    await registerMutation.mutateAsync({
+    const user = await registerMutation.mutateAsync({
       name: name.value,
       email: email.value,
       password: password.value,
       password_confirmation: password_confirmation.value,
     })
+    authStore.setUser(user)
     toast.success(t('admin.toast.accountCreated'))
-    router.push('/')
+    router.push('/admin')
   }
   catch (error: any) {
     toast.error(error.message || t('admin.toast.registrationFailed'))
@@ -96,7 +98,6 @@ async function handleRegister() {
             <UiSeparator :label="$t('admin.misc.orContinueWith')" />
 
             <div class="flex flex-col items-center justify-between gap-4">
-              <GitHubButton />
               <GoogleButton />
             </div>
 

@@ -82,10 +82,8 @@ export function useMediaUpload() {
         resolve()
       }
 
-      const token = localStorage.getItem('auth_token')
       xhr.open('POST', `${API_BASE_URL}/media`)
-      if (token)
-        xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+      xhr.withCredentials = true
       xhr.send(formData)
     })
   }

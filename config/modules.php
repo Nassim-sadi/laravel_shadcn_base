@@ -24,7 +24,8 @@ return [
     'activity_logs'  => filter_var(env('MODULE_ACTIVITY_LOGS', true), FILTER_VALIDATE_BOOLEAN),
     'translations'   => filter_var(env('MODULE_TRANSLATIONS', true), FILTER_VALIDATE_BOOLEAN),
 
-    'catalog' => filter_var(env('MODULE_CATALOG', false), FILTER_VALIDATE_BOOLEAN),
-    'booking' => filter_var(env('MODULE_BOOKING', false), FILTER_VALIDATE_BOOLEAN),
-    'blog'    => filter_var(env('MODULE_BLOG', false), FILTER_VALIDATE_BOOLEAN),
+    'catalog'     => filter_var(env('MODULE_CATALOG', false), FILTER_VALIDATE_BOOLEAN),
+    'booking'     => filter_var(env('MODULE_BOOKING', false), FILTER_VALIDATE_BOOLEAN),
+    'blog'        => filter_var(env('MODULE_BLOG', false), FILTER_VALIDATE_BOOLEAN),
+    'client_auth' => filter_var(env('MODULE_CLIENT_AUTH', false), FILTER_VALIDATE_BOOLEAN),
 ];

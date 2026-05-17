@@ -1,3 +1,4 @@
+import { $fetch } from 'ofetch'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { useApiFetch } from '@/composables/use-fetch'
@@ -27,32 +28,32 @@ export interface IRegisterRequest {
   email: string
   password: string
   password_confirmation: string
-  role?: string
 }
 
-export interface IAuthResponse {
-  user: IUser
-  token: string
-  token_type: string
+async function fetchCsrfCookie(): Promise<void> {
+  await $fetch('/sanctum/csrf-cookie', {
+    credentials: 'include',
+  })
 }
 
 export function useLoginMutation() {
-  const { apiFetch, setToken } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IAuthResponse, Error, ILoginRequest>({
+  return useMutation<IUser, Error, ILoginRequest>({
     mutationKey: ['useLoginMutation'],
     mutationFn: async (data: ILoginRequest) => {
-      const response = await apiFetch<IAuthResponse>('/login', {
+      await fetchCsrfCookie()
+      await $fetch('/login', {
         method: 'post',
         body: data,
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
       })
-      console.log('Login response:', response)
-      if (response.token) {
-        setToken(response.token)
-        console.log('Token set:', response.token)
-      }
-      return response
+      const { apiFetch } = useApiFetch()
+      const response = await apiFetch<IResponse<IUser>>('/user', {
+        method: 'get',
+      })
+      return response.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
@@ -61,20 +62,23 @@ export function useLoginMutation() {
 }
 
 export function useRegisterMutation() {
-  const { apiFetch, setToken } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IAuthResponse, Error, IRegisterRequest>({
+  return useMutation<IUser, Error, IRegisterRequest>({
     mutationKey: ['useRegisterMutation'],
     mutationFn: async (data: IRegisterRequest) => {
-      const response = await apiFetch<IAuthResponse>('/register', {
+      await fetchCsrfCookie()
+      await $fetch('/register', {
         method: 'post',
         body: data,
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
       })
-      if (response.token) {
-        setToken(response.token)
-      }
-      return response
+      const { apiFetch } = useApiFetch()
+      const response = await apiFetch<IResponse<IUser>>('/user', {
+        method: 'get',
+      })
+      return response.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
@@ -83,33 +87,32 @@ export function useRegisterMutation() {
 }
 
 export function useLogoutMutation() {
-  const { apiFetch, clearToken } = useApiFetch()
   const queryClient = useQueryClient()
 
-  return useMutation<IResponse<string>, Error>({
+  return useMutation<void, Error>({
     mutationKey: ['useLogoutMutation'],
     mutationFn: async () => {
-      const response = await apiFetch<IResponse<string>>('/logout', {
+      await $fetch('/logout', {
         method: 'post',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
       })
-      return response
     },
     onSuccess: () => {
-      clearToken()
       queryClient.clear()
     },
   })
 }
 
 export function useUserQuery(enabled = true) {
-  const { apiFetch, getToken } = useApiFetch()
+  const { apiFetch } = useApiFetch()
 
   return useQuery<IResponse<IUser>, Error>({
     queryKey: ['useUserQuery'],
     queryFn: async () => await apiFetch<IResponse<IUser>>('/user', {
       method: 'get',
     }),
-    enabled: enabled && !!getToken(),
+    enabled,
     staleTime: 5 * 60 * 1000,
   })
 }

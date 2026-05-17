@@ -8,33 +8,20 @@ import pinia from '@/plugins/pinia/setup'
 import { useAuthStore } from '@/stores/auth'
 import type { IUser } from '@/services/api/auth.api'
 
-const AUTH_TOKEN_NAME = 'auth_token'
-
 let authPromise: Promise<void> | null = null
 
-function getToken(): string | null {
-  return localStorage.getItem(AUTH_TOKEN_NAME)
-}
-
-function clearToken(): void {
-  localStorage.removeItem(AUTH_TOKEN_NAME)
-}
-
 async function initAuth(): Promise<void> {
-  const token = getToken()
-  if (!token) return
-
   const authStore = useAuthStore(pinia)
 
   try {
-    const response = await $fetch<{ data: IUser }>(`/user`, {
+    const response = await $fetch<{ data: IUser }>('/user', {
       baseURL: API_BASE_URL,
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
     })
     authStore.setUser(response.data)
   }
   catch {
-    clearToken()
     authStore.clearUser()
   }
 }

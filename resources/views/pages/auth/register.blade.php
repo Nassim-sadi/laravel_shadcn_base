@@ -1,0 +1,77 @@
+@extends('layouts.public')
+
+@section('title', 'Create Account - ' . config('app.name'))
+@section('meta_description', 'Create a new account.')
+
+@section('content')
+    <div class="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-sm items-center px-4 py-16">
+        <div class="w-full">
+            <h1 class="mb-6 text-center text-3xl font-bold">Create Account</h1>
+
+            @if ($errors->any())
+                <div class="alert alert-error mb-4">
+                    <ul class="list-disc pl-4">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('register') }}" class="card border border-base-300 bg-base-100 shadow-sm">
+                @csrf
+
+                <div class="card-body gap-4">
+                    <div class="form-control">
+                        <label class="label" for="name">
+                            <span class="label-text">Name</span>
+                        </label>
+                        <input id="name" type="text" name="name" value="{{ old('name') }}" class="input input-bordered @error('name') input-error @enderror" required autofocus autocomplete="name">
+                        @error('name')
+                            <label class="label"><span class="label-text-alt text-error">{{ $message }}</span></label>
+                        @enderror
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label" for="email">
+                            <span class="label-text">Email</span>
+                        </label>
+                        <input id="email" type="email" name="email" value="{{ old('email') }}" class="input input-bordered @error('email') input-error @enderror" required autocomplete="username">
+                        @error('email')
+                            <label class="label"><span class="label-text-alt text-error">{{ $message }}</span></label>
+                        @enderror
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label" for="password">
+                            <span class="label-text">Password</span>
+                        </label>
+                        <input id="password" type="password" name="password" class="input input-bordered @error('password') input-error @enderror" required autocomplete="new-password">
+                        @error('password')
+                            <label class="label"><span class="label-text-alt text-error">{{ $message }}</span></label>
+                        @enderror
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label" for="password_confirmation">
+                            <span class="label-text">Confirm Password</span>
+                        </label>
+                        <input id="password_confirmation" type="password" name="password_confirmation" class="input input-bordered @error('password_confirmation') input-error @enderror" required autocomplete="new-password">
+                        @error('password_confirmation')
+                            <label class="label"><span class="label-text-alt text-error">{{ $message }}</span></label>
+                        @enderror
+                    </div>
+
+                    <div class="card-actions flex-col gap-2">
+                        <button type="submit" class="btn btn-primary w-full">Create Account</button>
+
+                        <p class="text-center text-sm">
+                            Already have an account?
+                            <a href="{{ route('login') }}" class="link link-hover">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+@endsection

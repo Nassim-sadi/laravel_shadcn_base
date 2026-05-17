@@ -72,7 +72,15 @@
                     </ul>
                 </nav>
 
-                <div class="navbar-end">
+                <div class="navbar-end gap-2">
+                    @if (config('modules.client_auth'))
+                        @auth
+                            <a href="/admin" class="btn btn-ghost btn-sm">Dashboard</a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">Sign In</a>
+                        @endauth
+                    @endif
+
                     @if (Route::has('public.contact'))
                         <a href="{{ route('public.contact') }}" class="btn btn-primary">Start a project</a>
                     @endif

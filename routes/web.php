@@ -97,8 +97,8 @@ if (config('modules.projects', true)) {
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('public.projects.show');
 }
 
-Route::view('/auth/login', 'app')->name('login');
-Route::view('/auth/register', 'app')->name('register');
+Route::view('/auth/login', 'app')->name('auth.login');
+Route::view('/auth/register', 'app')->name('auth.register');
 
 Route::view('/admin', 'app')->name('admin');
 Route::view('/admin/{path}', 'app')->where('path', '.*');
