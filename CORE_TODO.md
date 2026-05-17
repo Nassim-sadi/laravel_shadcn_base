@@ -83,6 +83,7 @@ Tests live in downstream projects (core modules are a shared framework, not per-
 - [x] Remove or avoid dead permissions for disabled or unbuilt modules.
 - [x] Add router permission guards (meta.requiredPermission).
 - [x] Only generate standard-module permissions dynamically; keep hardcoded groups for non-standard names.
+- [x] Sidebar reactivity: super_admin bypass + reactive getter for auth-aware navMain.
 
 ## Phase 7: Settings System
 
