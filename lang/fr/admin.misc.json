@@ -53,5 +53,12 @@
     "admin.misc.bodyPlaceholder": "Commencez à écrire...",
     "admin.misc.noMenuFound": "Aucun menu trouvé.",
     "admin.misc.trySearchCommand": "Essayez de rechercher une commande ou vérifiez l'orthographe.",
-    "admin.misc.pages": "Pages"
+    "admin.misc.pages": "Pages",
+    "admin.misc.enterNewPassword": "Entrez votre nouveau mot de passe.",
+    "admin.misc.checkEmail": "Vérifiez votre email",
+    "admin.misc.resetLinkSentTo": "Nous avons envoyé un lien de réinitialisation à",
+    "admin.misc.verifyEmail": "Vérifiez votre email",
+    "admin.misc.verifyEmailDesc": "Veuillez vérifier votre adresse email.",
+    "admin.misc.verifyEmailHelp": "Merci de vous être inscrit ! Avant de commencer, pourriez-vous vérifier votre adresse email en cliquant sur le lien que nous venons de vous envoyer ? Si vous n'avez pas reçu l'email, nous vous en enverrons un autre.",
+    "admin.misc.verificationLinkSent": "Un nouveau lien de vérification a été envoyé à votre adresse email."
 }

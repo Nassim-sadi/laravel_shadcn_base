@@ -53,5 +53,12 @@
     "admin.misc.bodyPlaceholder": "Start writing...",
     "admin.misc.noMenuFound": "No menu found.",
     "admin.misc.trySearchCommand": "Try searching for a command or check the spelling.",
-    "admin.misc.pages": "Pages"
+    "admin.misc.pages": "Pages",
+    "admin.misc.enterNewPassword": "Enter your new password.",
+    "admin.misc.checkEmail": "Check your email",
+    "admin.misc.resetLinkSentTo": "We've sent a password reset link to",
+    "admin.misc.verifyEmail": "Verify Your Email",
+    "admin.misc.verifyEmailDesc": "Please verify your email address.",
+    "admin.misc.verifyEmailHelp": "Thanks for signing up! Before getting started, could you verify your email address by clicking the link we just emailed to you? If you didn't receive the email, we'll gladly send you another.",
+    "admin.misc.verificationLinkSent": "A new verification link has been sent to your email address."
 }

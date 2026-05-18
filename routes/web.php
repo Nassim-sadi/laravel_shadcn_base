@@ -101,4 +101,7 @@ Route::view('/auth/login', 'app')->name('auth.login');
 Route::view('/auth/register', 'app')->name('auth.register');
 
 Route::view('/admin', 'app')->name('admin');
+Route::get('/auth/google', [\App\Http\Controllers\Public\Auth\SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [\App\Http\Controllers\Public\Auth\SocialAuthController::class, 'handleGoogleCallback']);
+
 Route::view('/admin/{path}', 'app')->where('path', '.*');

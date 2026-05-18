@@ -18,5 +18,7 @@
     "admin.btn.signUp": "S'inscrire",
     "admin.btn.stay": "Rester",
     "admin.btn.update": "Mettre à jour",
-    "admin.btn.viewDetails": "Voir les détails"
+    "admin.btn.viewDetails": "Voir les détails",
+    "admin.btn.backToLogin": "Retour à la connexion",
+    "admin.btn.resendVerification": "Renvoyer l'email de vérification"
 }

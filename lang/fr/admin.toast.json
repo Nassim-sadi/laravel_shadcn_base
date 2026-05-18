@@ -11,5 +11,8 @@
     "admin.toast.saveError": "Impossible d'enregistrer les traductions.",
     "admin.toast.userDeleteFailed": "Échec de la suppression de l'utilisateur",
     "admin.toast.userDeleted": "Utilisateur supprimé avec succès",
-    "admin.toast.welcomeBack": "Bon retour !"
+    "admin.toast.welcomeBack": "Bon retour !",
+    "admin.toast.resetLinkSent": "Lien de réinitialisation envoyé !",
+    "admin.toast.verificationLinkSent": "Lien de vérification envoyé !",
+    "admin.toast.verificationFailed": "Échec de l'envoi de l'email de vérification"
 }

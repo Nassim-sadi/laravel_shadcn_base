@@ -37,18 +37,23 @@ export function setupAuthGuard(router: Router) {
     const isLoggedIn = !!authStore.user
 
     const isAuthPage = to.path.startsWith('/auth')
+    const isVerifyPage = to.path === '/email/verify'
     const isLandingPage = to.path === '/'
     const isAdminPage = to.path.startsWith('/admin')
 
     if (isLandingPage) return true
 
-    if (isAuthPage) {
-      if (isLoggedIn) return { path: '/admin' }
+    if (isAuthPage || isVerifyPage) {
+      if (isLoggedIn && isAuthPage) return { path: '/admin' }
       return true
     }
 
     if (isAdminPage && !isLoggedIn) {
       return { path: '/auth/login', query: { redirect: to.fullPath } }
+    }
+
+    if (isLoggedIn && !authStore.user?.email_verified_at) {
+      return { path: '/email/verify' }
     }
 
     const requiredRole = to.meta.requiredRole as string | undefined

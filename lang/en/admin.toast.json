@@ -11,5 +11,8 @@
     "admin.toast.saveError": "Unable to save translations.",
     "admin.toast.userDeleteFailed": "Failed to delete user",
     "admin.toast.userDeleted": "User deleted successfully",
-    "admin.toast.welcomeBack": "Welcome back!"
+    "admin.toast.welcomeBack": "Welcome back!",
+    "admin.toast.resetLinkSent": "Password reset link sent!",
+    "admin.toast.verificationLinkSent": "Verification link sent!",
+    "admin.toast.verificationFailed": "Failed to send verification email"
 }

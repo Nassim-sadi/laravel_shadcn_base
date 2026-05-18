@@ -14,6 +14,7 @@ export interface IUser {
   locale: string
   avatar: string | null
   avatar_url?: string | null
+  email_verified_at: string | null
   roles: string[]
   permissions: string[]
 }

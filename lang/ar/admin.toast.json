@@ -11,5 +11,8 @@
     "admin.toast.saveError": "تعذر حفظ الترجمات.",
     "admin.toast.userDeleteFailed": "فشل حذف المستخدم",
     "admin.toast.userDeleted": "تم حذف المستخدم بنجاح",
-    "admin.toast.welcomeBack": "مرحبًا بعودتك!"
+    "admin.toast.welcomeBack": "مرحبًا بعودتك!",
+    "admin.toast.resetLinkSent": "تم إرسال رابط إعادة تعيين كلمة المرور!",
+    "admin.toast.verificationLinkSent": "تم إرسال رابط التحقق!",
+    "admin.toast.verificationFailed": "فشل إرسال بريد التحقق"
 }

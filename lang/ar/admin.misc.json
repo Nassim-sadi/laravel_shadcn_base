@@ -53,5 +53,12 @@
     "admin.misc.bodyPlaceholder": "ابدأ الكتابة...",
     "admin.misc.noMenuFound": "لم يتم العثور على قائمة.",
     "admin.misc.trySearchCommand": "حاول البحث عن أمر أو تحقق من الإملاء.",
-    "admin.misc.pages": "الصفحات"
+    "admin.misc.pages": "الصفحات",
+    "admin.misc.enterNewPassword": "أدخل كلمة المرور الجديدة.",
+    "admin.misc.checkEmail": "تحقق من بريدك الإلكتروني",
+    "admin.misc.resetLinkSentTo": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى",
+    "admin.misc.verifyEmail": "تحقق من بريدك الإلكتروني",
+    "admin.misc.verifyEmailDesc": "يرجى التحقق من عنوان بريدك الإلكتروني.",
+    "admin.misc.verifyEmailHelp": "شكرًا على التسجيل! قبل البدء، يُرجى التحقق من عنوان بريدك الإلكتروني بالنقر على الرابط الذي أرسلناه إليك. إذا لم تستلم البريد الإلكتروني، سنرسل لك رابطًا آخر بكل سرور.",
+    "admin.misc.verificationLinkSent": "تم إرسال رابط تحقق جديد إلى بريدك الإلكتروني."
 }

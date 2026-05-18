@@ -18,5 +18,7 @@
     "admin.btn.signUp": "تسجيل",
     "admin.btn.stay": "البقاء",
     "admin.btn.update": "تحديث",
-    "admin.btn.viewDetails": "عرض التفاصيل"
+    "admin.btn.viewDetails": "عرض التفاصيل",
+    "admin.btn.backToLogin": "العودة إلى تسجيل الدخول",
+    "admin.btn.resendVerification": "إعادة إرسال بريد التحقق"
 }

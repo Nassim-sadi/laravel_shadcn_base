@@ -22,8 +22,8 @@ function navItem(title: string, url: string, icon: any) {
 
 export function useSidebar() {
   const settingsNavItems = [
-    { title: 'admin.nav.profile', url: '/admin/settings', icon: UserIcon },
     { title: 'admin.nav.account', url: '/admin/settings/account', icon: UserIcon },
+    { title: 'admin.nav.security', url: '/admin/settings/security', icon: ShieldCheckIcon },
   ]
 
   const navData = computed<NavGroup[]>(() => [

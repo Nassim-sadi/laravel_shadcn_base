@@ -18,5 +18,7 @@
     "admin.btn.signUp": "Sign Up",
     "admin.btn.stay": "Stay",
     "admin.btn.update": "Update",
-    "admin.btn.viewDetails": "View Details"
+    "admin.btn.viewDetails": "View Details",
+    "admin.btn.backToLogin": "Back to sign in",
+    "admin.btn.resendVerification": "Resend Verification Email"
 }

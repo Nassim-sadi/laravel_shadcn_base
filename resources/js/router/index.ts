@@ -14,6 +14,9 @@ const router = createRouter({
     { path: '/', redirect: '/admin' },
     { path: '/auth/login', component: () => import('../pages/auth/sign-in.vue') },
     { path: '/auth/register', component: () => import('../pages/auth/sign-up.vue') },
+    { path: '/auth/forgot-password', component: () => import('../pages/auth/forgot-password.vue') },
+    { path: '/auth/reset-password', component: () => import('../pages/auth/reset-password.vue') },
+    { path: '/email/verify', component: () => import('../pages/auth/verify-email.vue') },
     {
       path: '/admin',
       component: () => import('../layouts/default.vue'),
@@ -23,6 +26,7 @@ const router = createRouter({
         { path: 'roles', component: () => import('../pages/admin/roles/index.vue'), meta: { requiredPermission: 'roles.view' } },
         { path: 'settings', redirect: { path: '/admin/settings/account' } },
         { path: 'settings/account', component: () => import('../pages/settings/components/account-form.vue') },
+        { path: 'settings/security', component: () => import('../pages/settings/components/two-factor-form.vue') },
         ...(isEnabled('translations') ? [{ path: 'translations', component: () => import('../pages/admin/translations/index.vue'), meta: { requiredPermission: 'settings.view' } }] : []),
         ...(isEnabled('services') ? [{ path: 'services', component: () => import('../pages/admin/services/index.vue'), meta: { requiredPermission: 'services.view' } }] : []),
         ...(isEnabled('projects') ? [{ path: 'projects', component: () => import('../pages/admin/projects/index.vue'), meta: { requiredPermission: 'projects.view' } }] : []),

@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'avatar_url' => $this->avatar ? Storage::url($this->avatar) : null,
             'roles' => $this->getRoleNames(),
             'permissions' => $this->getAllPermissions()->pluck('name'),
+            'email_verified_at' => $this->email_verified_at?->toIso8601String(),
             'created_at' => $this->formatDate($this->created_at),
             'updated_at' => $this->formatDate($this->updated_at),
         ];
