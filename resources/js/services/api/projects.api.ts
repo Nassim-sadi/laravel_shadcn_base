@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { useApiFetch } from '@/composables/use-fetch'
@@ -52,11 +53,35 @@ export interface ICreateProjectRequest {
   seo_keywords?: Record<string, string | null>
 }
 
-export function useGetProjectsQuery() {
+export interface ProjectFilters {
+  search?: string
+  is_active?: string
+  client?: string
+  page?: number
+  per_page?: number
+  sort_by?: string
+  sort_order?: string
+}
+
+function buildUrl(path: string, params?: ProjectFilters): string {
+  if (!params) return path
+  const searchParams = new URLSearchParams()
+  if (params.search) searchParams.set('search', params.search)
+  if (params.is_active !== undefined) searchParams.set('is_active', params.is_active)
+  if (params.client) searchParams.set('client', params.client)
+  if (params.page) searchParams.set('page', String(params.page))
+  if (params.per_page) searchParams.set('per_page', String(params.per_page))
+  if (params.sort_by) searchParams.set('sort_by', params.sort_by)
+  if (params.sort_order) searchParams.set('sort_order', params.sort_order)
+  const qs = searchParams.toString()
+  return qs ? `${path}?${qs}` : path
+}
+
+export function useGetProjectsQuery(params?: Ref<ProjectFilters>) {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<IProjectsResponse>, Error>({
-    queryKey: ['useGetProjectsQuery'],
-    queryFn: () => apiFetch('/projects', { method: 'get' }),
+    queryKey: ['useGetProjectsQuery', params?.value],
+    queryFn: () => apiFetch(buildUrl('/projects', params?.value), { method: 'get' }),
   })
 }
 
@@ -102,6 +127,16 @@ export function useDeleteProjectMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteProjectMutation'],
     mutationFn: id => apiFetch(`/projects/${id}`, { method: 'delete' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] }),
+  })
+}
+
+export function useToggleProjectStatusMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+  return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
+    mutationKey: ['useToggleProjectStatusMutation'],
+    mutationFn: id => apiFetch(`/projects/${id}/toggle-status`, { method: 'post' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] }),
   })
 }

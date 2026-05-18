@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useApiFetch } from '@/composables/use-fetch'
 import type { IResponse } from '../types/response.type'
@@ -43,11 +44,33 @@ export interface ICreateBlogPostRequest {
   tag_ids?: number[]
 }
 
-export function useGetBlogPostsQuery() {
+export interface BlogPostFilters {
+  search?: string
+  is_published?: string
+  page?: number
+  per_page?: number
+  sort_by?: string
+  sort_order?: string
+}
+
+function buildUrl(path: string, params?: BlogPostFilters): string {
+  if (!params) return path
+  const searchParams = new URLSearchParams()
+  if (params.search) searchParams.set('search', params.search)
+  if (params.is_published !== undefined) searchParams.set('is_published', params.is_published)
+  if (params.page) searchParams.set('page', String(params.page))
+  if (params.per_page) searchParams.set('per_page', String(params.per_page))
+  if (params.sort_by) searchParams.set('sort_by', params.sort_by)
+  if (params.sort_order) searchParams.set('sort_order', params.sort_order)
+  const qs = searchParams.toString()
+  return qs ? `${path}?${qs}` : path
+}
+
+export function useGetBlogPostsQuery(params?: Ref<BlogPostFilters>) {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<IBlogPostsResponse>, Error>({
-    queryKey: ['useGetBlogPostsQuery'],
-    queryFn: () => apiFetch('/blog-posts', { method: 'get' }),
+    queryKey: ['useGetBlogPostsQuery', params?.value],
+    queryFn: () => apiFetch(buildUrl('/blog-posts', params?.value), { method: 'get' }),
   })
 }
 
@@ -92,6 +115,16 @@ export function useDeleteBlogPostMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteBlogPostMutation'],
     mutationFn: id => apiFetch(`/blog-posts/${id}`, { method: 'delete' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] }),
+  })
+}
+
+export function useToggleBlogPostStatusMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+  return useMutation<IResponse<{ is_published: boolean }>, Error, number>({
+    mutationKey: ['useToggleBlogPostStatusMutation'],
+    mutationFn: id => apiFetch(`/blog-posts/${id}/toggle-status`, { method: 'post' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] }),
   })
 }

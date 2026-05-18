@@ -21,6 +21,17 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'login',
+            'register',
+            'logout',
+            'user/*',
+            'two-factor*',
+            'forgot-password',
+            'reset-password',
+            'email/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {

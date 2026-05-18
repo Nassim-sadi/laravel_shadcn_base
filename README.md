@@ -340,6 +340,94 @@ If a module is disabled through `.env`, tests that expect that module's routes m
 - Avoid building a custom CMS or page builder.
 - Prefer small, maintainable patches over large rewrites.
 
+## Theme System
+
+Admin themes are defined as JSON files in `resources/js/themes/` and applied at runtime via CSS variables.
+
+### Adding a new theme
+
+1. **Create a JSON file** in `resources/js/themes/` (e.g. `my-theme.json`):
+
+```json
+{
+  "id": "my-theme",
+  "name": "My Theme",
+  "colors": {
+    "light": { ... },
+    "dark": { ... }
+  },
+  "fonts": {
+    "sans": "'Inter', ui-sans-serif, system-ui, sans-serif",
+    "mono": "'JetBrains Mono', ui-monospace, monospace",
+    "serif": "'Playfair Display', ui-serif, Georgia, serif"
+  }
+}
+```
+
+2. **Register it** in `resources/js/lib/themes.ts`:
+
+```ts
+import myTheme from '@/themes/my-theme.json'
+
+export const themes: Theme[] = [
+  amethystHaze as Theme,
+  myTheme as Theme,
+]
+```
+
+3. **Done** — the theme automatically appears in the admin theme customizer dropdown.
+
+### Quick reference
+
+- **`id`** — unique identifier, used in localStorage persistence
+- **`name`** — display name shown in the UI
+- **`colors.light`** — CSS variables for light mode
+- **`colors.dark`** — CSS variables for dark mode
+- **`fonts`** (optional) — `sans`, `mono`, `serif` font family stacks
+- All color values should use `oklch()` format for consistency with Tailwind v4
+- Font values are standard CSS font-family strings
+
+### Local fonts
+
+Fonts are stored locally in `public/fonts/` and declared via `@font-face` in `resources/js/assets/index.css`.
+
+To add a new font:
+
+1. Place WOFF2 files in `public/fonts/<font-name>/`
+2. Add `@font-face` declarations to `index.css`:
+
+```css
+@font-face {
+  font-family: 'My Font';
+  src: url('/fonts/my-font/my-font-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+```
+
+3. Reference it in a theme's `fonts` field:
+
+```json
+{
+  "fonts": {
+    "sans": "'My Font', sans-serif"
+  }
+}
+```
+
+Currently bundled fonts:
+
+| Font | Type | Source |
+|---|---|---|
+| Geist | Sans-serif (variable) | Vercel |
+| Geist Mono | Monospace (variable) | Vercel |
+| Inter | Sans-serif | Google Fonts |
+| JetBrains Mono | Monospace | Google Fonts |
+| Source Serif 4 | Serif | Google Fonts |
+| Oxanium | Sans-serif | Google Fonts |
+| Source Code Pro | Monospace | Google Fonts |
+
 ## Versioning Roadmap
 
 When NsBase becomes a Composer package, use semantic versioning:

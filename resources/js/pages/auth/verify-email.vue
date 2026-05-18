@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { $fetch } from 'ofetch'
+import { ofetch } from 'ofetch'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 
 import { useAuthStore } from '@/stores/auth'
@@ -14,13 +15,37 @@ const authStore = useAuthStore()
 const sending = ref(false)
 const sent = ref(false)
 
+function getXSRFToken(): string | undefined {
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/)
+  if (!match) return undefined
+  try {
+    return decodeURIComponent(match[1])
+  }
+  catch {
+    return match[1]
+  }
+}
+
+const csrfFetch = ofetch.create({
+  credentials: 'include',
+  onRequest({ options }) {
+    const token = getXSRFToken()
+    if (token) {
+      if (options.headers instanceof Headers) {
+        options.headers.set('X-XSRF-TOKEN', token)
+      } else if (options.headers) {
+        (options.headers as Record<string, string>)['X-XSRF-TOKEN'] = token
+      }
+    }
+  },
+})
+
 async function resend() {
   sending.value = true
   try {
-    await $fetch('/sanctum/csrf-cookie', { credentials: 'include' })
-    await $fetch('/email/verification-notification', {
+    await csrfFetch('/sanctum/csrf-cookie')
+    await csrfFetch('/email/verification-notification', {
       method: 'post',
-      credentials: 'include',
       headers: { Accept: 'application/json' },
     })
     sent.value = true
@@ -36,10 +61,9 @@ async function resend() {
 
 async function logout() {
   try {
-    await $fetch('/sanctum/csrf-cookie', { credentials: 'include' })
-    await $fetch('/logout', {
+    await csrfFetch('/sanctum/csrf-cookie')
+    await csrfFetch('/logout', {
       method: 'post',
-      credentials: 'include',
       headers: { Accept: 'application/json' },
     })
     authStore.clearUser()

@@ -7,11 +7,14 @@ use App\Http\Requests\Api\StoreBlogPostRequest;
 use App\Http\Requests\Api\UpdateBlogPostRequest;
 use App\Http\Resources\BlogPostResource;
 use App\Models\BlogPost;
+use App\Support\ToggleStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BlogPostController extends Controller
 {
+    use ToggleStatus;
     public function index()
     {
         $this->authorize('viewAny', BlogPost::class);
@@ -75,5 +78,10 @@ class BlogPostController extends Controller
         $blogPost->delete();
 
         return response()->json(['message' => 'Deleted successfully.']);
+    }
+
+    public function toggleStatus(BlogPost $blogPost): JsonResponse
+    {
+        return $this->doToggleStatus($blogPost);
     }
 }

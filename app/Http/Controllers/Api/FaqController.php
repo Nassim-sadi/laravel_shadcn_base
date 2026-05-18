@@ -7,10 +7,13 @@ use App\Http\Requests\Api\FaqRequest;
 use App\Http\Resources\FaqResource;
 use App\Http\Resources\FaqCollection;
 use App\Models\Faq;
+use App\Support\ToggleStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class FaqController extends Controller
 {
+    use ToggleStatus;
     public function index(Request $request)
     {
         $this->authorize('viewAny', Faq::class);
@@ -79,5 +82,10 @@ class FaqController extends Controller
         ]);
 
         return response()->json(['message' => 'FAQ deleted successfully']);
+    }
+
+    public function toggleStatus(Faq $faq): JsonResponse
+    {
+        return $this->doToggleStatus($faq);
     }
 }

@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { useApiFetch } from '@/composables/use-fetch'
@@ -38,11 +39,33 @@ export interface ICreateEmailTemplateRequest {
   is_active?: boolean
 }
 
-export function useGetEmailTemplatesQuery() {
+export interface EmailTemplateFilters {
+  search?: string
+  is_active?: string
+  page?: number
+  per_page?: number
+  sort_by?: string
+  sort_order?: string
+}
+
+function buildUrl(path: string, params?: EmailTemplateFilters): string {
+  if (!params) return path
+  const searchParams = new URLSearchParams()
+  if (params.search) searchParams.set('search', params.search)
+  if (params.is_active !== undefined) searchParams.set('is_active', params.is_active)
+  if (params.page) searchParams.set('page', String(params.page))
+  if (params.per_page) searchParams.set('per_page', String(params.per_page))
+  if (params.sort_by) searchParams.set('sort_by', params.sort_by)
+  if (params.sort_order) searchParams.set('sort_order', params.sort_order)
+  const qs = searchParams.toString()
+  return qs ? `${path}?${qs}` : path
+}
+
+export function useGetEmailTemplatesQuery(params?: Ref<EmailTemplateFilters>) {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<IEmailTemplatesResponse>, Error>({
-    queryKey: ['useGetEmailTemplatesQuery'],
-    queryFn: () => apiFetch('/email-templates', { method: 'get' }),
+    queryKey: ['useGetEmailTemplatesQuery', params?.value],
+    queryFn: () => apiFetch(buildUrl('/email-templates', params?.value), { method: 'get' }),
   })
 }
 
@@ -83,6 +106,16 @@ export function useDeleteEmailTemplateMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteEmailTemplateMutation'],
     mutationFn: id => apiFetch(`/email-templates/${id}`, { method: 'delete' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] }),
+  })
+}
+
+export function useToggleEmailTemplateStatusMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+  return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
+    mutationKey: ['useToggleEmailTemplateStatusMutation'],
+    mutationFn: id => apiFetch(`/email-templates/${id}/toggle-status`, { method: 'post' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] }),
   })
 }

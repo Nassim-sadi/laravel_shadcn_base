@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 
 import { Button } from '@/components/ui/button'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -39,6 +39,7 @@ interface BlogPostForm {
 const props = defineProps<{
   editingId: number | null
   item: any
+  open?: boolean
 }>()
 
 const open = defineModel<boolean>('open', { default: false })

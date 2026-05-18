@@ -1,19 +1,14 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-
 import { useI18n } from 'vue-i18n'
-import { THEME_PRIMARY_COLORS, THEMES } from '@/constants/themes'
+
+import { themes } from '@/lib/themes'
 import { useThemeStore } from '@/stores/theme'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
 const { setTheme } = themeStore
-const { theme: current } = storeToRefs(themeStore)
-
-watchEffect(() => {
-  document.documentElement.classList.remove(...THEMES.map(theme => `theme-${theme}`))
-  document.documentElement.classList.add(`theme-${current.value}`)
-})
+const { themeId: current } = storeToRefs(themeStore)
 </script>
 
 <template>
@@ -23,19 +18,18 @@ watchEffect(() => {
     </UiLabel>
     <div class="grid grid-cols-2 gap-2 py-1.5">
       <UiButton
-        v-for="theme in THEME_PRIMARY_COLORS" :key="theme.theme"
+        v-for="theme in themes"
+        :key="theme.id"
         variant="outline"
         class="justify-center h-8 px-3"
-        :class="current === theme.theme ? 'border-foreground border-2' : ''"
-        @click="setTheme(theme.theme)"
+        :class="current === theme.id ? 'border-foreground border-2' : ''"
+        @click="setTheme(theme.id)"
       >
         <span
-          :style="{
-            '--theme-primary': theme.primaryColor,
-          }"
-          class="size-2 rounded-full bg-(--theme-primary)"
+          class="size-2 rounded-full"
+          :style="{ backgroundColor: theme.colors.light['--primary'] }"
         />
-        <span class="text-xs">{{ theme.theme[0].toUpperCase() }}{{ theme.theme.slice(1) }}</span>
+        <span class="text-xs truncate ms-1.5">{{ theme.name }}</span>
       </UiButton>
     </div>
   </div>

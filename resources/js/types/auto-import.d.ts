@@ -96,6 +96,7 @@ declare global {
   const useSlots: typeof import('vue').useSlots
   const useSystemConfig: typeof import('../composables/use-system-config').useSystemConfig
   const useSystemTheme: typeof import('../composables/use-system-theme').useSystemTheme
+  const useTableFilters: typeof import('../composables/use-table-filters').useTableFilters
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useThemeConfig: typeof import('../composables/use-theme-config')['useThemeConfig']
   const useThemeStore: typeof import('../stores/theme').useThemeStore
@@ -111,10 +112,13 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { FilterParams } from '../composables/use-table-filters'
+  import('../composables/use-table-filters')
+  // @ts-ignore
   export type { TranslatedValue } from '../composables/use-translated-form'
   import('../composables/use-translated-form')
   // @ts-ignore
-  export type { Theme, Radius, ShadowPreset, HoverPreset } from '../constants/themes'
+  export type { Theme, Radius } from '../constants/themes'
   import('../constants/themes')
   // @ts-ignore
   export type { NavigationMode } from '../stores/sidebar-config'

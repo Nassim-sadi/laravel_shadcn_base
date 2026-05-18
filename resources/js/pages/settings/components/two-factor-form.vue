@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { $fetch } from 'ofetch'
-import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
-
-const { t } = useI18n()
 
 interface TwoFactorStatus {
   enabled: boolean

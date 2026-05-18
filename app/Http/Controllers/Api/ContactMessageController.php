@@ -8,10 +8,13 @@ use App\Http\Requests\Api\ContactMessageRequest;
 use App\Http\Resources\ContactMessageResource;
 use App\Http\Resources\ContactMessageCollection;
 use App\Models\ContactMessage;
+use App\Support\ToggleStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ContactMessageController extends Controller
 {
+    use ToggleStatus;
     public function index(Request $request)
     {
         $this->authorize('viewAny', ContactMessage::class);
@@ -84,5 +87,10 @@ class ContactMessageController extends Controller
         ]);
 
         return response()->json(['message' => 'Contact message deleted successfully']);
+    }
+
+    public function toggleStatus(ContactMessage $contactMessage): JsonResponse
+    {
+        return $this->doToggleStatus($contactMessage);
     }
 }

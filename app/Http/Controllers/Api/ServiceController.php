@@ -7,12 +7,15 @@ use App\Http\Requests\Api\ServiceRequest;
 use App\Http\Resources\ServiceResource;
 use App\Http\Resources\ServiceCollection;
 use App\Models\Service;
+use App\Support\ToggleStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class ServiceController extends Controller
 {
+    use ToggleStatus;
     public function index(Request $request)
     {
         $this->authorize('viewAny', Service::class);
@@ -104,5 +107,10 @@ class ServiceController extends Controller
         ]);
 
         return response()->json(['message' => 'Service deleted successfully']);
+    }
+
+    public function toggleStatus(Service $service): JsonResponse
+    {
+        return $this->doToggleStatus($service);
     }
 }

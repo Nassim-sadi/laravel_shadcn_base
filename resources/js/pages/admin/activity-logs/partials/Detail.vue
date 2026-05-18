@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/sheet'
 import type { IActivityLog } from '@/services/api/activity-log.api'
 
-const props = defineProps<{
+defineProps<{
   log: IActivityLog | null
 }>()
 

@@ -14,9 +14,9 @@ class StoreBlogCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required'],
             'slug' => ['required', 'string', 'max:255', 'unique:blog_categories,slug', 'alpha_dash'],
-            'description' => ['nullable', 'string', 'max:1000'],
+            'description' => ['nullable'],
             'is_published' => ['sometimes', 'boolean'],
         ];
     }

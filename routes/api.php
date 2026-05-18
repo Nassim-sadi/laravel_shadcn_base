@@ -72,21 +72,25 @@ Route::middleware('json.response')->group(function () {
         // Services
         if (config('modules.services', true)) {
             Route::apiResource('services', ServiceController::class);
+            Route::post('services/{service}/toggle-status', [ServiceController::class, 'toggleStatus']);
         }
 
         // Projects
         if (config('modules.projects', true)) {
             Route::apiResource('projects', ProjectController::class);
+            Route::post('projects/{project}/toggle-status', [ProjectController::class, 'toggleStatus']);
         }
 
         // Testimonials
         if (config('modules.testimonials', true)) {
             Route::apiResource('testimonials', TestimonialController::class);
+            Route::post('testimonials/{testimonial}/toggle-status', [TestimonialController::class, 'toggleStatus']);
         }
 
         // FAQs
         if (config('modules.faqs', true)) {
             Route::apiResource('faqs', FaqController::class);
+            Route::post('faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus']);
         }
 
         // Settings
@@ -95,16 +99,19 @@ Route::middleware('json.response')->group(function () {
         // Email Templates
         if (config('modules.email_templates', true)) {
             Route::apiResource('email-templates', EmailTemplateController::class);
+            Route::post('email-templates/{email_template}/toggle-status', [EmailTemplateController::class, 'toggleStatus']);
         }
 
         // Contact Messages
         if (config('modules.contact', true)) {
             Route::apiResource('contact-messages', ContactMessageController::class);
+            Route::post('contact-messages/{contact_message}/toggle-status', [ContactMessageController::class, 'toggleStatus']);
         }
 
         // Blog Module
         if (config('modules.blog', true)) {
             Route::apiResource('blog-posts', BlogPostController::class);
+            Route::post('blog-posts/{blog_post}/toggle-status', [BlogPostController::class, 'toggleStatus']);
             Route::apiResource('blog-categories', BlogCategoryController::class);
             Route::get('blog-tags', [BlogTagController::class, 'index']);
             Route::post('blog-tags', [BlogTagController::class, 'store']);

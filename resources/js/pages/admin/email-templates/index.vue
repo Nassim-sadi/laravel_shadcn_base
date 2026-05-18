@@ -1,18 +1,34 @@
 <script lang="ts" setup>
-import { PencilIcon, Trash2Icon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { BasicPage } from '@/components/global-layout'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useDeleteEmailTemplateMutation, useGetEmailTemplatesQuery } from '@/services/api/email-templates.api'
 import { hasPermission } from '@/composables/use-role'
+import { useTableFilters } from '@/composables/use-table-filters'
 import Form from './partials/Form.vue'
 
-const { data: response, isLoading, refetch } = useGetEmailTemplatesQuery()
-const items = computed(() => response.value?.data?.data ?? [])
+import { createColumns, type EmailTemplate } from './components/columns'
+import DataTable from './components/data-table.vue'
+
+const filters = useTableFilters()
+
+const { data: response, isLoading, refetch } = useGetEmailTemplatesQuery(filters.params)
+
+const items = computed(() => {
+  const d = response.value as any
+  return d?.data ?? []
+})
+
+const pagination = computed(() => ({
+  page: filters.page.value,
+  pageSize: filters.pageSize.value,
+  total: (response.value as any)?.total ?? 0,
+  onPageChange: (page: number) => { filters.page.value = page },
+  onPageSizeChange: (pageSize: number) => { filters.pageSize.value = pageSize; filters.page.value = 1 },
+}))
+
 const showSheet = ref(false)
 const editingId = ref<number | null>(null)
 const editingItem = ref<any>(null)
@@ -26,7 +42,7 @@ function openCreate() {
   showSheet.value = true
 }
 
-function openEdit(item: any) {
+function openEdit(item: EmailTemplate) {
   editingId.value = item.id
   editingItem.value = item
   showSheet.value = true
@@ -44,6 +60,8 @@ function handleDelete() {
   showDeleteDialog.value = false
   deleteTargetId.value = null
 }
+
+const columns = createColumns(openEdit, confirmDelete)
 </script>
 
 <template>
@@ -52,58 +70,19 @@ function handleDelete() {
       <Button variant="outline" @click="refetch">
         {{ $t('admin.btn.refresh') }}
       </Button>
-      <Button v-if="hasPermission('email-templates.create')" @click="openCreate">
-        {{ $t('admin.sheet.createTemplate') }}
+      <Button v-if="hasPermission('email_templates.create')" @click="openCreate">
+        {{ $t('admin.sheet.createEmailTemplate') }}
       </Button>
     </template>
-    <div class="space-y-4">
-      <div v-for="item in items" :key="item.id" class="flex items-start gap-4 rounded-lg border p-4">
-        <div class="flex-1 space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="font-medium">{{ item.name }}</span>
-            <Badge :variant="item.is_active ? 'default' : 'secondary'">
-              {{ item.is_active ? $t('admin.status.active') : $t('admin.status.inactive') }}
-            </Badge>
-          </div>
-          <p class="text-xs text-muted-foreground">
-            {{ $t('admin.misc.keyLabel', { value: item.key }) }}
-          </p>
-          <p class="text-sm">
-            {{ $t('admin.misc.subjectLabel', { value: item.subject }) }}
-          </p>
-          <p class="text-xs text-muted-foreground">
-            {{ $t('admin.label.body') }}: {{ item.body?.slice(0, 100) }}...
-          </p>
-          <div v-if="item.variables?.length" class="flex gap-1 flex-wrap">
-            <Badge v-for="v in item.variables" :key="v" variant="outline">
-              {{ v }}
-            </Badge>
-          </div>
-        </div>
-        <TooltipProvider>
-          <div class="flex gap-1">
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <Button v-if="hasPermission('email-templates.edit')" variant="ghost" size="icon" class="size-8" @click="openEdit(item)">
-                  <PencilIcon class="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent><p>{{ $t('admin.btn.edit') }}</p></TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <Button v-if="hasPermission('email-templates.delete')" variant="destructive" size="icon" class="size-8" @click="confirmDelete(item.id)">
-                  <Trash2Icon class="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent><p>{{ $t('admin.btn.delete') }}</p></TooltipContent>
-            </Tooltip>
-          </div>
-        </TooltipProvider>
-      </div>
-      <div v-if="items.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">
-        {{ $t('admin.empty.templates') }}
-      </div>
+    <div class="overflow-x-auto">
+      <DataTable
+        :loading="isLoading"
+        :data="items"
+        :columns="columns"
+        :server-pagination="pagination"
+        :filters
+        @refresh="refetch"
+      />
     </div>
 
     <ConfirmDialog
@@ -115,10 +94,10 @@ function handleDelete() {
       @confirm="handleDelete"
     >
       <template #title>
-        {{ $t('admin.dialog.deleteTitle', { item: 'email template' }) }}
+        {{ $t('admin.dialog.deleteTitle', { item: $t('admin.nav.emailTemplates') }) }}
       </template>
       <template #description>
-        {{ $t('admin.dialog.deleteDescription', { item: 'email template' }) }}
+        {{ $t('admin.dialog.deleteDescription', { item: $t('admin.nav.emailTemplates').toLowerCase() }) }}
       </template>
     </ConfirmDialog>
 

@@ -17,7 +17,7 @@ class BlogTagPolicy
         return $user->hasPermissionTo('blogs.create');
     }
 
-    public function delete(User $user, BlogTag $blogTag): bool
+    public function delete(User $user): bool
     {
         return $user->hasPermissionTo('blogs.delete');
     }

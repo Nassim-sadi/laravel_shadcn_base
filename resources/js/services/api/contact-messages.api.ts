@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { useApiFetch } from '@/composables/use-fetch'
@@ -26,6 +27,32 @@ export interface IContactMessagesResponse {
   total: number
 }
 
+export interface ContactMessageFilters {
+  search?: string
+  is_read?: string
+  from_date?: string
+  to_date?: string
+  page?: number
+  per_page?: number
+  sort_by?: string
+  sort_order?: string
+}
+
+function buildUrl(path: string, params?: ContactMessageFilters): string {
+  if (!params) return path
+  const searchParams = new URLSearchParams()
+  if (params.search) searchParams.set('search', params.search)
+  if (params.is_read !== undefined) searchParams.set('is_read', params.is_read)
+  if (params.from_date) searchParams.set('from_date', params.from_date)
+  if (params.to_date) searchParams.set('to_date', params.to_date)
+  if (params.page) searchParams.set('page', String(params.page))
+  if (params.per_page) searchParams.set('per_page', String(params.per_page))
+  if (params.sort_by) searchParams.set('sort_by', params.sort_by)
+  if (params.sort_order) searchParams.set('sort_order', params.sort_order)
+  const qs = searchParams.toString()
+  return qs ? `${path}?${qs}` : path
+}
+
 export function useCreateContactMessageMutation() {
   const { apiFetch } = useApiFetch()
   const queryClient = useQueryClient()
@@ -42,11 +69,11 @@ export function useCreateContactMessageMutation() {
   })
 }
 
-export function useGetContactMessagesQuery() {
+export function useGetContactMessagesQuery(params?: Ref<ContactMessageFilters>) {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<IContactMessagesResponse>, Error>({
-    queryKey: ['useGetContactMessagesQuery'],
-    queryFn: () => apiFetch('/contact-messages', { method: 'get' }),
+    queryKey: ['useGetContactMessagesQuery', params?.value],
+    queryFn: () => apiFetch(buildUrl('/contact-messages', params?.value), { method: 'get' }),
   })
 }
 
@@ -81,6 +108,16 @@ export function useDeleteContactMessageMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteContactMessageMutation'],
     mutationFn: id => apiFetch(`/contact-messages/${id}`, { method: 'delete' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
+  })
+}
+
+export function useToggleContactMessageStatusMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+  return useMutation<IResponse<{ is_read: boolean }>, Error, number>({
+    mutationKey: ['useToggleContactMessageStatusMutation'],
+    mutationFn: id => apiFetch(`/contact-messages/${id}/toggle-status`, { method: 'post' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
   })
 }

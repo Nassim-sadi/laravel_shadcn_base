@@ -37,6 +37,7 @@ interface ProjectForm {
 const props = defineProps<{
   editingId: number | null
   item: any
+  open?: boolean
 }>()
 
 const open = defineModel<boolean>('open', { default: false })

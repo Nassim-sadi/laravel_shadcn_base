@@ -7,11 +7,14 @@ use App\Http\Requests\Api\TestimonialRequest;
 use App\Http\Resources\TestimonialResource;
 use App\Http\Resources\TestimonialCollection;
 use App\Models\Testimonial;
+use App\Support\ToggleStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class TestimonialController extends Controller
 {
+    use ToggleStatus;
     public function index(Request $request)
     {
         $this->authorize('viewAny', Testimonial::class);
@@ -105,5 +108,10 @@ class TestimonialController extends Controller
         ]);
 
         return response()->json(['message' => 'Testimonial deleted successfully']);
+    }
+
+    public function toggleStatus(Testimonial $testimonial): JsonResponse
+    {
+        return $this->doToggleStatus($testimonial);
     }
 }

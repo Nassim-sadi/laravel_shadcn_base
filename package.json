@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint resources/js --fix",
     "typecheck": "vue-tsc -b --noEmit",
-    "check": "vue-tsc -b --noEmit && eslint resources/js"
+    "check": "vue-tsc -b --noEmit && eslint resources/js",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",
@@ -23,11 +25,13 @@
     "@types/nprogress": "^0.2.3",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitejs/plugin-vue-jsx": "^4.1.1",
+    "@vue/test-utils": "^2.4.10",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.0.1",
     "daisyui": "^5.5.19",
     "eslint": "^9.15.0",
     "eslint-plugin-format": "^1.0.1",
+    "happy-dom": "^20.9.0",
     "laravel-vite-plugin": "^2.0.0",
     "lint-staged": "^16.4.0",
     "rollup-plugin-visualizer": "^7.0.0",

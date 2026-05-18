@@ -1,16 +1,19 @@
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { useLoginMutation, useLogoutMutation, useUserQuery } from '@/services/api/auth.api'
 import { useAuthStore } from '@/stores/auth'
 
 export function useAuth() {
+  const route = useRoute()
   const router = useRouter()
 
   const authStore = useAuthStore()
   const { user, isLogin } = storeToRefs(authStore)
 
-  const { data: userData, refetch: refetchUser } = useUserQuery()
+  const isAuthPage = computed(() => route.path.startsWith('/auth/'))
+
+  const { data: userData, refetch: refetchUser } = useUserQuery(!isAuthPage.value)
 
   watch(userData, (newUser) => {
     if (newUser?.data) {

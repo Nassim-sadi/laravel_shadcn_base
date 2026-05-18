@@ -1,18 +1,33 @@
 <script lang="ts" setup>
-import { PencilIcon, Trash2Icon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { BasicPage } from '@/components/global-layout'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useDeleteServiceMutation, useGetServicesQuery } from '@/services/api/services.api'
 import { hasPermission } from '@/composables/use-role'
+import { useTableFilters } from '@/composables/use-table-filters'
 import Form from './partials/Form.vue'
 
-const { data: response, isLoading, refetch } = useGetServicesQuery()
-const services = computed(() => response.value?.data?.data ?? [])
+import { createColumns, type Service } from './components/columns'
+import DataTable from './components/data-table.vue'
+
+const filters = useTableFilters()
+
+const { data: response, isLoading, refetch } = useGetServicesQuery(filters.params)
+
+const services = computed(() => {
+  const d = response.value as any
+  return d?.data ?? []
+})
+
+const pagination = computed(() => ({
+  page: filters.page.value,
+  pageSize: filters.pageSize.value,
+  total: (response.value as any)?.total ?? 0,
+  onPageChange: (page: number) => { filters.page.value = page },
+  onPageSizeChange: (pageSize: number) => { filters.pageSize.value = pageSize; filters.page.value = 1 },
+}))
 
 const showSheet = ref(false)
 const editingId = ref<number | null>(null)
@@ -27,7 +42,7 @@ function openCreate() {
   showSheet.value = true
 }
 
-function openEdit(service: any) {
+function openEdit(service: Service) {
   editingId.value = service.id
   editingItem.value = service
   showSheet.value = true
@@ -45,6 +60,8 @@ function handleDelete() {
   showDeleteDialog.value = false
   deleteTargetId.value = null
 }
+
+const columns = createColumns(openEdit, confirmDelete)
 </script>
 
 <template>
@@ -57,46 +74,15 @@ function handleDelete() {
         {{ $t('admin.sheet.createService') }}
       </Button>
     </template>
-    <div class="space-y-4">
-      <div v-for="service in services" :key="service.id" class="flex items-start gap-4 rounded-lg border p-4">
-        <div class="flex-1 space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="font-medium">{{ service.title }}</span>
-            <Badge :variant="service.is_active ? 'default' : 'secondary'">
-              {{ service.is_active ? $t('admin.status.active') : $t('admin.status.inactive') }}
-            </Badge>
-          </div>
-          <p class="text-sm text-muted-foreground">
-            {{ service.description?.slice(0, 100) ?? $t('admin.misc.noDescription') }}
-          </p>
-          <p class="text-xs text-muted-foreground">
-            {{ $t('admin.misc.orderLabel', { value: service.order }) }} | {{ $t('admin.misc.iconLabel', { value: service.icon || '-' }) }}
-          </p>
-        </div>
-        <TooltipProvider>
-          <div class="flex gap-1">
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <Button v-if="hasPermission('services.edit')" variant="ghost" size="icon" class="size-8" @click="openEdit(service)">
-                  <PencilIcon class="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent><p>{{ $t('admin.btn.edit') }}</p></TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <Button v-if="hasPermission('services.delete')" variant="destructive" size="icon" class="size-8" @click="confirmDelete(service.id)">
-                  <Trash2Icon class="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent><p>{{ $t('admin.btn.delete') }}</p></TooltipContent>
-            </Tooltip>
-          </div>
-        </TooltipProvider>
-      </div>
-      <div v-if="services.length === 0 && !isLoading" class="text-center py-8 text-muted-foreground">
-        {{ $t('admin.empty.services') }}
-      </div>
+    <div class="overflow-x-auto">
+      <DataTable
+        :loading="isLoading"
+        :data="services"
+        :columns="columns"
+        :server-pagination="pagination"
+        :filters
+        @refresh="refetch"
+      />
     </div>
 
     <ConfirmDialog

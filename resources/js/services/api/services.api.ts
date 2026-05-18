@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { useApiFetch } from '@/composables/use-fetch'
@@ -49,11 +50,35 @@ export interface ICreateServiceRequest {
   seo_keywords?: Record<string, string | null>
 }
 
-export function useGetServicesQuery() {
+export interface ServiceFilters {
+  search?: string
+  is_active?: string
+  icon?: string
+  page?: number
+  per_page?: number
+  sort_by?: string
+  sort_order?: string
+}
+
+function buildUrl(path: string, params?: ServiceFilters): string {
+  if (!params) return path
+  const searchParams = new URLSearchParams()
+  if (params.search) searchParams.set('search', params.search)
+  if (params.is_active !== undefined) searchParams.set('is_active', params.is_active)
+  if (params.icon) searchParams.set('icon', params.icon)
+  if (params.page) searchParams.set('page', String(params.page))
+  if (params.per_page) searchParams.set('per_page', String(params.per_page))
+  if (params.sort_by) searchParams.set('sort_by', params.sort_by)
+  if (params.sort_order) searchParams.set('sort_order', params.sort_order)
+  const qs = searchParams.toString()
+  return qs ? `${path}?${qs}` : path
+}
+
+export function useGetServicesQuery(params?: Ref<ServiceFilters>) {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<IServicesResponse>, Error>({
-    queryKey: ['useGetServicesQuery'],
-    queryFn: () => apiFetch('/services', { method: 'get' }),
+    queryKey: ['useGetServicesQuery', params?.value],
+    queryFn: () => apiFetch(buildUrl('/services', params?.value), { method: 'get' }),
   })
 }
 
@@ -99,6 +124,16 @@ export function useDeleteServiceMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteServiceMutation'],
     mutationFn: id => apiFetch(`/services/${id}`, { method: 'delete' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] }),
+  })
+}
+
+export function useToggleServiceStatusMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+  return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
+    mutationKey: ['useToggleServiceStatusMutation'],
+    mutationFn: id => apiFetch(`/services/${id}/toggle-status`, { method: 'post' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] }),
   })
 }

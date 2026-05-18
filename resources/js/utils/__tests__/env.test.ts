@@ -84,7 +84,7 @@ describe('envSchema validation', () => {
       expect(result.success).toBe(false)
       if (!result.success) {
         expect(result.error.issues[0].path).toContain('VITE_SERVER_API_URL')
-        expect(result.error.issues[0].code).toBe('invalid_format')
+        expect(result.error.issues[0].code).toBe('invalid_string')
       }
     })
 

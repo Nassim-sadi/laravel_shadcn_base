@@ -15,18 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
             ContentSeeder::class,
+            SuperAdminSeeder::class,
         ]);
-
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@test.com'],
-            [
-                'name' => 'Admin',
-                'password' => bcrypt('password'),
-                'role' => 'super_admin',
-                'is_active' => true,
-            ]
-        );
-
-        $admin->syncRoles(['super_admin']);
     }
 }

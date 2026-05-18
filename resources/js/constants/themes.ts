@@ -14,17 +14,3 @@ export const THEME_PRIMARY_COLORS: { theme: Theme, primaryColor: string }[] = [
 
 export type Radius = typeof RADIUS[number]
 export const RADIUS = [0, 0.25, 0.5, 0.75, 1] as const
-
-export type ShadowPreset = 'subtle' | 'medium' | 'prominent'
-export const SHADOW_PRESETS: { value: ShadowPreset, label: string, shadows: { sm: string, md: string, lg: string } }[] = [
-  { value: 'subtle', label: 'admin.theme.shadowSubtle', shadows: { sm: '0 1px 2px 0 rgb(0 0 0 / 0.03)', md: '0 4px 6px -1px rgb(0 0 0 / 0.05)', lg: '0 10px 15px -3px rgb(0 0 0 / 0.05)' } },
-  { value: 'medium', label: 'admin.theme.shadowMedium', shadows: { sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)', md: '0 4px 6px -1px rgb(0 0 0 / 0.1)', lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)' } },
-  { value: 'prominent', label: 'admin.theme.shadowProminent', shadows: { sm: '0 1px 3px 0 rgb(0 0 0 / 0.08)', md: '0 6px 10px -2px rgb(0 0 0 / 0.15)', lg: '0 12px 20px -4px rgb(0 0 0 / 0.15)' } },
-] as const
-
-export type HoverPreset = 'subtle' | 'medium' | 'strong'
-export const HOVER_PRESETS: { value: HoverPreset, label: string, overlay: number }[] = [
-  { value: 'subtle', label: 'admin.theme.hoverSubtle', overlay: 0.03 },
-  { value: 'medium', label: 'admin.theme.hoverMedium', overlay: 0.05 },
-  { value: 'strong', label: 'admin.theme.hoverStrong', overlay: 0.1 },
-] as const

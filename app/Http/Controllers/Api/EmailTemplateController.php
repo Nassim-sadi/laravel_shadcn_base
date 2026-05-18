@@ -7,10 +7,13 @@ use App\Http\Requests\Api\EmailTemplateRequest;
 use App\Http\Resources\EmailTemplateResource;
 use App\Http\Resources\EmailTemplateCollection;
 use App\Models\EmailTemplate;
+use App\Support\ToggleStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EmailTemplateController extends Controller
 {
+    use ToggleStatus;
     public function index(Request $request)
     {
         $this->authorize('viewAny', EmailTemplate::class);
@@ -91,5 +94,10 @@ class EmailTemplateController extends Controller
         $rendered = $emailTemplate->render($validated['data'] ?? []);
 
         return response()->json($rendered);
+    }
+
+    public function toggleStatus(EmailTemplate $emailTemplate): JsonResponse
+    {
+        return $this->doToggleStatus($emailTemplate);
     }
 }

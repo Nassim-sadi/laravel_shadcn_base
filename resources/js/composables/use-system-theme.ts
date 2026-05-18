@@ -1,49 +1,49 @@
+import { useColorMode } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { watch } from 'vue'
 
-import { HOVER_PRESETS, SHADOW_PRESETS, THEMES } from '@/constants/themes'
+import { getThemeById } from '@/lib/themes'
 import { useThemeStore } from '@/stores/theme'
+
+function applyThemeVariables(themeId: string, mode: 'light' | 'dark') {
+  const theme = getThemeById(themeId)
+  if (!theme) return
+
+  const colors = mode === 'dark' ? theme.colors.dark : theme.colors.light
+
+  Object.entries(colors).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(key, value)
+  })
+
+  if (theme.fonts) {
+    if (theme.fonts.sans) document.documentElement.style.setProperty('--font-sans', theme.fonts.sans)
+    if (theme.fonts.mono) document.documentElement.style.setProperty('--font-mono', theme.fonts.mono)
+    if (theme.fonts.serif) document.documentElement.style.setProperty('--font-serif', theme.fonts.serif)
+  }
+}
 
 export function useSystemTheme() {
   const themeStore = useThemeStore()
-  const { setTheme, setRadius, setShadowPreset, setHoverPreset } = themeStore
-  const { theme, radius, shadowPreset, hoverPreset } = storeToRefs(themeStore)
+  const { setTheme, setRadius } = themeStore
+  const { themeId, radius } = storeToRefs(themeStore)
+  const mode = useColorMode()
 
   if (typeof document !== 'undefined') {
-    watch(theme, (theme) => {
-      document.documentElement.classList.remove(...THEMES.map(t => `theme-${t}`))
-      document.documentElement.classList.add(`theme-${theme}`)
-    }, { immediate: true })
+    watch(
+      [themeId, mode],
+      ([id, currentMode]) => {
+        const colorMode = currentMode === 'auto'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : currentMode
+        applyThemeVariables(id, colorMode)
+      },
+      { immediate: true },
+    )
 
-    watch(radius, (radius) => {
-      document.documentElement.style.setProperty('--radius', `${radius}rem`)
-    }, { immediate: true })
-
-    watch(shadowPreset, (preset) => {
-      const p = SHADOW_PRESETS.find(sp => sp.value === preset)
-      if (p) {
-        document.documentElement.style.setProperty('--shadow-sm', p.shadows.sm)
-        document.documentElement.style.setProperty('--shadow-md', p.shadows.md)
-        document.documentElement.style.setProperty('--shadow-lg', p.shadows.lg)
-      }
-    }, { immediate: true })
-
-    watch(hoverPreset, (preset) => {
-      const p = HOVER_PRESETS.find(hp => hp.value === preset)
-      if (p) {
-        document.documentElement.style.setProperty('--hover-overlay', String(p.overlay))
-      }
+    watch(radius, (r) => {
+      document.documentElement.style.setProperty('--radius', `${r}rem`)
     }, { immediate: true })
   }
 
-  return {
-    theme,
-    radius,
-    shadowPreset,
-    hoverPreset,
-    setTheme,
-    setRadius,
-    setShadowPreset,
-    setHoverPreset,
-  }
+  return { themeId, radius, setTheme, setRadius }
 }

@@ -9,6 +9,7 @@ import { useUpdateContactMessageMutation } from '@/services/api/contact-messages
 const props = defineProps<{
   replyingId: number | null
   initialReply: string
+  open?: boolean
 }>()
 
 const open = defineModel<boolean>('open', { default: false })

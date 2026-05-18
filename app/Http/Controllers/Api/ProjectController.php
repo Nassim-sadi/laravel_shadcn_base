@@ -7,12 +7,15 @@ use App\Http\Requests\Api\ProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\ProjectCollection;
 use App\Models\Project;
+use App\Support\ToggleStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class ProjectController extends Controller
 {
+    use ToggleStatus;
     public function index(Request $request)
     {
         $this->authorize('viewAny', Project::class);
@@ -106,5 +109,10 @@ class ProjectController extends Controller
         ]);
 
         return response()->json(['message' => 'Project deleted successfully']);
+    }
+
+    public function toggleStatus(Project $project): JsonResponse
+    {
+        return $this->doToggleStatus($project);
     }
 }

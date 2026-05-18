@@ -14,10 +14,10 @@ class StoreBlogPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required'],
             'slug' => ['required', 'string', 'max:255', 'unique:blog_posts,slug', 'alpha_dash'],
-            'excerpt' => ['nullable', 'string', 'max:500'],
-            'body' => ['nullable', 'string'],
+            'excerpt' => ['nullable'],
+            'body' => ['nullable'],
             'is_published' => ['sometimes', 'boolean'],
             'featured' => ['sometimes', 'boolean'],
             'category_id' => ['nullable', 'exists:blog_categories,id'],

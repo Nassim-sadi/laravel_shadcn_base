@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { useApiFetch } from '@/composables/use-fetch'
@@ -53,11 +54,33 @@ export interface ICreateTestimonialRequest {
   seo_description?: TranslatedValue
 }
 
-export function useGetTestimonialsQuery() {
+export interface TestimonialFilters {
+  search?: string
+  is_active?: string
+  page?: number
+  per_page?: number
+  sort_by?: string
+  sort_order?: string
+}
+
+function buildUrl(path: string, params?: TestimonialFilters): string {
+  if (!params) return path
+  const searchParams = new URLSearchParams()
+  if (params.search) searchParams.set('search', params.search)
+  if (params.is_active !== undefined) searchParams.set('is_active', params.is_active)
+  if (params.page) searchParams.set('page', String(params.page))
+  if (params.per_page) searchParams.set('per_page', String(params.per_page))
+  if (params.sort_by) searchParams.set('sort_by', params.sort_by)
+  if (params.sort_order) searchParams.set('sort_order', params.sort_order)
+  const qs = searchParams.toString()
+  return qs ? `${path}?${qs}` : path
+}
+
+export function useGetTestimonialsQuery(params?: Ref<TestimonialFilters>) {
   const { apiFetch } = useApiFetch()
   return useQuery<IResponse<ITestimonialsResponse>, Error>({
-    queryKey: ['useGetTestimonialsQuery'],
-    queryFn: () => apiFetch('/testimonials', { method: 'get' }),
+    queryKey: ['useGetTestimonialsQuery', params?.value],
+    queryFn: () => apiFetch(buildUrl('/testimonials', params?.value), { method: 'get' }),
   })
 }
 
@@ -98,6 +121,16 @@ export function useDeleteTestimonialMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteTestimonialMutation'],
     mutationFn: id => apiFetch(`/testimonials/${id}`, { method: 'delete' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] }),
+  })
+}
+
+export function useToggleTestimonialStatusMutation() {
+  const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
+  return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
+    mutationKey: ['useToggleTestimonialStatusMutation'],
+    mutationFn: id => apiFetch(`/testimonials/${id}/toggle-status`, { method: 'post' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] }),
   })
 }

@@ -17,9 +17,9 @@ class UpdateBlogCategoryRequest extends FormRequest
         $category = $this->route('blogCategory');
 
         return [
-            'name' => ['sometimes', 'string', 'max:255'],
+            'name' => ['sometimes'],
             'slug' => ['sometimes', 'string', 'max:255', Rule::unique('blog_categories', 'slug')->ignore($category), 'alpha_dash'],
-            'description' => ['nullable', 'string', 'max:1000'],
+            'description' => ['nullable'],
             'is_published' => ['sometimes', 'boolean'],
         ];
     }
