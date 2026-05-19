@@ -9,7 +9,7 @@
     <section class="bg-base-200/60 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
-                <a href="{{ route('public.services.index') }}" class="link link-hover text-sm">&larr; Back to services</a>
+                <a href="{{ route('public.services.index') }}" class="link link-hover text-sm">&larr; {{ __('public.backToServices') }}</a>
             </div>
 
             @php
@@ -39,7 +39,7 @@
                     @if ($service->url)
                         <div class="mt-8">
                             <a href="{{ $service->url }}" class="btn btn-primary" target="_blank" rel="noreferrer">
-                                Visit site
+                                {{ __('services.visitSite') }}
                             </a>
                         </div>
                     @endif

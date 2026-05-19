@@ -9,7 +9,7 @@
     <section class="bg-base-200/60 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
-                <a href="{{ route('public.projects.index') }}" class="link link-hover text-sm">&larr; Back to projects</a>
+                <a href="{{ route('public.projects.index') }}" class="link link-hover text-sm">&larr; {{ __('public.backToProjects') }}</a>
             </div>
 
             @php
@@ -32,14 +32,14 @@
                     <h1 class="text-4xl font-bold">{{ $project->translated('title') }}</h1>
 
                     @if ($project->translated('client'))
-                        <p class="mt-2 text-lg text-base-content/60">Client: {{ $project->translated('client') }}</p>
+                        <p class="mt-2 text-lg text-base-content/60">{{ __('projects.client') }}: {{ $project->translated('client') }}</p>
                     @endif
 
                     <p class="mt-6 text-lg leading-relaxed text-base-content/70">{{ $project->translated('description') }}</p>
 
                     @if (filled($project->technologies))
                         <div class="mt-6">
-                            <p class="text-sm font-semibold uppercase text-base-content/60 mb-2">Technologies</p>
+                            <p class="text-sm font-semibold uppercase text-base-content/60 mb-2">{{ __('projects.technologies') }}</p>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($project->technologies as $technology)
                                     <span class="badge badge-outline">{{ $technology }}</span>
@@ -51,7 +51,7 @@
                     @if ($project->url)
                         <div class="mt-8">
                             <a href="{{ $project->url }}" class="btn btn-primary" target="_blank" rel="noreferrer">
-                                Visit project
+                                {{ __('projects.visitProject') }}
                             </a>
                         </div>
                     @endif

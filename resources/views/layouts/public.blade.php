@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="corporate">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}" data-theme="corporate">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="@yield('meta_description', 'Structured Laravel business websites with clear Blade frontends and maintainable backend logic.')">
+        <meta name="description" content="@yield('meta_description', __('public.meta_description'))">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>@yield('title', config('app.name', 'NsBase'))</title>
@@ -11,7 +11,7 @@
         <link rel="canonical" href="{{ url()->current() }}" />
 
         <meta property="og:title" content="@yield('og_title', config('app.name', 'NsBase'))" />
-        <meta property="og:description" content="@yield('og_description', 'Structured Laravel business websites with clear Blade frontends and maintainable backend logic.')" />
+        <meta property="og:description" content="@yield('og_description', __('public.meta_description'))" />
         <meta property="og:url" content="{{ url()->current() }}" />
         <meta property="og:type" content="@yield('og_type', 'website')" />
         <meta property="og:site_name" content="{{ config('app.name', 'NsBase') }}" />
@@ -20,7 +20,7 @@
         <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="@yield('og_title', config('app.name', 'NsBase'))" />
-        <meta name="twitter:description" content="@yield('og_description', 'Structured Laravel business websites with clear Blade frontends and maintainable backend logic.')" />
+        <meta name="twitter:description" content="@yield('og_description', __('public.meta_description'))" />
 
         <script type="application/ld+json">
         {
@@ -54,35 +54,40 @@
                 <nav class="navbar-center hidden lg:flex">
                     <ul class="menu menu-horizontal gap-1 px-1">
                         @if (Route::has('public.services.index'))
-                            <li><a href="{{ route('public.services.index') }}">Services</a></li>
+                            <li><a href="{{ route('public.services.index') }}">{{ __('public.nav.services') }}</a></li>
                         @endif
                         @if (Route::has('public.projects.index'))
-                            <li><a href="{{ route('public.projects.index') }}">Projects</a></li>
+                            <li><a href="{{ route('public.projects.index') }}">{{ __('public.nav.projects') }}</a></li>
                         @endif
-                        <li><a href="{{ route('public.about') }}">About</a></li>
+                        @if (Route::has('public.blog.index'))
+                            <li><a href="{{ route('public.blog.index') }}">{{ __('public.nav.blog') }}</a></li>
+                        @endif
+                        <li><a href="{{ route('public.about') }}">{{ __('public.nav.about') }}</a></li>
                         @if (config('modules.testimonials', true))
-                            <li><a href="{{ route('home') }}#testimonials">Testimonials</a></li>
+                            <li><a href="{{ route('home') }}#testimonials">{{ __('public.nav.testimonials') }}</a></li>
                         @endif
                         @if (config('modules.faqs', true))
-                            <li><a href="{{ route('home') }}#faq">FAQ</a></li>
+                            <li><a href="{{ route('home') }}#faq">{{ __('public.nav.faq') }}</a></li>
                         @endif
                         @if (Route::has('public.contact'))
-                            <li><a href="{{ route('public.contact') }}">Contact</a></li>
+                            <li><a href="{{ route('public.contact') }}">{{ __('public.nav.contact') }}</a></li>
                         @endif
                     </ul>
                 </nav>
 
                 <div class="navbar-end gap-2">
+                    <x-language-switcher />
+
                     @if (config('modules.client_auth'))
                         @auth
-                            <a href="/admin" class="btn btn-ghost btn-sm">Dashboard</a>
+                            <a href="/admin" class="btn btn-ghost btn-sm">{{ __('public.nav.dashboard') }}</a>
                         @else
-                            <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">Sign In</a>
+                            <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">{{ __('public.nav.signIn') }}</a>
                         @endauth
                     @endif
 
                     @if (Route::has('public.contact'))
-                        <a href="{{ route('public.contact') }}" class="btn btn-primary">Start a project</a>
+                        <a href="{{ route('public.contact') }}" class="btn btn-primary">{{ __('public.nav.startProject') }}</a>
                     @endif
                 </div>
             </div>
@@ -94,8 +99,8 @@
 
         <footer class="border-t border-base-300 bg-base-200/60">
             <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-base-content/70 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-                <p>&copy; {{ now()->year }} {{ config('app.name', 'NsBase') }}. All rights reserved.</p>
-                <p>Blade frontend. Laravel backend. Vue only where the app needs it.</p>
+                <p>&copy; {{ now()->year }} {{ config('app.name', 'NsBase') }}. {{ __('public.footer.rights') }}</p>
+                <p>{{ __('public.footer.tagline') }}</p>
             </div>
         </footer>
     </body>

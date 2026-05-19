@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'json.response' => \App\Http\Middleware\ForceJsonResponse::class,
         ]);
 
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);

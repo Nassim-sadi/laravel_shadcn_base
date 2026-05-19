@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\Public\AboutController;
+use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\LocaleController;
 use App\Http\Controllers\Public\ServiceController;
 use App\Http\Controllers\Public\ProjectController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/locale', [LocaleController::class, 'switch'])->name('locale.switch');
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -22,6 +26,7 @@ Route::get('/robots.txt', function () {
 Route::get('/sitemap.xml', function () {
     $servicesEnabled = Route::has('public.services.index') && Route::has('public.services.show');
     $projectsEnabled = Route::has('public.projects.index') && Route::has('public.projects.show');
+    $blogEnabled = Route::has('public.blog.index') && Route::has('public.blog.show');
     $contactEnabled = Route::has('public.contact');
 
     $services = $servicesEnabled
@@ -29,6 +34,9 @@ Route::get('/sitemap.xml', function () {
         : collect();
     $projects = $projectsEnabled
         ? \App\Models\Project::query()->where('is_active', true)->get(['id', 'slug', 'updated_at'])
+        : collect();
+    $blogPosts = $blogEnabled
+        ? \App\Models\BlogPost::query()->where('is_published', true)->get(['id', 'slug', 'updated_at'])
         : collect();
 
     $urls = [
@@ -42,6 +50,10 @@ Route::get('/sitemap.xml', function () {
 
     if ($projectsEnabled) {
         $urls[] = ['loc' => route('public.projects.index'), 'priority' => '0.9'];
+    }
+
+    if ($blogEnabled) {
+        $urls[] = ['loc' => route('public.blog.index'), 'priority' => '0.9'];
     }
 
     if ($contactEnabled) {
@@ -77,6 +89,14 @@ Route::get('/sitemap.xml', function () {
         $xml .= "  </url>\n";
     }
 
+    foreach ($blogPosts as $post) {
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>" . route('public.blog.show', $post) . "</loc>\n";
+        $xml .= "    <priority>0.7</priority>\n";
+        $xml .= "    <lastmod>{$post->updated_at->toDateString()}</lastmod>\n";
+        $xml .= "  </url>\n";
+    }
+
     $xml .= '</urlset>';
 
     return response($xml)->header('Content-Type', 'application/xml');
@@ -95,6 +115,11 @@ if (config('modules.services', true)) {
 if (config('modules.projects', true)) {
     Route::get('/projects', [ProjectController::class, 'index'])->name('public.projects.index');
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('public.projects.show');
+}
+
+if (config('modules.blog', false)) {
+    Route::get('/blog', [BlogController::class, 'index'])->name('public.blog.index');
+    Route::get('/blog/{blogPost}', [BlogController::class, 'show'])->name('public.blog.show');
 }
 
 Route::view('/auth/login', 'app')->name('auth.login');

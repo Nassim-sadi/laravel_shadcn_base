@@ -1,19 +1,19 @@
 @extends('layouts.public')
 
-@section('title', 'Projects - ' . config('app.name', 'NsBase'))
-@section('meta_description', 'Browse our portfolio of web development and digital projects.')
-@section('og_title', 'Projects - ' . config('app.name', 'NsBase'))
-@section('og_description', 'Browse our portfolio of web development and digital projects.')
+@section('title', __('public.nav.projects') . ' - ' . config('app.name', 'NsBase'))
+@section('meta_description', __('public.nav.projects') . ' - ' . config('app.name', 'NsBase'))
+@section('og_title', __('public.nav.projects') . ' - ' . config('app.name', 'NsBase'))
+@section('og_description', __('public.nav.projects') . ' - ' . config('app.name', 'NsBase'))
 
 @section('content')
     <section class="bg-base-200/60 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div class="max-w-2xl">
-                    <p class="text-sm font-semibold uppercase text-primary">Projects</p>
-                    <h1 class="mt-3 text-4xl font-bold">Selected work</h1>
+                    <p class="text-sm font-semibold uppercase text-primary">{{ __('public.nav.projects') }}</p>
+                    <h1 class="mt-3 text-4xl font-bold">{{ __('projects.title') }}</h1>
                     <p class="mt-4 text-base-content/70">
-                        Published projects come straight from the database, including clients, images, links, and technologies.
+                        {{ __('projects.subtitle') }}
                     </p>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                                 </div>
 
                                 @if ($project->url)
-                                    <a href="{{ $project->url }}" class="btn btn-sm btn-primary" target="_blank" rel="noreferrer">Visit</a>
+                                    <a href="{{ $project->url }}" class="btn btn-sm btn-primary" target="_blank" rel="noreferrer">{{ __('projects.visit') }}</a>
                                 @endif
                             </div>
 
@@ -61,13 +61,13 @@
                             @endif
 
                             <div class="card-actions mt-2">
-                                <a href="{{ route('public.projects.show', $project) }}" class="btn btn-sm btn-outline">View details</a>
+                                <a href="{{ route('public.projects.show', $project) }}" class="btn btn-sm btn-outline">{{ __('projects.viewDetails') }}</a>
                             </div>
                         </div>
                     </article>
                 @empty
                     <div class="alert lg:col-span-2">
-                        <span>No active projects yet. Add projects from the admin panel to publish them here.</span>
+                        <span>{{ __('public.noProjects') }}</span>
                     </div>
                 @endforelse
             </div>

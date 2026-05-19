@@ -9,8 +9,10 @@ class LocaleController extends Controller
 {
     public function switch(Request $request)
     {
+        $supported = config('localization.supported_codes', ['fr', 'en', 'ar']);
+
         $validated = $request->validate([
-            'locale' => 'required|string|in:fr,en,ar',
+            'locale' => ['required', 'string', 'in:' . implode(',', $supported)],
             'redirect' => 'nullable|string',
         ]);
 

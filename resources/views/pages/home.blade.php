@@ -1,27 +1,27 @@
 @extends('layouts.public')
 
 @section('title', config('app.name', 'NsBase') . ' - Business Websites and Digital Systems')
-@section('meta_description', 'Explore services, projects, testimonials, and FAQs powered by Laravel structured content.')
+@section('meta_description', __('home.hero.subtitle'))
 @section('og_title', config('app.name', 'NsBase') . ' - Business Websites and Digital Systems')
-@section('og_description', 'Explore services, projects, testimonials, and FAQs powered by Laravel structured content.')
+@section('og_description', __('home.hero.subtitle'))
 
 @section('content')
     <section class="bg-base-200/60">
         <div class="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
             <div class="max-w-3xl">
-                <div class="badge badge-primary badge-outline mb-5">Blade frontend + dynamic content</div>
+                <div class="badge badge-primary badge-outline mb-5">{{ __('home.hero.badge') }}</div>
                 <h1 class="text-4xl font-bold leading-tight text-base-content sm:text-5xl lg:text-6xl">
-                    Build a clear public website around content you manage from Laravel.
+                    {{ __('home.hero.title') }}
                 </h1>
                 <p class="mt-6 max-w-2xl text-lg leading-8 text-base-content/70">
-                    Services, projects, testimonials, and FAQs are rendered by Blade from structured database records, while Vue stays focused on the admin workspace.
+                    {{ __('home.hero.subtitle') }}
                 </p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                     @if (config('modules.contact', true))
-                        <a href="#contact" class="btn btn-primary btn-lg">Start a project</a>
+                        <a href="#contact" class="btn btn-primary btn-lg">{{ __('home.hero.startProject') }}</a>
                     @endif
                     @if (config('modules.projects', true))
-                        <a href="#projects" class="btn btn-outline btn-lg">View work</a>
+                        <a href="#projects" class="btn btn-outline btn-lg">{{ __('home.hero.viewWork') }}</a>
                     @endif
                 </div>
             </div>
@@ -30,25 +30,25 @@
                 <div class="stats stats-vertical w-full bg-base-100">
                     @if (config('modules.services', true))
                         <div class="stat">
-                            <div class="stat-title">Services</div>
+                            <div class="stat-title">{{ __('home.stats.services') }}</div>
                             <div class="stat-value text-primary">{{ $services->count() }}</div>
-                            <div class="stat-desc">Active offers</div>
+                            <div class="stat-desc">{{ __('home.stats.servicesDesc') }}</div>
                         </div>
                     @endif
 
                     @if (config('modules.projects', true))
                         <div class="stat">
-                            <div class="stat-title">Projects</div>
+                            <div class="stat-title">{{ __('home.stats.projects') }}</div>
                             <div class="stat-value">{{ $projects->count() }}</div>
-                            <div class="stat-desc">Published work</div>
+                            <div class="stat-desc">{{ __('home.stats.projectsDesc') }}</div>
                         </div>
                     @endif
 
                     @if (config('modules.testimonials', true))
                         <div class="stat">
-                            <div class="stat-title">Testimonials</div>
+                            <div class="stat-title">{{ __('home.stats.testimonials') }}</div>
                             <div class="stat-value">{{ $testimonials->count() }}</div>
-                            <div class="stat-desc">Client proof</div>
+                            <div class="stat-desc">{{ __('home.stats.testimonialsDesc') }}</div>
                         </div>
                     @endif
                 </div>
@@ -60,10 +60,10 @@
     <section id="services" class="bg-base-100 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase text-primary">Services</p>
-                <h2 class="mt-3 text-3xl font-bold">What we can build</h2>
+                <p class="text-sm font-semibold uppercase text-primary">{{ __('home.services.label') }}</p>
+                <h2 class="mt-3 text-3xl font-bold">{{ __('home.services.title') }}</h2>
                 <p class="mt-4 text-base-content/70">
-                    Active services are managed in the admin panel and displayed here with locale fallback.
+                    {{ __('home.services.subtitle') }}
                 </p>
             </div>
 
@@ -95,14 +95,14 @@
 
                             @if ($service->url)
                                 <div class="card-actions mt-2">
-                                    <a href="{{ $service->url }}" class="btn btn-sm btn-outline">Learn more</a>
+                                    <a href="{{ $service->url }}" class="btn btn-sm btn-outline">{{ __('home.services.learnMore') }}</a>
                                 </div>
                             @endif
                         </div>
                     </article>
                 @empty
                     <div class="alert md:col-span-2 lg:col-span-3">
-                        <span>No active services yet. Add services from the admin panel to publish them here.</span>
+                        <span>{{ __('home.services.noServices') }}</span>
                     </div>
                 @endforelse
             </div>
@@ -115,10 +115,10 @@
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div class="max-w-2xl">
-                    <p class="text-sm font-semibold uppercase text-primary">Projects</p>
-                    <h2 class="mt-3 text-3xl font-bold">Selected work</h2>
+                    <p class="text-sm font-semibold uppercase text-primary">{{ __('home.projects.label') }}</p>
+                    <h2 class="mt-3 text-3xl font-bold">{{ __('home.projects.title') }}</h2>
                     <p class="mt-4 text-base-content/70">
-                        Published projects come straight from the database, including clients, images, links, and technologies.
+                        {{ __('home.projects.subtitle') }}
                     </p>
                 </div>
             </div>
@@ -151,7 +151,7 @@
                                 </div>
 
                                 @if ($project->url)
-                                    <a href="{{ $project->url }}" class="btn btn-sm btn-primary" target="_blank" rel="noreferrer">Visit</a>
+                                    <a href="{{ $project->url }}" class="btn btn-sm btn-primary" target="_blank" rel="noreferrer">{{ __('home.projects.visit') }}</a>
                                 @endif
                             </div>
 
@@ -168,7 +168,7 @@
                     </article>
                 @empty
                     <div class="alert lg:col-span-2">
-                        <span>No active projects yet. Add projects from the admin panel to publish them here.</span>
+                        <span>{{ __('home.projects.noProjects') }}</span>
                     </div>
                 @endforelse
             </div>
@@ -180,10 +180,10 @@
     <section id="testimonials" class="bg-base-100 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase text-primary">Testimonials</p>
-                <h2 class="mt-3 text-3xl font-bold">What clients say</h2>
+                <p class="text-sm font-semibold uppercase text-primary">{{ __('home.testimonials.label') }}</p>
+                <h2 class="mt-3 text-3xl font-bold">{{ __('home.testimonials.title') }}</h2>
                 <p class="mt-4 text-base-content/70">
-                    Testimonials can be ordered, rated, translated, and toggled from the admin panel.
+                    {{ __('home.testimonials.subtitle') }}
                 </p>
             </div>
 
@@ -230,7 +230,7 @@
                     </article>
                 @empty
                     <div class="alert md:col-span-2 lg:col-span-3">
-                        <span>No active testimonials yet. Add testimonials from the admin panel to publish them here.</span>
+                        <span>{{ __('home.testimonials.noTestimonials') }}</span>
                     </div>
                 @endforelse
             </div>
@@ -242,10 +242,10 @@
     <section id="faq" class="bg-base-200/60 py-16">
         <div class="mx-auto grid w-full max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
-                <p class="text-sm font-semibold uppercase text-primary">FAQ</p>
-                <h2 class="mt-3 text-3xl font-bold">Common questions</h2>
+                <p class="text-sm font-semibold uppercase text-primary">{{ __('home.faq.label') }}</p>
+                <h2 class="mt-3 text-3xl font-bold">{{ __('home.faq.title') }}</h2>
                 <p class="mt-4 text-base-content/70">
-                    Public questions are pulled from active FAQ records and grouped visually by their category label.
+                    {{ __('home.faq.subtitle') }}
                 </p>
             </div>
 
@@ -265,7 +265,7 @@
                     </div>
                 @empty
                     <div class="alert">
-                        <span>No active FAQs yet. Add FAQ entries from the admin panel to publish them here.</span>
+                        <span>{{ __('home.faq.noFaqs') }}</span>
                     </div>
                 @endforelse
             </div>
@@ -279,10 +279,10 @@
             <div class="rounded-box border border-base-300 bg-base-100 p-8 shadow-sm">
                 <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h2 class="text-3xl font-bold">Ready to publish dynamic content.</h2>
-                        <p class="mt-3 text-base-content/70">Manage the records in admin, then Blade renders the public page from Laravel.</p>
+                        <h2 class="text-3xl font-bold">{{ __('home.cta.title') }}</h2>
+                        <p class="mt-3 text-base-content/70">{{ __('home.cta.subtitle') }}</p>
                     </div>
-                    <a href="mailto:hello@example.com" class="btn btn-primary btn-lg">Contact us</a>
+                    <a href="mailto:hello@example.com" class="btn btn-primary btn-lg">{{ __('home.cta.contact') }}</a>
                 </div>
             </div>
         </div>

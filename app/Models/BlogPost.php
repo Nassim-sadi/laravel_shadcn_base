@@ -28,6 +28,11 @@ class BlogPost extends Model
         'deleted_at' => 'datetime',
     ];
 
+    public function scopePublished($query)
+    {
+        return $query->where('is_published', true);
+    }
+
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');

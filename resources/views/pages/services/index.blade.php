@@ -1,18 +1,18 @@
 @extends('layouts.public')
 
-@section('title', 'Services - ' . config('app.name', 'NsBase'))
-@section('meta_description', 'Explore our range of web development and digital services.')
-@section('og_title', 'Services - ' . config('app.name', 'NsBase'))
-@section('og_description', 'Explore our range of web development and digital services.')
+@section('title', __('public.nav.services') . ' - ' . config('app.name', 'NsBase'))
+@section('meta_description', __('public.nav.services') . ' - ' . config('app.name', 'NsBase'))
+@section('og_title', __('public.nav.services') . ' - ' . config('app.name', 'NsBase'))
+@section('og_description', __('public.nav.services') . ' - ' . config('app.name', 'NsBase'))
 
 @section('content')
     <section class="bg-base-200/60 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl">
-                <p class="text-sm font-semibold uppercase text-primary">Services</p>
-                <h1 class="mt-3 text-4xl font-bold">What we can build</h1>
+                <p class="text-sm font-semibold uppercase text-primary">{{ __('public.nav.services') }}</p>
+                <h1 class="mt-3 text-4xl font-bold">{{ __('services.title') }}</h1>
                 <p class="mt-4 text-base-content/70">
-                    Active services are managed in the admin panel and displayed here with locale fallback.
+                    {{ __('services.subtitle') }}
                 </p>
             </div>
 
@@ -43,13 +43,13 @@
                             <p class="text-base-content/70">{{ Str::limit($service->translated('description'), 150) }}</p>
 
                             <div class="card-actions mt-2">
-                                <a href="{{ route('public.services.show', $service) }}" class="btn btn-sm btn-outline">Learn more</a>
+                                <a href="{{ route('public.services.show', $service) }}" class="btn btn-sm btn-outline">{{ __('public.learnMore') }}</a>
                             </div>
                         </div>
                     </article>
                 @empty
                     <div class="alert md:col-span-2 lg:col-span-3">
-                        <span>No active services yet. Add services from the admin panel to publish them here.</span>
+                        <span>{{ __('public.noServices') }}</span>
                     </div>
                 @endforelse
             </div>
