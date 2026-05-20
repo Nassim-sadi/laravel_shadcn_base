@@ -40,12 +40,25 @@ class TestimonialController extends Controller
             $file = $request->file('image');
             $filename = 'testimonial_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('testimonials', $filename, 'public');
-            $validated['image'] = $path;
+
+            $media = \App\Models\Media::create([
+                'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'file_name' => $filename,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'disk' => 'public',
+                'path' => $path,
+                'thumbnail_path' => null,
+                'created_by' => auth()->id(),
+            ]);
+
+            $validated['image_id'] = $media->id;
         }
 
         $testimonial = Testimonial::create($validated);
 
-        // Log activity
         activity_log('testimonial.created', [
             'testimonial_id' => $testimonial->id,
             'user_id' => auth()->id(),
@@ -68,20 +81,42 @@ class TestimonialController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($testimonial->image && Storage::disk('public')->exists($testimonial->image)) {
-                Storage::disk('public')->delete($testimonial->image);
+            if ($testimonial->image_id) {
+                $oldMedia = \App\Models\Media::find($testimonial->image_id);
+                if ($oldMedia) {
+                    if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldMedia->path)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldMedia->path);
+                    }
+                    if ($oldMedia->thumbnail_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldMedia->thumbnail_path)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldMedia->thumbnail_path);
+                    }
+                    $oldMedia->delete();
+                }
             }
-            
+
             $file = $request->file('image');
             $filename = 'testimonial_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('testimonials', $filename, 'public');
-            $validated['image'] = $path;
+
+            $media = \App\Models\Media::create([
+                'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'file_name' => $filename,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'disk' => 'public',
+                'path' => $path,
+                'thumbnail_path' => null,
+                'created_by' => auth()->id(),
+            ]);
+
+            $validated['image_id'] = $media->id;
+            unset($validated['image']);
         }
 
         $testimonial->update($validated);
 
-        // Log activity
         activity_log('testimonial.updated', [
             'testimonial_id' => $testimonial->id,
             'user_id' => auth()->id(),
@@ -94,14 +129,21 @@ class TestimonialController extends Controller
     {
         $this->authorize('delete', $testimonial);
 
-        // Delete associated image
-        if ($testimonial->image && Storage::disk('public')->exists($testimonial->image)) {
-            Storage::disk('public')->delete($testimonial->image);
+        if ($testimonial->image_id) {
+            $media = \App\Models\Media::find($testimonial->image_id);
+            if ($media) {
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($media->path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->path);
+                }
+                if ($media->thumbnail_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($media->thumbnail_path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->thumbnail_path);
+                }
+                $media->delete();
+            }
         }
 
         $testimonial->delete();
 
-        // Log activity
         activity_log('testimonial.deleted', [
             'testimonial_id' => $testimonial->id,
             'user_id' => auth()->id(),

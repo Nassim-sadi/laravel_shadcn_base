@@ -2,7 +2,9 @@
 import { useVuelidate } from '@vuelidate/core'
 import { numeric } from '@vuelidate/validators'
 import { computed, ref, watch } from 'vue'
+import { SparklesIcon } from '@lucide/vue'
 
+import AiContentGeneratorDialog from '@/admin/components/ai/AiContentGeneratorDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,10 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 
+import { hasPermission } from '@/composables/use-role'
 import type { TranslatedValue } from '@/services/api/faqs.api'
 import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
 import { translatedRequired } from '@/composables/use-validation'
 import { languageMetadata } from '@/plugins/i18n'
+import type { AiContentField } from '@/services/api/ai-content.api'
 import { useCreateFaqMutation, useUpdateFaqMutation } from '@/services/api/faqs.api'
 
 interface FaqForm {
@@ -40,6 +44,7 @@ const activeFormLocale = ref('fr')
 const { mutate: createItem } = useCreateFaqMutation()
 const { mutate: updateItem } = useUpdateFaqMutation(0)
 const showUnsavedDialog = ref(false)
+const aiGeneratorOpen = ref(false)
 
 function createEmptyForm(): FaqForm {
   return {
@@ -109,13 +114,47 @@ function forceClose() {
   showUnsavedDialog.value = false
   open.value = false
 }
+
+function applyAiDraft(payload: Partial<Record<AiContentField, string>>) {
+  const locale = activeFormLocale.value
+
+  if (payload.question !== undefined) {
+    form.value.question[locale] = payload.question
+  }
+  if (payload.answer !== undefined) {
+    form.value.answer[locale] = payload.answer
+  }
+  if (payload.seo_title !== undefined) {
+    form.value.seo_title[locale] = payload.seo_title
+  }
+  if (payload.seo_description !== undefined) {
+    form.value.seo_description[locale] = payload.seo_description
+  }
+}
+
+const aiSource = computed<Partial<Record<AiContentField, string>>>(() => {
+  const locale = activeFormLocale.value
+
+  return {
+    question: form.value.question[locale] || '',
+    answer: form.value.answer[locale] || '',
+    seo_title: form.value.seo_title[locale] || '',
+    seo_description: form.value.seo_description[locale] || '',
+  }
+})
 </script>
 
 <template>
   <Sheet :open="open" @update:open="handleSheetClose">
     <SheetContent side="right" class="xl:max-w-2xl w-full">
       <SheetHeader>
-        <SheetTitle>{{ editingId ? $t('admin.sheet.editFaq') : $t('admin.sheet.createFaq') }}</SheetTitle>
+        <div class="flex items-center justify-between gap-3">
+          <SheetTitle>{{ editingId ? $t('admin.sheet.editFaq') : $t('admin.sheet.createFaq') }}</SheetTitle>
+          <Button v-if="hasPermission('ai.generate')" type="button" variant="outline" size="sm" class="shrink-0" @click="aiGeneratorOpen = true">
+            <SparklesIcon class="size-4" />
+            <span>Generate</span>
+          </Button>
+        </div>
       </SheetHeader>
       <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         <Tabs v-model="activeFormLocale">
@@ -199,4 +238,12 @@ function forceClose() {
       {{ $t('admin.dialog.unsavedDescription') }}
     </template>
   </ConfirmDialog>
+
+  <AiContentGeneratorDialog
+    v-model:open="aiGeneratorOpen"
+    module="faqs"
+    :locale="activeFormLocale"
+    :source="aiSource"
+    @apply="applyAiDraft"
+  />
 </template>

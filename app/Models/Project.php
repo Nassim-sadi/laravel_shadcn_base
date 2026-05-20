@@ -15,7 +15,6 @@ class Project extends Model
         'title',
         'description',
         'client',
-        'image',
         'image_id',
         'url',
         'technologies',

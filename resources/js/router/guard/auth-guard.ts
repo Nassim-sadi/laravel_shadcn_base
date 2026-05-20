@@ -23,6 +23,7 @@ async function initAuth(): Promise<void> {
   }
   catch {
     authStore.clearUser()
+    authPromise = null
   }
 }
 
@@ -56,10 +57,10 @@ export function setupAuthGuard(router: Router) {
       return { path: '/email/verify' }
     }
 
-    const requiredRole = to.meta.requiredRole as string | undefined
+    const requiredRole = to.meta.requiredRole
     if (requiredRole && !hasRole(requiredRole)) return { path: '/admin' }
 
-    const requiredPermission = to.meta.requiredPermission as string | undefined
+    const requiredPermission = to.meta.requiredPermission
     if (requiredPermission && !hasPermission(requiredPermission)) return { path: '/admin' }
   })
 }

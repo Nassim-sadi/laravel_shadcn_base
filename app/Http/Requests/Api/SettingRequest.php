@@ -23,7 +23,7 @@ class SettingRequest extends FormRequest
             'name' => [$required, 'string', 'max:255'],
             'value' => ['nullable'],
             'default_value' => ['nullable'],
-            'type' => [$required, 'string', 'in:string,integer,boolean,json,array'],
+            'type' => [$required, 'string', 'in:string,integer,boolean,json,array,encrypted'],
             'description' => ['nullable', 'string'],
             'is_public' => ['sometimes', 'boolean'],
         ];

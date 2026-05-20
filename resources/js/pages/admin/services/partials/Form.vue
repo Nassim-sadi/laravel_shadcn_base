@@ -2,6 +2,8 @@
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, numeric, required } from '@vuelidate/validators'
 import { computed, ref, watch } from 'vue'
+import { SparklesIcon } from '@lucide/vue'
+import { toast } from 'vue-sonner'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,12 +14,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import ImagePickerField from '@/admin/components/ImagePickerField.vue'
+import AiContentGeneratorDialog from '@/admin/components/ai/AiContentGeneratorDialog.vue'
 
 import type { TranslatedValue } from '@/composables/use-translated-form'
+import { hasPermission } from '@/composables/use-role'
 import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
 import { translatedRequired } from '@/composables/use-validation'
 import { languageMetadata } from '@/plugins/i18n'
 import { useCreateServiceMutation, useUpdateServiceMutation } from '@/services/api/services.api'
+import type { AiContentField } from '@/services/api/ai-content.api'
 
 interface ServiceForm {
   title: TranslatedValue
@@ -45,6 +50,7 @@ const activeFormLocale = ref('fr')
 const { mutate: createService } = useCreateServiceMutation()
 const { mutate: updateService } = useUpdateServiceMutation()
 const showUnsavedDialog = ref(false)
+const aiGeneratorOpen = ref(false)
 
 function createEmptyForm(): ServiceForm {
   return {
@@ -112,10 +118,16 @@ async function save() {
 
   const payload = { ...form.value, image_id: form.value.image_id ?? undefined }
   if (props.editingId) {
-    updateService({ id: props.editingId, ...payload })
+    updateService({ id: props.editingId, ...payload }, {
+      onSuccess: () => toast.success('Service updated successfully'),
+      onError: (error: any) => toast.error(error?.message ?? 'Failed to update service'),
+    })
   }
   else {
-    createService(payload)
+    createService(payload, {
+      onSuccess: () => toast.success('Service created successfully'),
+      onError: (error: any) => toast.error(error?.message ?? 'Failed to create service'),
+    })
   }
   open.value = false
 }
@@ -124,13 +136,51 @@ function forceClose() {
   showUnsavedDialog.value = false
   open.value = false
 }
+
+function applyAiDraft(payload: Partial<Record<AiContentField, string>>) {
+  const locale = activeFormLocale.value
+
+  if (payload.title !== undefined) {
+    form.value.title[locale] = payload.title
+  }
+  if (payload.description !== undefined) {
+    form.value.description[locale] = payload.description
+  }
+  if (payload.seo_title !== undefined) {
+    form.value.seo_title[locale] = payload.seo_title
+  }
+  if (payload.seo_description !== undefined) {
+    form.value.seo_description[locale] = payload.seo_description
+  }
+  if (payload.seo_keywords !== undefined) {
+    form.value.seo_keywords[locale] = payload.seo_keywords
+  }
+}
+
+const aiSource = computed<Partial<Record<AiContentField, string>>>(() => {
+  const locale = activeFormLocale.value
+
+  return {
+    title: form.value.title[locale] || '',
+    description: form.value.description[locale] || '',
+    seo_title: form.value.seo_title[locale] || '',
+    seo_description: form.value.seo_description[locale] || '',
+    seo_keywords: form.value.seo_keywords[locale] || '',
+  }
+})
 </script>
 
 <template>
   <Sheet :open="open" @update:open="handleSheetClose">
     <SheetContent side="right" class="xl:max-w-2xl w-full" @interact-outside.prevent>
       <SheetHeader>
-        <SheetTitle>{{ editingId ? $t('admin.sheet.editService') : $t('admin.sheet.createService') }}</SheetTitle>
+        <div class="flex items-center justify-between gap-3">
+          <SheetTitle>{{ editingId ? $t('admin.sheet.editService') : $t('admin.sheet.createService') }}</SheetTitle>
+          <Button v-if="hasPermission('ai.generate')" type="button" variant="outline" size="sm" class="shrink-0" @click="aiGeneratorOpen = true">
+            <SparklesIcon class="size-4" />
+            <span>Generate</span>
+          </Button>
+        </div>
       </SheetHeader>
       <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         <Tabs v-model="activeFormLocale">
@@ -231,4 +281,12 @@ function forceClose() {
       {{ $t('admin.dialog.unsavedDescription') }}
     </template>
   </ConfirmDialog>
+
+  <AiContentGeneratorDialog
+    v-model:open="aiGeneratorOpen"
+    module="services"
+    :locale="activeFormLocale"
+    :source="aiSource"
+    @apply="applyAiDraft"
+  />
 </template>

@@ -6,6 +6,12 @@ use App\Models\ActivityLog;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\BlogTag;
+use App\Models\CatalogBrand;
+use App\Models\CatalogCategory;
+use App\Models\CatalogProduct;
+use App\Models\CatalogTag;
+use App\Models\CatalogMarqueeItem;
+use App\Models\CatalogAttribute;
 use App\Models\ContactMessage;
 use App\Models\EmailTemplate;
 use App\Models\Faq;
@@ -19,6 +25,12 @@ use App\Policies\ActivityLogPolicy;
 use App\Policies\BlogCategoryPolicy;
 use App\Policies\BlogPostPolicy;
 use App\Policies\BlogTagPolicy;
+use App\Policies\CatalogBrandPolicy;
+use App\Policies\CatalogCategoryPolicy;
+use App\Policies\CatalogProductPolicy;
+use App\Policies\CatalogTagPolicy;
+use App\Policies\CatalogMarqueeItemPolicy;
+use App\Policies\CatalogAttributePolicy;
 use App\Policies\ContactMessagePolicy;
 use App\Policies\EmailTemplatePolicy;
 use App\Policies\FaqPolicy;
@@ -65,5 +77,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Permission::class, PermissionPolicy::class);
+
+        Gate::policy(CatalogBrand::class, CatalogBrandPolicy::class);
+        Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
+        Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
+        Gate::policy(CatalogTag::class, CatalogTagPolicy::class);
+        Gate::policy(CatalogMarqueeItem::class, CatalogMarqueeItemPolicy::class);
+        Gate::policy(CatalogAttribute::class, CatalogAttributePolicy::class);
     }
 }

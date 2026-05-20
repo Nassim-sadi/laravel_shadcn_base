@@ -15,7 +15,6 @@ class Service extends Model
         'title',
         'description',
         'icon',
-        'image',
         'image_id',
         'url',
         'order',

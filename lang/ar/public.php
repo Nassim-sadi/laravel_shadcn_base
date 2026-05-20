@@ -13,6 +13,7 @@ return [
         'signIn' => 'تسجيل الدخول',
         'dashboard' => 'لوحة التحكم',
         'startProject' => 'ابدأ مشروعًا',
+        'shop' => 'المتجر',
     ],
     'footer' => [
         'rights' => 'جميع الحقوق محفوظة.',

@@ -81,12 +81,33 @@ class ContactMessageController extends Controller
 
         $contactMessage->delete();
 
-        // Log activity
         activity_log('contact_message.deleted', [
             'contact_message_id' => $contactMessage->id,
         ]);
 
         return response()->json(['message' => 'Contact message deleted successfully']);
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $this->authorize('delete', ContactMessage::class);
+
+        $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['required', 'integer', 'exists:contact_messages,id'],
+        ]);
+
+        $count = ContactMessage::whereIn('id', $request->ids)->count();
+        ContactMessage::whereIn('id', $request->ids)->delete();
+
+        activity_log('contact_message.bulk_deleted', [
+            'count' => $count,
+        ]);
+
+        return response()->json([
+            'message' => 'Deleted successfully.',
+            'deleted' => $count,
+        ]);
     }
 
     public function toggleStatus(ContactMessage $contactMessage): JsonResponse

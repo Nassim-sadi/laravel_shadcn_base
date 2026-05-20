@@ -29,6 +29,11 @@ class BlogTagController extends Controller
 
         $tag = BlogTag::create($data);
 
+        activity_log('blog_tag.created', [
+            'tag_id' => $tag->id,
+            'user_id' => auth()->id(),
+        ]);
+
         return new BlogTagResource($tag);
     }
 
@@ -37,6 +42,11 @@ class BlogTagController extends Controller
         $this->authorize('delete', BlogTag::class);
 
         $blogTag->delete();
+
+        activity_log('blog_tag.deleted', [
+            'tag_id' => $blogTag->id,
+            'user_id' => auth()->id(),
+        ]);
 
         return response()->json(['message' => 'Deleted successfully.']);
     }

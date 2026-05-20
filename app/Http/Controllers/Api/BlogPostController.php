@@ -43,6 +43,11 @@ class BlogPostController extends Controller
             $post->tags()->sync($data['tag_ids']);
         }
 
+        activity_log('blog_post.created', [
+            'post_id' => $post->id,
+            'user_id' => auth()->id(),
+        ]);
+
         return new BlogPostResource($post->load(['category', 'author', 'tags', 'body']));
     }
 
@@ -68,6 +73,11 @@ class BlogPostController extends Controller
             $blogPost->tags()->sync($data['tag_ids'] ?? []);
         }
 
+        activity_log('blog_post.updated', [
+            'post_id' => $blogPost->id,
+            'user_id' => auth()->id(),
+        ]);
+
         return new BlogPostResource($blogPost->load(['category', 'author', 'tags', 'body']));
     }
 
@@ -76,6 +86,11 @@ class BlogPostController extends Controller
         $this->authorize('delete', $blogPost);
 
         $blogPost->delete();
+
+        activity_log('blog_post.deleted', [
+            'post_id' => $blogPost->id,
+            'user_id' => auth()->id(),
+        ]);
 
         return response()->json(['message' => 'Deleted successfully.']);
     }

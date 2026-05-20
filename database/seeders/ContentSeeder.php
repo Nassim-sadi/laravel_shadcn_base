@@ -190,5 +190,7 @@ class ContentSeeder extends Seeder
             'name' => 'Default Locale',
             'is_public' => false,
         ]);
+
+        app(\App\Services\AiSettingsService::class)->seedDefaults();
     }
 }

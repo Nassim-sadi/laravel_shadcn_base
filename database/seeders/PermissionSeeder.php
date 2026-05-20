@@ -15,6 +15,7 @@ class PermissionSeeder extends Seeder
             'roles' => ['roles.view', 'roles.create', 'roles.edit', 'roles.delete'],
             'permissions' => ['permissions.view', 'permissions.create', 'permissions.edit', 'permissions.delete'],
             'settings' => ['settings.view', 'settings.edit'],
+            'ai' => ['ai.generate', 'ai.import'],
             'logs' => ['logs.view'],
             'media' => ['media.view', 'media.create', 'media.edit', 'media.delete'],
             'services' => ['services.view', 'services.create', 'services.edit', 'services.delete'],
@@ -24,6 +25,7 @@ class PermissionSeeder extends Seeder
             'contact-messages' => ['contact-messages.view', 'contact-messages.create', 'contact-messages.edit', 'contact-messages.delete'],
             'email-templates' => ['email-templates.view', 'email-templates.create', 'email-templates.edit', 'email-templates.delete'],
             'blog' => ['blogs.view', 'blogs.create', 'blogs.edit', 'blogs.delete'],
+            'catalog' => ['catalog.view', 'catalog.create', 'catalog.edit', 'catalog.delete'],
         ];
 
         $modules = config('modules', []);
@@ -63,6 +65,7 @@ class PermissionSeeder extends Seeder
             'roles.view', 'roles.create', 'roles.edit',
             'permissions.view',
             'settings.view', 'settings.edit',
+            'ai.generate', 'ai.import',
             'logs.view',
             'media.view', 'media.create', 'media.edit',
             'services.view', 'services.create', 'services.edit',
@@ -72,6 +75,7 @@ class PermissionSeeder extends Seeder
             'contact-messages.view', 'contact-messages.create', 'contact-messages.edit',
             'email-templates.view', 'email-templates.create', 'email-templates.edit',
             'blogs.view', 'blogs.create', 'blogs.edit',
+            'catalog.view', 'catalog.create', 'catalog.edit',
         ]);
 
         $user = Role::firstOrCreate([

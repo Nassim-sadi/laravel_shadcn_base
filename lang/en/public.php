@@ -13,6 +13,7 @@ return [
         'signIn' => 'Sign In',
         'dashboard' => 'Dashboard',
         'startProject' => 'Start a project',
+        'shop' => 'Shop',
     ],
     'footer' => [
         'rights' => 'All rights reserved.',

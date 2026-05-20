@@ -67,16 +67,12 @@ export function useLoginMutation() {
     mutationKey: ['useLoginMutation'],
     mutationFn: async (data: ILoginRequest) => {
       await fetchCsrfCookie()
-      await csrfFetch('/login', {
+      const response = await csrfFetch<{ user: IUser }>('/login', {
         method: 'post',
         body: data,
         headers: { Accept: 'application/json' },
       })
-      const { apiFetch } = useApiFetch()
-      const response = await apiFetch<IResponse<IUser>>('/user', {
-        method: 'get',
-      })
-      return response.data!
+      return response.user
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
@@ -91,16 +87,12 @@ export function useRegisterMutation() {
     mutationKey: ['useRegisterMutation'],
     mutationFn: async (data: IRegisterRequest) => {
       await fetchCsrfCookie()
-      await csrfFetch('/register', {
+      const response = await csrfFetch<{ user: IUser }>('/register', {
         method: 'post',
         body: data,
         headers: { Accept: 'application/json' },
       })
-      const { apiFetch } = useApiFetch()
-      const response = await apiFetch<IResponse<IUser>>('/user', {
-        method: 'get',
-      })
-      return response.data!
+      return response.user
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })

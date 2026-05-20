@@ -6,6 +6,8 @@ export interface FilterParams {
   is_read?: string
   is_published?: string
   category?: string
+  category_id?: string
+  brand_id?: string
   rating?: string
   icon?: string
   client?: string
@@ -22,6 +24,8 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
   const is_read = ref<string | undefined>(defaults.is_read)
   const is_published = ref<string | undefined>(defaults.is_published)
   const category = ref<string | undefined>(defaults.category)
+  const category_id = ref<string | undefined>(defaults.category_id)
+  const brand_id = ref<string | undefined>(defaults.brand_id)
   const rating = ref<string | undefined>(defaults.rating)
   const icon = ref<string | undefined>(defaults.icon)
   const client = ref<string | undefined>(defaults.client)
@@ -47,6 +51,8 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
     is_read.value = undefined
     is_published.value = undefined
     category.value = undefined
+    category_id.value = undefined
+    brand_id.value = undefined
     rating.value = undefined
     icon.value = undefined
     client.value = undefined
@@ -56,7 +62,7 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
   }
 
   function hasFilters() {
-    return !!(search.value || is_active.value || is_read.value || is_published.value || category.value || rating.value || icon.value || client.value || from_date.value || to_date.value)
+    return !!(search.value || is_active.value || is_read.value || is_published.value || category.value || category_id.value || brand_id.value || rating.value || icon.value || client.value || from_date.value || to_date.value)
   }
 
   const params = computed<FilterParams>(() => {
@@ -66,6 +72,8 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
     if (is_read.value !== undefined) p.is_read = is_read.value
     if (is_published.value !== undefined) p.is_published = is_published.value
     if (category.value) p.category = category.value
+    if (category_id.value) p.category_id = category_id.value
+    if (brand_id.value) p.brand_id = brand_id.value
     if (rating.value) p.rating = rating.value
     if (icon.value) p.icon = icon.value
     if (client.value) p.client = client.value
@@ -83,6 +91,8 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
     is_read,
     is_published,
     category,
+    category_id,
+    brand_id,
     rating,
     icon,
     client,

@@ -1,6 +1,10 @@
 {
     "admin.page.activityLogs.description": "Consultez l'historique des activités du système",
     "admin.page.activityLogs.title": "Journal d'activité",
+    "admin.page.blog.description": "Gérer les articles du blog",
+    "admin.page.blog.title": "Blog",
+    "admin.page.catalog.description": "Gérez votre catalogue de produits",
+    "admin.page.catalog.title": "Catalogue",
     "admin.page.contactMessages.description": "Gérez les soumissions du formulaire de contact",
     "admin.page.contactMessages.title": "Messages de contact",
     "admin.page.dashboard.description": "Bienvenue sur votre tableau de bord",
@@ -24,7 +28,5 @@
     "admin.page.translations.description": "Modifiez les clés de traduction JSON Laravel utilisées par Blade et Vue.",
     "admin.page.translations.title": "Traductions",
     "admin.page.users.description": "Gérez les membres de votre équipe et leurs autorisations",
-    "admin.page.users.title": "Utilisateurs",
-    "admin.page.blog.title": "Blog",
-    "admin.page.blog.description": "Gérer les articles du blog"
+    "admin.page.users.title": "Utilisateurs"
 }

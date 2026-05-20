@@ -25,6 +25,11 @@ class BlogCategoryController extends Controller
 
         $category = BlogCategory::create($request->validated());
 
+        activity_log('blog_category.created', [
+            'category_id' => $category->id,
+            'user_id' => auth()->id(),
+        ]);
+
         return new BlogCategoryResource($category);
     }
 
@@ -41,6 +46,11 @@ class BlogCategoryController extends Controller
 
         $blogCategory->update($request->validated());
 
+        activity_log('blog_category.updated', [
+            'category_id' => $blogCategory->id,
+            'user_id' => auth()->id(),
+        ]);
+
         return new BlogCategoryResource($blogCategory);
     }
 
@@ -48,7 +58,19 @@ class BlogCategoryController extends Controller
     {
         $this->authorize('delete', $blogCategory);
 
+        $postCount = $blogCategory->posts()->count();
+        if ($postCount > 0) {
+            return response()->json([
+                'message' => "Cannot delete category. It has {$postCount} post(s) associated with it.",
+            ], 409);
+        }
+
         $blogCategory->delete();
+
+        activity_log('blog_category.deleted', [
+            'category_id' => $blogCategory->id,
+            'user_id' => auth()->id(),
+        ]);
 
         return response()->json(['message' => 'Deleted successfully.']);
     }

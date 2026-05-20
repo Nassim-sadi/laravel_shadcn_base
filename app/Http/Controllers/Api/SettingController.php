@@ -72,6 +72,24 @@ class SettingController extends Controller
     {
         $this->authorize('delete', $setting);
 
+        $protectedKeys = [
+            'site_name',
+            'site_email',
+            'site_phone',
+            'site_address',
+            'smtp_host',
+            'smtp_port',
+            'smtp_username',
+            'smtp_password',
+            'mail_from_address',
+        ];
+
+        if (in_array($setting->key, $protectedKeys, true)) {
+            return response()->json([
+                'message' => 'Cannot delete system setting: '.$setting->key,
+            ], 403);
+        }
+
         $setting->delete();
 
         activity_log('setting.deleted', [

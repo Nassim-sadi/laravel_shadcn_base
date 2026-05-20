@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 
 import ConfirmDialog from '@/components/confirm-dialog.vue'
+import AiImportActions from '@/admin/components/ai/AiImportActions.vue'
 import { BasicPage } from '@/components/global-layout'
 import { Button } from '@/components/ui/button'
 import { useDeleteBlogPostMutation, useGetBlogPostsQuery } from '@/services/api/blog-posts.api'
@@ -70,6 +71,7 @@ const columns = createColumns(openEdit, confirmDelete)
       <Button variant="outline" @click="refetch">
         {{ $t('admin.btn.refresh') }}
       </Button>
+      <AiImportActions v-if="hasPermission('ai.import')" module="blog_posts" :disabled="showSheet" @imported="refetch" />
       <Button v-if="hasPermission('blogs.create')" @click="openCreate">
         {{ $t('admin.sheet.createBlogPost') }}
       </Button>

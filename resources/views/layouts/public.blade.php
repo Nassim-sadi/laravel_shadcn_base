@@ -62,6 +62,9 @@
                         @if (Route::has('public.blog.index'))
                             <li><a href="{{ route('public.blog.index') }}">{{ __('public.nav.blog') }}</a></li>
                         @endif
+                        @if (config('modules.catalog', false))
+                            <li><a href="{{ route('public.catalog.shop') }}">{{ __('public.nav.shop') }}</a></li>
+                        @endif
                         <li><a href="{{ route('public.about') }}">{{ __('public.nav.about') }}</a></li>
                         @if (config('modules.testimonials', true))
                             <li><a href="{{ route('home') }}#testimonials">{{ __('public.nav.testimonials') }}</a></li>

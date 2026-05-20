@@ -2,7 +2,9 @@
 import { useVuelidate } from '@vuelidate/core'
 import { maxValue, minValue } from '@vuelidate/validators'
 import { computed, ref, watch } from 'vue'
+import { SparklesIcon } from '@lucide/vue'
 
+import AiContentGeneratorDialog from '@/admin/components/ai/AiContentGeneratorDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,10 +15,12 @@ import { Textarea } from '@/components/ui/textarea'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import ImagePickerField from '@/admin/components/ImagePickerField.vue'
 
+import { hasPermission } from '@/composables/use-role'
 import type { TranslatedValue } from '@/services/api/testimonials.api'
 import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
 import { translatedRequired } from '@/composables/use-validation'
 import { languageMetadata } from '@/plugins/i18n'
+import type { AiContentField } from '@/services/api/ai-content.api'
 import { useCreateTestimonialMutation, useUpdateTestimonialMutation } from '@/services/api/testimonials.api'
 
 interface TestimonialForm {
@@ -45,6 +49,7 @@ const activeFormLocale = ref('fr')
 const { mutate: createItem } = useCreateTestimonialMutation()
 const { mutate: updateItem } = useUpdateTestimonialMutation(0)
 const showUnsavedDialog = ref(false)
+const aiGeneratorOpen = ref(false)
 
 function createEmptyForm(): TestimonialForm {
   return {
@@ -123,13 +128,55 @@ function forceClose() {
   showUnsavedDialog.value = false
   open.value = false
 }
+
+function applyAiDraft(payload: Partial<Record<AiContentField, string>>) {
+  const locale = activeFormLocale.value
+
+  if (payload.name !== undefined) {
+    form.value.name[locale] = payload.name
+  }
+  if (payload.position !== undefined) {
+    form.value.position[locale] = payload.position
+  }
+  if (payload.company !== undefined) {
+    form.value.company[locale] = payload.company
+  }
+  if (payload.content !== undefined) {
+    form.value.content[locale] = payload.content
+  }
+  if (payload.seo_title !== undefined) {
+    form.value.seo_title[locale] = payload.seo_title
+  }
+  if (payload.seo_description !== undefined) {
+    form.value.seo_description[locale] = payload.seo_description
+  }
+}
+
+const aiSource = computed<Partial<Record<AiContentField, string>>>(() => {
+  const locale = activeFormLocale.value
+
+  return {
+    name: form.value.name[locale] || '',
+    position: form.value.position[locale] || '',
+    company: form.value.company[locale] || '',
+    content: form.value.content[locale] || '',
+    seo_title: form.value.seo_title[locale] || '',
+    seo_description: form.value.seo_description[locale] || '',
+  }
+})
 </script>
 
 <template>
   <Sheet :open="open" @update:open="handleSheetClose">
     <SheetContent side="right" class="xl:max-w-2xl w-full" @interact-outside.prevent>
       <SheetHeader>
-        <SheetTitle>{{ editingId ? $t('admin.sheet.editTestimonial') : $t('admin.sheet.createTestimonial') }}</SheetTitle>
+        <div class="flex items-center justify-between gap-3">
+          <SheetTitle>{{ editingId ? $t('admin.sheet.editTestimonial') : $t('admin.sheet.createTestimonial') }}</SheetTitle>
+          <Button v-if="hasPermission('ai.generate')" type="button" variant="outline" size="sm" class="shrink-0" @click="aiGeneratorOpen = true">
+            <SparklesIcon class="size-4" />
+            <span>Generate</span>
+          </Button>
+        </div>
       </SheetHeader>
       <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         <Tabs v-model="activeFormLocale">
@@ -228,4 +275,12 @@ function forceClose() {
       {{ $t('admin.dialog.unsavedDescription') }}
     </template>
   </ConfirmDialog>
+
+  <AiContentGeneratorDialog
+    v-model:open="aiGeneratorOpen"
+    module="testimonials"
+    :locale="activeFormLocale"
+    :source="aiSource"
+    @apply="applyAiDraft"
+  />
 </template>

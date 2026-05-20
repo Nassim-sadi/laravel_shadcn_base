@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Public\CatalogController;
+use App\Http\Controllers\Public\CatalogQuoteController;
 use App\Http\Controllers\Public\AboutController;
 use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\ContactController;
@@ -120,6 +122,14 @@ if (config('modules.projects', true)) {
 if (config('modules.blog', false)) {
     Route::get('/blog', [BlogController::class, 'index'])->name('public.blog.index');
     Route::get('/blog/{blogPost}', [BlogController::class, 'show'])->name('public.blog.show');
+}
+
+if (config('modules.catalog', false)) {
+    Route::get('/shop', [CatalogController::class, 'shop'])->name('public.catalog.shop');
+    Route::get('/catalog', [CatalogController::class, 'shop'])->name('public.catalog.index');
+    Route::get('/catalog/{product}', [CatalogController::class, 'show'])->name('public.catalog.show');
+    Route::get('/catalog/quote', [CatalogController::class, 'quote'])->name('public.catalog.quote');
+    Route::post('/catalog/quote', [CatalogQuoteController::class, 'store'])->name('public.catalog.quote.store');
 }
 
 Route::view('/auth/login', 'app')->name('auth.login');

@@ -16,7 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'json.response' => \App\Http\Middleware\ForceJsonResponse::class,
+            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'throttle.api' => \App\Http\Middleware\ThrottleApiRequests::class,
         ]);
+
+        $middleware->trustProxies(at: '*');
 
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
@@ -41,6 +45,37 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Unauthenticated'], 401);
+            }
+        });
+
+        $exceptions->render(function (\Illuminate\Validation\ValidationException $e, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Not found'], 404);
+            }
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $e, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Method not allowed'], 405);
+            }
+        });
+
+        $exceptions->render(function (\Throwable $e, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                $message = config('app.debug') ? $e->getMessage() : 'Internal server error';
+
+                return response()->json([
+                    'message' => $message,
+                ], 500);
             }
         });
     })->create();

@@ -245,6 +245,11 @@ class MediaController extends Controller
             if ($testimonials > 0) {
                 $references[] = ['model' => 'Testimonial', 'count' => $testimonials];
             }
+
+            $blogPosts = \App\Models\BlogPost::where('image_id', $medium->id)->count();
+            if ($blogPosts > 0) {
+                $references[] = ['model' => 'BlogPost', 'count' => $blogPosts];
+            }
         }
 
         return $references;

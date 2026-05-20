@@ -6,10 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -17,58 +15,58 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        $key = 'api:register:'.$request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            throw ValidationException::withMessages([
+                'email' => ['Too many registration attempts. Please try again in '.$seconds.' seconds.'],
+            ]);
+        }
+
+        RateLimiter::hit($key, 60);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'sometimes|string|in:super_admin,admin,user',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'] ?? 'user',
         ]);
-
-        $token = $user->createToken('auth-token')->plainTextToken;
 
         $user->load('roles', 'permissions');
 
         return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'is_active' => $user->is_active,
-                'locale' => $user->locale,
-                'avatar' => $user->avatar,
-                'avatar_url' => $user->avatar ? \Illuminate\Support\Facades\Storage::url($user->avatar) : null,
-                'roles' => $user->getRoleNames(),
-                'permissions' => $user->getAllPermissions()->pluck('name'),
-            ],
-            'token' => $token,
-            'token_type' => 'Bearer',
+            'message' => 'Registration successful. Please check your email to verify your account.',
+            'user' => new UserResource($user),
         ], 201);
     }
 
     public function login(Request $request)
     {
-        Log::info('AuthController: login() called', ['email' => $request->email]);
+        $key = 'api:login:'.$request->ip().':'.$request->email;
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            throw ValidationException::withMessages([
+                'email' => ['Too many login attempts. Please try again in '.$seconds.' seconds.'],
+            ]);
+        }
 
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        Log::info('AuthController: validating user');
-
         $user = User::where('email', $request->email)->first();
 
-        Log::info('AuthController: user found', ['user_id' => $user?->id]);
-
         if (! $user || ! Hash::check($request->password, $user->password)) {
+            RateLimiter::hit($key, 60);
+
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -80,37 +78,22 @@ class AuthController extends Controller
             ]);
         }
 
-        Log::info('AuthController: creating token');
-        $token = $user->createToken('auth-token')->plainTextToken;
-        Log::info('AuthController: token created');
+        RateLimiter::clear($key);
 
         $user->load('roles', 'permissions');
 
         return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'is_active' => $user->is_active,
-                'locale' => $user->locale,
-                'avatar' => $user->avatar,
-                'avatar_url' => $user->avatar ? \Illuminate\Support\Facades\Storage::url($user->avatar) : null,
-                'roles' => $user->getRoleNames(),
-                'permissions' => $user->getAllPermissions()->pluck('name'),
-            ],
-            'token' => $token,
-            'token_type' => 'Bearer',
+            'message' => 'Login successful.',
+            'user' => new UserResource($user),
         ]);
     }
 
     public function logout(Request $request)
     {
         $user = $request->user();
-        \Log::info('Logout attempt', ['user_id' => $user?->id]);
 
         if ($user) {
-            $user->currentAccessToken()?->delete();
+            $user->tokens()->delete();
         }
 
         return response()->json([

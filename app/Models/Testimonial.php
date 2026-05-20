@@ -15,7 +15,6 @@ class Testimonial extends Model
         'position',
         'company',
         'content',
-        'image',
         'image_id',
         'rating',
         'is_active',

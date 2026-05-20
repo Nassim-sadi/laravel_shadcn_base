@@ -1,5 +1,5 @@
-import { BriefcaseIcon, FileTextIcon, FolderKanbanIcon, HelpCircleIcon, ImageIcon, LanguagesIcon, LayoutDashboardIcon, MailIcon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, StarIcon, UserIcon, UsersIcon } from '@lucide/vue'
-import { computed } from 'vue'
+import { BriefcaseIcon, FileTextIcon, FolderKanbanIcon, HelpCircleIcon, ImageIcon, LanguagesIcon, LayoutDashboardIcon, MailIcon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, ShoppingBagIcon, SparklesIcon, StarIcon, UserIcon, UsersIcon, TagIcon, LayoutGridIcon, GalleryHorizontalIcon } from '@lucide/vue'
+import { computed, ref } from 'vue'
 
 import { hasPermission, isSuperAdmin } from '@/composables/use-role'
 import type { NavGroup } from '@/components/app-sidebar/types'
@@ -24,6 +24,7 @@ export function useSidebar() {
   const settingsNavItems = [
     { title: 'admin.nav.account', url: '/admin/settings/account', icon: UserIcon },
     { title: 'admin.nav.security', url: '/admin/settings/security', icon: ShieldCheckIcon },
+    ...(isVisible(null, 'settings.view') ? [{ title: 'AI Settings', url: '/admin/settings/ai', icon: SparklesIcon }] : []),
   ]
 
   const navData = computed<NavGroup[]>(() => [
@@ -36,9 +37,20 @@ export function useSidebar() {
         ...(isVisible('testimonials', 'testimonials.view') ? [navItem('admin.nav.testimonials', '/admin/testimonials', StarIcon)] : []),
         ...(isVisible('faqs', 'faqs.view') ? [navItem('admin.nav.faqs', '/admin/faqs', HelpCircleIcon)] : []),
         ...(isVisible('media', 'media.view') ? [navItem('admin.nav.media', '/admin/media', ImageIcon)] : []),
-...(isVisible('blog', 'blogs.view') ? [navItem('admin.nav.blog', '/admin/blog', FileTextIcon)] : []),
+        ...(isVisible('blog', 'blogs.view') ? [navItem('admin.nav.blog', '/admin/blog', FileTextIcon)] : []),
       ],
     },
+    ...(isVisible('catalog', 'catalog.view') ? [{
+      title: 'admin.nav.group.catalog',
+      items: [
+        navItem('admin.catalog.products', '/admin/catalog/products', ShoppingBagIcon),
+        navItem('admin.catalog.categories', '/admin/catalog/categories', LayoutGridIcon),
+        navItem('admin.catalog.tags', '/admin/catalog/tags', TagIcon),
+        navItem('admin.catalog.brands', '/admin/catalog/brands', GalleryHorizontalIcon),
+        navItem('admin.catalog.marquee', '/admin/catalog/marquee', ImageIcon),
+        navItem('admin.catalog.quotes', '/admin/catalog/quotes', MailIcon),
+      ],
+    }] : []),
     {
       title: 'admin.nav.group.management',
       items: [

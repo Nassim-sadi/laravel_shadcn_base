@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\HasTranslatedAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class Setting extends Model
@@ -53,6 +54,7 @@ class Setting extends Model
             'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
             'json' => json_decode($value, true),
             'array' => json_decode($value, true),
+            'encrypted' => $this->decryptValue($value),
             default => $value,
         };
     }
@@ -69,8 +71,18 @@ class Setting extends Model
         return match ($type) {
             'integer', 'boolean' => strval($value),
             'json', 'array' => json_encode($value),
+            'encrypted' => Crypt::encryptString((string) $value),
             default => $value,
         };
+    }
+
+    protected function decryptValue(string $value): ?string
+    {
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Throwable) {
+            return $value;
+        }
     }
 
     /**

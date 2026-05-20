@@ -41,12 +41,25 @@ class ProjectController extends Controller
             $file = $request->file('image');
             $filename = 'project_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('projects', $filename, 'public');
-            $validated['image'] = $path;
+
+            $media = \App\Models\Media::create([
+                'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'file_name' => $filename,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'disk' => 'public',
+                'path' => $path,
+                'thumbnail_path' => null,
+                'created_by' => auth()->id(),
+            ]);
+
+            $validated['image_id'] = $media->id;
         }
 
         $project = Project::create($validated);
 
-        // Log activity
         activity_log('project.created', [
             'project_id' => $project->id,
             'user_id' => auth()->id(),
@@ -69,20 +82,42 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($project->image && Storage::disk('public')->exists($project->image)) {
-                Storage::disk('public')->delete($project->image);
+            if ($project->image_id) {
+                $oldMedia = \App\Models\Media::find($project->image_id);
+                if ($oldMedia) {
+                    if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldMedia->path)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldMedia->path);
+                    }
+                    if ($oldMedia->thumbnail_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldMedia->thumbnail_path)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldMedia->thumbnail_path);
+                    }
+                    $oldMedia->delete();
+                }
             }
-            
+
             $file = $request->file('image');
             $filename = 'project_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('projects', $filename, 'public');
-            $validated['image'] = $path;
+
+            $media = \App\Models\Media::create([
+                'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'file_name' => $filename,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'disk' => 'public',
+                'path' => $path,
+                'thumbnail_path' => null,
+                'created_by' => auth()->id(),
+            ]);
+
+            $validated['image_id'] = $media->id;
+            unset($validated['image']);
         }
 
         $project->update($validated);
 
-        // Log activity
         activity_log('project.updated', [
             'project_id' => $project->id,
             'user_id' => auth()->id(),
@@ -95,14 +130,21 @@ class ProjectController extends Controller
     {
         $this->authorize('delete', $project);
 
-        // Delete associated image
-        if ($project->image && Storage::disk('public')->exists($project->image)) {
-            Storage::disk('public')->delete($project->image);
+        if ($project->image_id) {
+            $media = \App\Models\Media::find($project->image_id);
+            if ($media) {
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($media->path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->path);
+                }
+                if ($media->thumbnail_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($media->thumbnail_path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->thumbnail_path);
+                }
+                $media->delete();
+            }
         }
 
         $project->delete();
 
-        // Log activity
         activity_log('project.deleted', [
             'project_id' => $project->id,
             'user_id' => auth()->id(),

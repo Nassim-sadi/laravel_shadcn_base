@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { computed, ref, watch } from 'vue'
+import { SparklesIcon } from '@lucide/vue'
 
+import AiContentGeneratorDialog from '@/admin/components/ai/AiContentGeneratorDialog.vue'
 import { Button } from '@/components/ui/button'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -22,6 +24,7 @@ import { emptyTranslations, withLanguages } from '@/composables/use-translated-f
 import { translatedRequired } from '@/composables/use-validation'
 import { languageMetadata } from '@/plugins/i18n'
 import { hasPermission } from '@/composables/use-role'
+import type { AiContentField } from '@/services/api/ai-content.api'
 
 interface BlogPostForm {
   title: TranslatedValue
@@ -55,6 +58,7 @@ const { mutate: createTag } = useCreateBlogTagMutation()
 const newTagName = ref('')
 const newTagSlug = ref('')
 const showCancelConfirm = ref(false)
+const aiGeneratorOpen = ref(false)
 
 function createEmptyForm(): BlogPostForm {
   return {
@@ -145,13 +149,43 @@ function addNewTag() {
 function removeTag(tagId: number) {
   form.value.tag_ids = form.value.tag_ids.filter(id => id !== tagId)
 }
+
+function applyAiDraft(payload: Partial<Record<AiContentField, string>>) {
+  const locale = activeFormLocale.value
+
+  if (payload.title !== undefined) {
+    form.value.title[locale] = payload.title
+  }
+  if (payload.excerpt !== undefined) {
+    form.value.excerpt[locale] = payload.excerpt
+  }
+  if (payload.body !== undefined) {
+    form.value.body[locale] = payload.body
+  }
+}
+
+const aiSource = computed<Partial<Record<AiContentField, string>>>(() => {
+  const locale = activeFormLocale.value
+
+  return {
+    title: form.value.title[locale] || '',
+    excerpt: form.value.excerpt[locale] || '',
+    body: form.value.body[locale] || '',
+  }
+})
 </script>
 
 <template>
   <Dialog :open="open" @update:open="handleDialogClose">
     <DialogContent class="!max-w-7xl max-h-[85vh] overflow-y-auto" @interact-outside.prevent>
       <DialogHeader>
-        <DialogTitle>{{ editingId ? $t('admin.sheet.editBlogPost') : $t('admin.sheet.createBlogPost') }}</DialogTitle>
+        <div class="flex items-center justify-between gap-3">
+          <DialogTitle>{{ editingId ? $t('admin.sheet.editBlogPost') : $t('admin.sheet.createBlogPost') }}</DialogTitle>
+          <Button v-if="hasPermission('ai.generate')" type="button" variant="outline" size="sm" class="shrink-0" @click="aiGeneratorOpen = true">
+            <SparklesIcon class="size-4" />
+            <span>Generate</span>
+          </Button>
+        </div>
         <DialogDescription class="sr-only">{{ editingId ? $t('admin.sheet.editBlogPost') : $t('admin.sheet.createBlogPost') }}</DialogDescription>
       </DialogHeader>
 
@@ -281,4 +315,12 @@ function removeTag(tagId: number) {
       This action cannot be undone. All unsaved changes will be lost.
     </template>
   </ConfirmDialog>
+
+  <AiContentGeneratorDialog
+    v-model:open="aiGeneratorOpen"
+    module="blog_posts"
+    :locale="activeFormLocale"
+    :source="aiSource"
+    @apply="applyAiDraft"
+  />
 </template>

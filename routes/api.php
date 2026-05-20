@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AiContentController;
+use App\Http\Controllers\Api\AiImportController;
+use App\Http\Controllers\Api\AiSettingsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
@@ -18,16 +21,23 @@ use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\BlogPostController;
 use App\Http\Controllers\Api\BlogCategoryController;
 use App\Http\Controllers\Api\BlogTagController;
+use App\Http\Controllers\Api\CatalogCategoryController;
+use App\Http\Controllers\Api\CatalogProductController;
+use App\Http\Controllers\Api\CatalogTagController;
+use App\Http\Controllers\Api\CatalogAttributeController;
+use App\Http\Controllers\Api\CatalogMarqueeController;
+use App\Http\Controllers\Api\CatalogBrandController;
+use App\Http\Controllers\Api\QuoteRequestController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('json.response')->group(function () {
+Route::middleware(['json.response', 'throttle.api'])->group(function () {
     Route::get('/localization', [LocalizationController::class, 'index']);
     Route::get('/translations/{locale}', [LocalizationController::class, 'translations']);
 
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/user', [AuthController::class, 'user']);
         Route::put('/profile', [AuthController::class, 'updateProfile']);
         Route::post('/profile/avatar', [AuthController::class, 'uploadAvatar']);
@@ -95,6 +105,12 @@ Route::middleware('json.response')->group(function () {
 
         // Settings
         Route::apiResource('settings', SettingController::class);
+        Route::get('/ai/settings', [AiSettingsController::class, 'show']);
+        Route::put('/ai/settings', [AiSettingsController::class, 'update']);
+
+        Route::post('/ai/generate-content', [AiContentController::class, 'generate']);
+        Route::post('/ai/import-content/preview', [AiImportController::class, 'preview']);
+        Route::post('/ai/import-content/confirm', [AiImportController::class, 'confirm']);
 
         // Email Templates
         if (config('modules.email_templates', true)) {
@@ -105,6 +121,7 @@ Route::middleware('json.response')->group(function () {
         // Contact Messages
         if (config('modules.contact', true)) {
             Route::apiResource('contact-messages', ContactMessageController::class);
+            Route::post('contact-messages/bulk-delete', [ContactMessageController::class, 'bulkDestroy']);
             Route::post('contact-messages/{contact_message}/toggle-status', [ContactMessageController::class, 'toggleStatus']);
         }
 
@@ -125,5 +142,47 @@ Route::middleware('json.response')->group(function () {
             Route::post('media/bulk-delete', [MediaController::class, 'bulkDestroy']);
             Route::apiResource('media', MediaController::class);
         }
+
+        // Catalog Module
+        if (config('modules.catalog', false)) {
+            Route::get('catalog-categories/all', [CatalogCategoryController::class, 'all']);
+            Route::apiResource('catalog-categories', CatalogCategoryController::class);
+            Route::post('catalog-categories/{catalogCategory}/toggle-status', [CatalogCategoryController::class, 'toggleStatus']);
+
+            Route::get('catalog-brands/all', [CatalogBrandController::class, 'all']);
+            Route::apiResource('catalog-brands', CatalogBrandController::class);
+            Route::post('catalog-brands/{catalogBrand}/toggle-status', [CatalogBrandController::class, 'toggleStatus']);
+
+            Route::apiResource('catalog-products', CatalogProductController::class);
+            Route::post('catalog-products/{catalogProduct}/toggle-status', [CatalogProductController::class, 'toggleStatus']);
+
+            Route::get('catalog-tags', [CatalogTagController::class, 'index']);
+            Route::post('catalog-tags', [CatalogTagController::class, 'store']);
+            Route::delete('catalog-tags/{catalogTag}', [CatalogTagController::class, 'destroy']);
+
+            Route::get('catalog-attributes', [CatalogAttributeController::class, 'index']);
+            Route::post('catalog-attributes', [CatalogAttributeController::class, 'store']);
+            Route::put('catalog-attributes/{catalogAttribute}', [CatalogAttributeController::class, 'update']);
+            Route::delete('catalog-attributes/{catalogAttribute}', [CatalogAttributeController::class, 'destroy']);
+
+            Route::get('catalog-marquee', [CatalogMarqueeController::class, 'index']);
+            Route::post('catalog-marquee', [CatalogMarqueeController::class, 'store']);
+            Route::put('catalog-marquee/{catalogMarqueeItem}', [CatalogMarqueeController::class, 'update']);
+            Route::delete('catalog-marquee/{catalogMarqueeItem}', [CatalogMarqueeController::class, 'destroy']);
+
+            Route::get('quote-requests', [QuoteRequestController::class, 'index']);
+            Route::get('quote-requests/{quoteRequest}', [QuoteRequestController::class, 'show']);
+            Route::post('quote-requests/{quoteRequest}/reply', [QuoteRequestController::class, 'reply']);
+            Route::delete('quote-requests/{quoteRequest}', [QuoteRequestController::class, 'destroy']);
+            Route::post('quote-requests/bulk-delete', [QuoteRequestController::class, 'bulkDestroy']);
+        }
     });
+});
+
+// Public catalog routes (no auth required)
+Route::middleware(['json.response', 'throttle.api'])->group(function () {
+    if (config('modules.catalog', false)) {
+        Route::get('catalog-marquee/public', [CatalogMarqueeController::class, 'publicIndex']);
+        Route::post('quote-requests', [QuoteRequestController::class, 'store']);
+    }
 });

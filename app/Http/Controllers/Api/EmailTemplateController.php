@@ -72,6 +72,18 @@ class EmailTemplateController extends Controller
     {
         $this->authorize('delete', $emailTemplate);
 
+        $protectedKeys = [
+            'password_reset',
+            'email_verification',
+            'welcome',
+        ];
+
+        if (in_array($emailTemplate->key, $protectedKeys, true)) {
+            return response()->json([
+                'message' => 'Cannot delete system email template: '.$emailTemplate->key,
+            ], 403);
+        }
+
         $emailTemplate->delete();
 
         activity_log('email_template.deleted', [

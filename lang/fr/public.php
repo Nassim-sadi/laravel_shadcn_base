@@ -13,6 +13,7 @@ return [
         'signIn' => 'Connexion',
         'dashboard' => 'Tableau de bord',
         'startProject' => 'Démarrer un projet',
+        'shop' => 'Boutique',
     ],
     'footer' => [
         'rights' => 'Tous droits réservés.',

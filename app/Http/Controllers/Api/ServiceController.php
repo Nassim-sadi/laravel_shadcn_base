@@ -41,12 +41,25 @@ class ServiceController extends Controller
             $file = $request->file('image');
             $filename = 'service_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('services', $filename, 'public');
-            $validated['image'] = $path;
+
+            $media = \App\Models\Media::create([
+                'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'file_name' => $filename,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'disk' => 'public',
+                'path' => $path,
+                'thumbnail_path' => null,
+                'created_by' => auth()->id(),
+            ]);
+
+            $validated['image_id'] = $media->id;
         }
 
         $service = Service::create($validated);
 
-        // Log activity
         activity_log('service.created', [
             'service_id' => $service->id,
             'user_id' => auth()->id(),
@@ -67,20 +80,42 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
+            if ($service->image_id) {
+                $oldMedia = \App\Models\Media::find($service->image_id);
+                if ($oldMedia) {
+                    if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldMedia->path)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldMedia->path);
+                    }
+                    if ($oldMedia->thumbnail_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldMedia->thumbnail_path)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldMedia->thumbnail_path);
+                    }
+                    $oldMedia->delete();
+                }
             }
-            
+
             $file = $request->file('image');
             $filename = 'service_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('services', $filename, 'public');
-            $validated['image'] = $path;
+
+            $media = \App\Models\Media::create([
+                'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'file_name' => $filename,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'disk' => 'public',
+                'path' => $path,
+                'thumbnail_path' => null,
+                'created_by' => auth()->id(),
+            ]);
+
+            $validated['image_id'] = $media->id;
+            unset($validated['image']);
         }
 
         $service->update($validated);
 
-        // Log activity
         activity_log('service.updated', [
             'service_id' => $service->id,
             'user_id' => auth()->id(),
@@ -93,14 +128,21 @@ class ServiceController extends Controller
     {
         $this->authorize('delete', $service);
 
-        // Delete associated image
-        if ($service->image && Storage::disk('public')->exists($service->image)) {
-            Storage::disk('public')->delete($service->image);
+        if ($service->image_id) {
+            $media = \App\Models\Media::find($service->image_id);
+            if ($media) {
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($media->path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->path);
+                }
+                if ($media->thumbnail_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($media->thumbnail_path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->thumbnail_path);
+                }
+                $media->delete();
+            }
         }
 
         $service->delete();
 
-        // Log activity
         activity_log('service.deleted', [
             'service_id' => $service->id,
             'user_id' => auth()->id(),

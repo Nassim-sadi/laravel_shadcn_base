@@ -446,3 +446,109 @@ Downstream projects should pin by major version:
 ```
 
 That lets projects receive safe fixes while keeping breaking upgrades deliberate.
+
+## Production Deployment
+
+### Quick Deploy
+
+```bash
+# 1. Install dependencies (no dev packages)
+composer install --no-dev --optimize-autoloader
+npm ci
+npm run build
+
+# 2. Set up environment
+cp .env.example .env
+# Edit .env — see "Production .env Checklist" below
+php artisan key:generate
+
+# 3. Database
+php artisan migrate --force
+
+# 4. Storage symlink
+php artisan storage:link
+
+# 5. Seed essential data
+php artisan db:seed --class=RolePermissionSeeder
+php artisan db:seed --class=SettingSeeder
+
+# 6. Cache everything
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan event:cache
+```
+
+### Production `.env` Checklist
+
+| Variable | Production Value | Notes |
+|----------|-----------------|-------|
+| `APP_ENV` | `production` | |
+| `APP_DEBUG` | `false` | Never `true` in prod |
+| `APP_URL` | `https://yourdomain.com` | Must match your domain |
+| `SESSION_SECURE_COOKIE` | `true` | Required for HTTPS |
+| `SESSION_DOMAIN` | `.yourdomain.com` | For subdomain sharing |
+| `SESSION_ENCRYPT` | `true` | Encrypt session cookies |
+| `SANCTUM_STATEFUL_DOMAINS` | `yourdomain.com` | Comma-separated |
+| `TRUSTED_PROXIES` | `*` or specific IPs | `*` if behind Cloudflare |
+| `LOG_STACK` | `daily` | Auto-rotates logs |
+| `LOG_LEVEL` | `error` | Reduce noise |
+| `API_RATE_LIMIT` | `60` | Requests per minute |
+| `MAIL_*` | Your SMTP settings | Required for email verification |
+
+### Server Configuration
+
+**Apache** — `.htaccess` is pre-configured with security headers (CSP, X-Frame-Options, nosniff, etc.), compression, cache headers, and file protection.
+
+**Nginx** — see `deploy/PRODUCTION_CHECKLIST.md` for a full server block with security headers.
+
+**Queue Worker** — copy `deploy/supervisor/laravel-worker.conf` to `/etc/supervisor/conf.d/`, update the path, then:
+
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start laravel-worker:*
+```
+
+**Cron** — add to crontab (`crontab -e`):
+
+```bash
+* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### File Permissions
+
+```bash
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+```
+
+### Rollback
+
+```bash
+php artisan down
+# Fix the issue or rollback code
+git checkout <previous-commit>
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan migrate --force
+php artisan optimize
+php artisan up
+```
+
+### Security Features
+
+The following are pre-configured for production:
+
+- **CSRF protection** via Sanctum's stateful cookie authentication
+- **XSRF token** auto-attached to API requests
+- **Rate limiting** on login (5/min), register (3/min), and all API endpoints (60/min configurable)
+- **Email verification** enforced on all authenticated API routes
+- **Security headers** — CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **Trusted proxy** support for Cloudflare/reverse proxies
+- **Error sanitization** — stack traces hidden when `APP_DEBUG=false`
+- **Protected deletes** — system settings, email templates, and roles cannot be deleted
+- **Authorization policies** on every controller action
+- **Soft deletes** on content models for recovery
+
+See `deploy/PRODUCTION_CHECKLIST.md` for the full deployment guide.

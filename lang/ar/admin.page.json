@@ -1,6 +1,10 @@
 {
     "admin.page.activityLogs.description": "عرض تاريخ نشاط النظام",
     "admin.page.activityLogs.title": "سجل النشاطات",
+    "admin.page.blog.description": "إدارة مقالات المدونة",
+    "admin.page.blog.title": "المدونة",
+    "admin.page.catalog.description": "إدارة كتالوج المنتجات",
+    "admin.page.catalog.title": "الكتالوج",
     "admin.page.contactMessages.description": "إدارة طلبات نموذج الاتصال",
     "admin.page.contactMessages.title": "رسائل الاتصال",
     "admin.page.dashboard.description": "مرحبًا بك في لوحة التحكم",
@@ -24,7 +28,5 @@
     "admin.page.translations.description": "تحرير مفاتيح الترجمة JSON لارافل المستخدمة في Blade و Vue.",
     "admin.page.translations.title": "الترجمات",
     "admin.page.users.description": "إدارة أعضاء فريقك وصلاحيات حساباتهم",
-    "admin.page.users.title": "المستخدمين",
-    "admin.page.blog.title": "المدونة",
-    "admin.page.blog.description": "إدارة مقالات المدونة"
+    "admin.page.users.title": "المستخدمين"
 }

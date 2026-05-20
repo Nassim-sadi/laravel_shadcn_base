@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { computed, ref, watch } from 'vue'
+import { SparklesIcon } from '@lucide/vue'
 
+import AiContentGeneratorDialog from '@/admin/components/ai/AiContentGeneratorDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,10 +15,12 @@ import { Badge } from '@/components/ui/badge'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import ImagePickerField from '@/admin/components/ImagePickerField.vue'
 
+import { hasPermission } from '@/composables/use-role'
 import type { TranslatedValue } from '@/composables/use-translated-form'
 import { emptyTranslations, withLanguages } from '@/composables/use-translated-form'
 import { translatedRequired } from '@/composables/use-validation'
 import { languageMetadata } from '@/plugins/i18n'
+import type { AiContentField } from '@/services/api/ai-content.api'
 import { useCreateProjectMutation, useUpdateProjectMutation } from '@/services/api/projects.api'
 
 interface ProjectForm {
@@ -47,6 +51,7 @@ const techInput = ref('')
 const { mutate: createItem } = useCreateProjectMutation()
 const { mutate: updateItem } = useUpdateProjectMutation()
 const showUnsavedDialog = ref(false)
+const aiGeneratorOpen = ref(false)
 
 function createEmptyForm(): ProjectForm {
   return {
@@ -139,13 +144,55 @@ function forceClose() {
   showUnsavedDialog.value = false
   open.value = false
 }
+
+function applyAiDraft(payload: Partial<Record<AiContentField, string>>) {
+  const locale = activeFormLocale.value
+
+  if (payload.title !== undefined) {
+    form.value.title[locale] = payload.title
+  }
+  if (payload.description !== undefined) {
+    form.value.description[locale] = payload.description
+  }
+  if (payload.client !== undefined) {
+    form.value.client[locale] = payload.client
+  }
+  if (payload.seo_title !== undefined) {
+    form.value.seo_title[locale] = payload.seo_title
+  }
+  if (payload.seo_description !== undefined) {
+    form.value.seo_description[locale] = payload.seo_description
+  }
+  if (payload.seo_keywords !== undefined) {
+    form.value.seo_keywords[locale] = payload.seo_keywords
+  }
+}
+
+const aiSource = computed<Partial<Record<AiContentField, string>>>(() => {
+  const locale = activeFormLocale.value
+
+  return {
+    title: form.value.title[locale] || '',
+    description: form.value.description[locale] || '',
+    client: form.value.client[locale] || '',
+    seo_title: form.value.seo_title[locale] || '',
+    seo_description: form.value.seo_description[locale] || '',
+    seo_keywords: form.value.seo_keywords[locale] || '',
+  }
+})
 </script>
 
 <template>
   <Sheet :open="open" @update:open="handleSheetClose">
     <SheetContent side="right" class="xl:max-w-2xl w-full" @interact-outside.prevent>
       <SheetHeader>
-        <SheetTitle>{{ editingId ? $t('admin.sheet.editProject') : $t('admin.sheet.createProject') }}</SheetTitle>
+        <div class="flex items-center justify-between gap-3">
+          <SheetTitle>{{ editingId ? $t('admin.sheet.editProject') : $t('admin.sheet.createProject') }}</SheetTitle>
+          <Button v-if="hasPermission('ai.generate')" type="button" variant="outline" size="sm" class="shrink-0" @click="aiGeneratorOpen = true">
+            <SparklesIcon class="size-4" />
+            <span>Generate</span>
+          </Button>
+        </div>
       </SheetHeader>
       <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         <Tabs v-model="activeFormLocale">
@@ -258,4 +305,12 @@ function forceClose() {
       {{ $t('admin.dialog.unsavedDescription') }}
     </template>
   </ConfirmDialog>
+
+  <AiContentGeneratorDialog
+    v-model:open="aiGeneratorOpen"
+    module="projects"
+    :locale="activeFormLocale"
+    :source="aiSource"
+    @apply="applyAiDraft"
+  />
 </template>
