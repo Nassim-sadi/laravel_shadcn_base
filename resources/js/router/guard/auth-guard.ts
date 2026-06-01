@@ -2,11 +2,14 @@ import type { Router } from 'vue-router'
 
 import { $fetch } from 'ofetch'
 
+import { useModules } from '@/composables/use-modules'
 import { hasPermission, hasRole } from '@/composables/use-role'
 import { API_BASE_URL } from '@/constants/app-config'
 import pinia from '@/plugins/pinia/setup'
 import { useAuthStore } from '@/stores/auth'
 import type { IUser } from '@/services/api/auth.api'
+
+const { isEnabled } = useModules()
 
 let authPromise: Promise<void> | null = null
 
@@ -62,5 +65,8 @@ export function setupAuthGuard(router: Router) {
 
     const requiredPermission = to.meta.requiredPermission
     if (requiredPermission && !hasPermission(requiredPermission)) return { path: '/admin' }
+
+    const requiredModule = to.meta.module as string | undefined
+    if (requiredModule && !isEnabled(requiredModule)) return { path: '/admin' }
   })
 }

@@ -471,31 +471,102 @@ Rules:
 
 ---
 
-## Module toggleability via env
+## Module system
 
-Admin page groups can be toggled on/off per project via `.env` flags defined in `config/modules.php`.
+Module access is governed by a single authority — `ModuleRegistry` — not scattered `if (config())` blocks.
 
-Each module flag:
-- Defaults to `true` for built-in modules, `false` for optional add-ons.
-- Is checked in 3 places (all must stay in sync):
-  1. **Sidebar** — `resources/js/composables/use-sidebar.ts` wraps nav items with `isEnabled('name')`
-  2. **Vue router** — `resources/js/router/index.ts` wraps route with `isEnabled('name')`
-  3. **API routes** — `routes/api.php` wraps route groups with `if (config('modules.name', true))`
+### Architecture
 
-The `isEnabled()` function reads from `(window as any).activeModules`, which is injected by `ModuleServiceProvider`.
+```
+ModuleRegistry (definition + env overrides → resolved snapshot)
+       │
+       ├── Blade bootstrap: window.bootstrap.modules
+       │
+       ├── API middleware (module:name) → 403 JSON if disabled
+       │
+       ├── Web middleware (module:name) → 404 Blade if disabled
+       │
+       └── Frontend (useModules() composable reads bootstrap)
+            ├── Router guard — checks meta.module, redirects /admin if disabled
+            └── Sidebar — hides disabled groups
+```
+
+**Key principle:** There is ONE authority (`ModuleRegistry`) deciding module access. Everything else reads from its resolved snapshot. Nothing recomputes logic independently.
+
+### Single authority: `App\Support\Modules\ModuleRegistry`
+
+- **Definition layer** — hardcoded metadata (name, group, label, default enabled)
+- **Override layer** — env vars (`MODULE_*`) override defaults (future: database overrides)
+- **Resolved snapshot** — `resolve()` returns `[{ name, enabled, group, label }]` combined from definition + overrides
+
+Use the registry directly in PHP:
+
+```php
+app(ModuleRegistry::class)->isEnabled('booking');
+app(ModuleRegistry::class)->resolve(); // full snapshot
+```
+
+### Backend route gating
+
+Always register routes. Gate with `module:name` middleware:
+
+```php
+// GOOD — middleware gates at runtime, routes always visible in route:list
+Route::middleware('module:booking')->group(function () {
+    Route::get('/bookings', ...);
+});
+
+// NEVER — conditional route registration. Routes disappear from route:list.
+if (config('modules.booking')) { Route::get('/bookings', ...); }
+```
+
+The middleware (`EnsureModuleEnabled`) returns 403 JSON for API routes and 404 for Blade routes when a module is disabled.
+
+### Frontend module access
+
+The ONLY way to check module status in Vue is the `useModules()` composable:
+
+```ts
+import { useModules } from '@/composables/use-modules'
+
+const { isEnabled, findByGroup, getModule, modules } = useModules()
+```
+
+**Never access `window.bootstrap` directly in Vue files.** The composable is the single entry point.
+
+### Router gating
+
+Routes are always registered (no conditional route arrays). Each module-gated route has `meta.module` set to its module name. The auth guard checks it at runtime and redirects to `/admin` if disabled.
+
+```ts
+{ path: 'services', meta: { module: 'services', requiredPermission: 'services.view' } }
+```
 
 ### Currently toggleable modules
 
-- `services`, `projects`, `testimonials`, `faqs`, `media` (content)
-- `contact`, `email_templates` (communication)
-- `activity_logs`, `translations` (system)
-- `catalog`, `booking`, `blog` (optional, default false)
+| Module | Group | Default |
+|---|---|---|
+| `services` | content | enabled |
+| `projects` | content | enabled |
+| `testimonials` | content | enabled |
+| `faqs` | content | enabled |
+| `media` | content | enabled |
+| `blog` | content | disabled |
+| `contact` | communication | enabled |
+| `email_templates` | communication | enabled |
+| `activity_logs` | system | enabled |
+| `translations` | system | enabled |
+| `catalog` | commerce | disabled |
+| `booking` | scheduling | disabled |
+| `client_auth` | auth | disabled |
 
 ### Adding a new toggleable module
 
-1. Add to `config/modules.php` with appropriate default.
-2. Add `isEnabled()` guard in sidebar, router, and API routes.
-3. Add to `.env.example` with its default value.
+1. Add definition in `app/Support/Modules/ModuleRegistry.php` (`$definitions` array).
+2. Add `module:name` middleware group in `routes/api.php` and `routes/web.php`.
+3. Add sidebar item in `resources/js/composables/use-sidebar.ts` using `isVisible('name', 'permission.name')`.
+4. Add route in `resources/js/router/index.ts` with `meta: { module: 'name', requiredPermission: 'permission.name' }`.
+5. Add `.env.example` entry: `MODULE_NAME=false`.
 
 ---
 

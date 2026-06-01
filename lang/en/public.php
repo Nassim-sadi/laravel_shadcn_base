@@ -14,6 +14,7 @@ return [
         'dashboard' => 'Dashboard',
         'startProject' => 'Start a project',
         'shop' => 'Shop',
+        'booking' => 'Book Now',
     ],
     'footer' => [
         'rights' => 'All rights reserved.',

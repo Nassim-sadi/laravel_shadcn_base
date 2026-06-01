@@ -1,12 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { useModules } from '@/composables/use-modules'
 import { setupRouterGuard } from './guard'
 
-const activeModules: string[] = (window as any).activeModules ?? []
-
-function isEnabled(module: string): boolean {
-  return activeModules.includes(module)
-}
+const { isEnabled } = useModules()
 
 const router = createRouter({
   history: createWebHistory(),
@@ -28,24 +25,26 @@ const router = createRouter({
         { path: 'settings/account', component: () => import('../pages/settings/components/account-form.vue') },
         { path: 'settings/security', component: () => import('../pages/settings/components/two-factor-form.vue') },
         { path: 'settings/ai', component: () => import('../pages/settings/components/ai-settings-form.vue'), meta: { requiredPermission: 'settings.view' } },
-        ...(isEnabled('translations') ? [{ path: 'translations', component: () => import('../pages/admin/translations/index.vue'), meta: { requiredPermission: 'settings.view' } }] : []),
-        ...(isEnabled('services') ? [{ path: 'services', component: () => import('../pages/admin/services/index.vue'), meta: { requiredPermission: 'services.view' } }] : []),
-        ...(isEnabled('projects') ? [{ path: 'projects', component: () => import('../pages/admin/projects/index.vue'), meta: { requiredPermission: 'projects.view' } }] : []),
-        ...(isEnabled('testimonials') ? [{ path: 'testimonials', component: () => import('../pages/admin/testimonials/index.vue'), meta: { requiredPermission: 'testimonials.view' } }] : []),
-        ...(isEnabled('faqs') ? [{ path: 'faqs', component: () => import('../pages/admin/faqs/index.vue'), meta: { requiredPermission: 'faqs.view' } }] : []),
-        ...(isEnabled('contact') ? [{ path: 'contact-messages', component: () => import('../pages/admin/contact-messages/index.vue'), meta: { requiredPermission: 'contact-messages.view' } }] : []),
-        ...(isEnabled('email_templates') ? [{ path: 'email-templates', component: () => import('../pages/admin/email-templates/index.vue'), meta: { requiredPermission: 'email-templates.view' } }] : []),
-        ...(isEnabled('media') ? [{ path: 'media', component: () => import('../admin/views/media/Index.vue'), meta: { requiredPermission: 'media.view' } }] : []),
-        ...(isEnabled('blog') ? [{ path: 'blog', component: () => import('../pages/admin/blog/Index.vue'), meta: { requiredPermission: 'blogs.view' } }] : []),
-        ...(isEnabled('activity_logs') ? [{ path: 'activity-logs', component: () => import('../pages/admin/activity-logs/index.vue'), meta: { requiredPermission: 'logs.view' } }] : []),
-        ...(isEnabled('catalog') ? [
-          { path: 'catalog/products', component: () => import('../pages/admin/catalog/products/index.vue'), meta: { requiredPermission: 'catalog.view' } },
-          { path: 'catalog/categories', component: () => import('../pages/admin/catalog/categories/index.vue'), meta: { requiredPermission: 'catalog.view' } },
-          { path: 'catalog/tags', component: () => import('../pages/admin/catalog/tags/index.vue'), meta: { requiredPermission: 'catalog.view' } },
-          { path: 'catalog/brands', component: () => import('../pages/admin/catalog/brands/index.vue'), meta: { requiredPermission: 'catalog.view' } },
-          { path: 'catalog/marquee', component: () => import('../pages/admin/catalog/marquee/index.vue'), meta: { requiredPermission: 'catalog.view' } },
-          { path: 'catalog/quotes', component: () => import('../pages/admin/catalog/quotes/index.vue'), meta: { requiredPermission: 'catalog.view' } },
-        ] : []),
+        { path: 'translations', component: () => import('../pages/admin/translations/index.vue'), meta: { module: 'translations', requiredPermission: 'settings.view' } },
+        { path: 'services', component: () => import('../pages/admin/services/index.vue'), meta: { module: 'services', requiredPermission: 'services.view' } },
+        { path: 'projects', component: () => import('../pages/admin/projects/index.vue'), meta: { module: 'projects', requiredPermission: 'projects.view' } },
+        { path: 'testimonials', component: () => import('../pages/admin/testimonials/index.vue'), meta: { module: 'testimonials', requiredPermission: 'testimonials.view' } },
+        { path: 'faqs', component: () => import('../pages/admin/faqs/index.vue'), meta: { module: 'faqs', requiredPermission: 'faqs.view' } },
+        { path: 'contact-messages', component: () => import('../pages/admin/contact-messages/index.vue'), meta: { module: 'contact', requiredPermission: 'contact-messages.view' } },
+        { path: 'email-templates', component: () => import('../pages/admin/email-templates/index.vue'), meta: { module: 'email_templates', requiredPermission: 'email-templates.view' } },
+        { path: 'media', component: () => import('../admin/views/media/Index.vue'), meta: { module: 'media', requiredPermission: 'media.view' } },
+        { path: 'blog', component: () => import('../pages/admin/blog/Index.vue'), meta: { module: 'blog', requiredPermission: 'blogs.view' } },
+        { path: 'activity-logs', component: () => import('../pages/admin/activity-logs/index.vue'), meta: { module: 'activity_logs', requiredPermission: 'logs.view' } },
+        { path: 'catalog/products', component: () => import('../pages/admin/catalog/products/index.vue'), meta: { module: 'catalog', requiredPermission: 'catalog.view' } },
+        { path: 'catalog/categories', component: () => import('../pages/admin/catalog/categories/index.vue'), meta: { module: 'catalog', requiredPermission: 'catalog.view' } },
+        { path: 'catalog/tags', component: () => import('../pages/admin/catalog/tags/index.vue'), meta: { module: 'catalog', requiredPermission: 'catalog.view' } },
+        { path: 'catalog/brands', component: () => import('../pages/admin/catalog/brands/index.vue'), meta: { module: 'catalog', requiredPermission: 'catalog.view' } },
+        { path: 'catalog/marquee', component: () => import('../pages/admin/catalog/marquee/index.vue'), meta: { module: 'catalog', requiredPermission: 'catalog.view' } },
+        { path: 'catalog/quotes', component: () => import('../pages/admin/catalog/quotes/index.vue'), meta: { module: 'catalog', requiredPermission: 'catalog.view' } },
+        { path: 'booking-services', component: () => import('../pages/admin/booking-services/index.vue'), meta: { module: 'booking', requiredPermission: 'booking_services.view' } },
+        { path: 'bookings', component: () => import('../pages/admin/bookings/index.vue'), meta: { module: 'booking', requiredPermission: 'booking.view' } },
+        { path: 'bookings/calendar', component: () => import('../pages/admin/bookings/calendar.vue'), meta: { module: 'booking', requiredPermission: 'booking.view' } },
+        { path: 'bookings/settings', component: () => import('../pages/admin/bookings/settings.vue'), meta: { module: 'booking', requiredPermission: 'settings.view' } },
         { path: ':pathMatch(.*)*', redirect: '/admin' },
       ],
     },

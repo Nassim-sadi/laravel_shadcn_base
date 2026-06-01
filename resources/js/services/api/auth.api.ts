@@ -1,5 +1,6 @@
 import { ofetch } from 'ofetch'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -76,6 +77,10 @@ export function useLoginMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
+      toast.success('Logged in')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to login')
     },
   })
 }
@@ -96,6 +101,10 @@ export function useRegisterMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
+      toast.success('Registered successfully')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to register')
     },
   })
 }
@@ -113,6 +122,10 @@ export function useLogoutMutation() {
     },
     onSuccess: () => {
       queryClient.clear()
+      toast.success('Logged out')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to logout')
     },
   })
 }
@@ -147,6 +160,10 @@ export function useUpdateProfileMutation() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
+      toast.success('Profile updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update profile')
     },
   })
 }
@@ -166,6 +183,12 @@ export function useChangePasswordMutation() {
       method: 'post',
       body: data,
     }),
+    onSuccess: () => {
+      toast.success('Password changed')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to change password')
+    },
   })
 }
 
@@ -182,6 +205,10 @@ export function useUploadAvatarMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
+      toast.success('Avatar uploaded')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to upload avatar')
     },
   })
 }
@@ -195,6 +222,10 @@ export function useDeleteAvatarMutation() {
     mutationFn: async () => apiFetch<IResponse<string>>('/profile/avatar', { method: 'delete' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useUserQuery'] })
+      toast.success('Avatar deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete avatar')
     },
   })
 }

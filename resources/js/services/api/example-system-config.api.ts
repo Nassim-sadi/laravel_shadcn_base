@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import type { IResponse } from '../types/response.type'
 
@@ -61,6 +62,10 @@ export function useUpdateSystemConfigByKeyMutation(key: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetSystemConfigByKeyQuery', key] })
+      toast.success('Config updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update config')
     },
   })
 }
@@ -79,6 +84,10 @@ export function useCreateSystemMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetSystemConfigByKeyQuery'] })
+      toast.success('Config created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create config')
     },
   })
 }

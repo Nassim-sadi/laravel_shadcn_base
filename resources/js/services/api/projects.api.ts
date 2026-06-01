@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -99,7 +100,13 @@ export function useCreateProjectMutation() {
   return useMutation<IResponse<IProject>, Error, ICreateProjectRequest>({
     mutationKey: ['useCreateProjectMutation'],
     mutationFn: data => apiFetch('/projects', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] })
+      toast.success('Project created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create project')
+    },
   })
 }
 
@@ -117,6 +124,10 @@ export function useUpdateProjectMutation(id?: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetProjectByIdQuery', id] })
+      toast.success('Project updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update project')
     },
   })
 }
@@ -127,7 +138,13 @@ export function useDeleteProjectMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteProjectMutation'],
     mutationFn: id => apiFetch(`/projects/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] })
+      toast.success('Project deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete project')
+    },
   })
 }
 
@@ -137,6 +154,12 @@ export function useToggleProjectStatusMutation() {
   return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
     mutationKey: ['useToggleProjectStatusMutation'],
     mutationFn: id => apiFetch(`/projects/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetProjectsQuery'] })
+      toast.success('Project status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update project status')
+    },
   })
 }

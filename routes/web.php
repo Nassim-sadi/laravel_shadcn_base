@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Public\CatalogController;
 use App\Http\Controllers\Public\CatalogQuoteController;
+use App\Http\Controllers\Public\BookingController as PublicBookingController;
 use App\Http\Controllers\Public\AboutController;
 use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\ContactController;
@@ -26,10 +27,10 @@ Route::get('/robots.txt', function () {
 })->name('robots');
 
 Route::get('/sitemap.xml', function () {
-    $servicesEnabled = Route::has('public.services.index') && Route::has('public.services.show');
-    $projectsEnabled = Route::has('public.projects.index') && Route::has('public.projects.show');
-    $blogEnabled = Route::has('public.blog.index') && Route::has('public.blog.show');
-    $contactEnabled = Route::has('public.contact');
+    $servicesEnabled = module_enabled('services');
+    $projectsEnabled = module_enabled('projects');
+    $blogEnabled = module_enabled('blog');
+    $contactEnabled = module_enabled('contact');
 
     $services = $servicesEnabled
         ? \App\Models\Service::query()->where('is_active', true)->get(['id', 'slug', 'updated_at'])
@@ -104,33 +105,39 @@ Route::get('/sitemap.xml', function () {
     return response($xml)->header('Content-Type', 'application/xml');
 })->name('sitemap');
 
-if (config('modules.contact', true)) {
+Route::middleware('module:contact')->group(function () {
     Route::get('/contact', [ContactController::class, 'index'])->name('public.contact');
     Route::post('/contact', [ContactController::class, 'store'])->name('public.contact.store');
-}
+});
 
-if (config('modules.services', true)) {
+Route::middleware('module:services')->group(function () {
     Route::get('/services', [ServiceController::class, 'index'])->name('public.services.index');
     Route::get('/services/{service}', [ServiceController::class, 'show'])->name('public.services.show');
-}
+});
 
-if (config('modules.projects', true)) {
+Route::middleware('module:projects')->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('public.projects.index');
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('public.projects.show');
-}
+});
 
-if (config('modules.blog', false)) {
+Route::middleware('module:blog')->group(function () {
     Route::get('/blog', [BlogController::class, 'index'])->name('public.blog.index');
     Route::get('/blog/{blogPost}', [BlogController::class, 'show'])->name('public.blog.show');
-}
+});
 
-if (config('modules.catalog', false)) {
+Route::middleware('module:catalog')->group(function () {
     Route::get('/shop', [CatalogController::class, 'shop'])->name('public.catalog.shop');
     Route::get('/catalog', [CatalogController::class, 'shop'])->name('public.catalog.index');
     Route::get('/catalog/{product}', [CatalogController::class, 'show'])->name('public.catalog.show');
     Route::get('/catalog/quote', [CatalogController::class, 'quote'])->name('public.catalog.quote');
     Route::post('/catalog/quote', [CatalogQuoteController::class, 'store'])->name('public.catalog.quote.store');
-}
+});
+
+Route::middleware('module:booking')->group(function () {
+    Route::get('/bookings', [PublicBookingController::class, 'index'])->name('public.booking.index');
+    Route::post('/bookings', [PublicBookingController::class, 'store'])->name('public.booking.store');
+    Route::get('/bookings/availability/{serviceId}', [PublicBookingController::class, 'availability'])->name('public.booking.availability');
+});
 
 Route::view('/auth/login', 'app')->name('auth.login');
 Route::view('/auth/register', 'app')->name('auth.register');

@@ -10,10 +10,17 @@ const props = defineProps<ToasterProps>()
 <template>
   <Sonner
     :class="cn('toaster group', props.class)"
+    rich-colors
     :style="{
       '--normal-bg': 'var(--popover)',
       '--normal-text': 'var(--popover-foreground)',
       '--normal-border': 'var(--border)',
+      '--success-bg': 'hsl(143 64% 24%)',
+      '--success-text': 'hsl(0 0% 100%)',
+      '--success-border': 'hsl(143 64% 24%)',
+      '--error-bg': 'var(--destructive)',
+      '--error-text': 'var(--destructive-foreground)',
+      '--error-border': 'var(--destructive)',
       '--border-radius': 'var(--radius)',
     }"
     v-bind="props"

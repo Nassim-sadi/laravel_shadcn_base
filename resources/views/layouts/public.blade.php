@@ -41,6 +41,7 @@
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
 
         @vite(['resources/css/app.css'])
+        @stack('styles')
     </head>
     <body class="min-h-screen bg-base-100 text-base-content antialiased">
         <header class="border-b border-base-300/70 bg-base-100">
@@ -62,14 +63,17 @@
                         @if (Route::has('public.blog.index'))
                             <li><a href="{{ route('public.blog.index') }}">{{ __('public.nav.blog') }}</a></li>
                         @endif
-                        @if (config('modules.catalog', false))
+                        @if (module_enabled('catalog'))
                             <li><a href="{{ route('public.catalog.shop') }}">{{ __('public.nav.shop') }}</a></li>
                         @endif
+                        @if (module_enabled('booking'))
+                            <li><a href="{{ route('public.booking.index') }}">{{ __('public.nav.booking') }}</a></li>
+                        @endif
                         <li><a href="{{ route('public.about') }}">{{ __('public.nav.about') }}</a></li>
-                        @if (config('modules.testimonials', true))
+                        @if (module_enabled('testimonials'))
                             <li><a href="{{ route('home') }}#testimonials">{{ __('public.nav.testimonials') }}</a></li>
                         @endif
-                        @if (config('modules.faqs', true))
+                        @if (module_enabled('faqs'))
                             <li><a href="{{ route('home') }}#faq">{{ __('public.nav.faq') }}</a></li>
                         @endif
                         @if (Route::has('public.contact'))
@@ -81,7 +85,7 @@
                 <div class="navbar-end gap-2">
                     <x-language-switcher />
 
-                    @if (config('modules.client_auth'))
+                    @if (module_enabled('client_auth'))
                         @auth
                             <a href="/admin" class="btn btn-ghost btn-sm">{{ __('public.nav.dashboard') }}</a>
                         @else
@@ -106,5 +110,7 @@
                 <p>{{ __('public.footer.tagline') }}</p>
             </div>
         </footer>
+
+        @stack('scripts')
     </body>
 </html>

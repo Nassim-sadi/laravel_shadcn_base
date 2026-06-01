@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -83,7 +84,13 @@ export function useCreateEmailTemplateMutation() {
   return useMutation<IResponse<IEmailTemplate>, Error, ICreateEmailTemplateRequest>({
     mutationKey: ['useCreateEmailTemplateMutation'],
     mutationFn: data => apiFetch('/email-templates', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] })
+      toast.success('Email template created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create email template')
+    },
   })
 }
 
@@ -96,6 +103,10 @@ export function useUpdateEmailTemplateMutation(id: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplateByIdQuery', id] })
+      toast.success('Email template updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update email template')
     },
   })
 }
@@ -106,7 +117,13 @@ export function useDeleteEmailTemplateMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteEmailTemplateMutation'],
     mutationFn: id => apiFetch(`/email-templates/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] })
+      toast.success('Email template deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete email template')
+    },
   })
 }
 
@@ -116,6 +133,12 @@ export function useToggleEmailTemplateStatusMutation() {
   return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
     mutationKey: ['useToggleEmailTemplateStatusMutation'],
     mutationFn: id => apiFetch(`/email-templates/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetEmailTemplatesQuery'] })
+      toast.success('Email template status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update email template status')
+    },
   })
 }

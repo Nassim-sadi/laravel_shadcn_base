@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -65,7 +66,13 @@ export function useCreateContactMessageMutation() {
   }>({
     mutationKey: ['useCreateContactMessageMutation'],
     mutationFn: data => apiFetch('/contact-messages', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] })
+      toast.success('Message sent')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to send message')
+    },
   })
 }
 
@@ -98,6 +105,10 @@ export function useUpdateContactMessageMutation(id: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetContactMessageByIdQuery', id] })
+      toast.success('Message updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update message')
     },
   })
 }
@@ -108,7 +119,13 @@ export function useDeleteContactMessageMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteContactMessageMutation'],
     mutationFn: id => apiFetch(`/contact-messages/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] })
+      toast.success('Message deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete message')
+    },
   })
 }
 
@@ -118,6 +135,12 @@ export function useToggleContactMessageStatusMutation() {
   return useMutation<IResponse<{ is_read: boolean }>, Error, number>({
     mutationKey: ['useToggleContactMessageStatusMutation'],
     mutationFn: id => apiFetch(`/contact-messages/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetContactMessagesQuery'] })
+      toast.success('Message status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update message status')
+    },
   })
 }

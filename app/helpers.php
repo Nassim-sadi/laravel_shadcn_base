@@ -7,6 +7,13 @@ if (!function_exists('activity_log')) {
     }
 }
 
+if (!function_exists('module_enabled')) {
+    function module_enabled(string $name): bool
+    {
+        return app(\App\Support\Modules\ModuleRegistry::class)->isEnabled($name);
+    }
+}
+
 if (!function_exists('setting')) {
     function setting(?string $key = null, mixed $default = null): mixed
     {

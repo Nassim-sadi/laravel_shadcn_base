@@ -9,11 +9,13 @@ import Component from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
 
+const isDev = process.env.NODE_ENV !== 'production'
+
 export default defineConfig({
   plugins: [
     laravel({
-      input: ['resources/js/main.ts', 'resources/css/app.css'],
-      refresh: ['resources/views/**'],
+      input: ['resources/js/main.ts', 'resources/js/booking.js', 'resources/css/app.css'],
+      refresh: ['resources/views/**/*.blade.php'],
     }),
     vue({
       script: {
@@ -22,7 +24,7 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
-    visualizer({ gzipSize: true, brotliSize: true }) as PluginOption,
+    ...(isDev ? [] : [visualizer({ gzipSize: true, brotliSize: true }) as PluginOption]),
     AutoImport({
       include: [
         /\.[tj]sx?$/,
@@ -48,6 +50,15 @@ export default defineConfig({
       dts: 'resources/js/types/auto-import-components.d.ts',
     }),
   ],
+  server: {
+    watch: {
+      usePolling: true,
+      interval: 500,
+    },
+    hmr: {
+      overlay: true,
+    },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./resources/js', import.meta.url)),

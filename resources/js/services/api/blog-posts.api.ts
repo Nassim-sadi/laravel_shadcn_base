@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 import { useApiFetch } from '@/composables/use-fetch'
 import type { IResponse } from '../types/response.type'
 
@@ -88,7 +89,13 @@ export function useCreateBlogPostMutation() {
   return useMutation<IResponse<IBlogPost>, Error, ICreateBlogPostRequest>({
     mutationKey: ['useCreateBlogPostMutation'],
     mutationFn: data => apiFetch('/blog-posts', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] })
+      toast.success('Blog post created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create blog post')
+    },
   })
 }
 
@@ -105,6 +112,10 @@ export function useUpdateBlogPostMutation(id?: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetBlogPostByIdQuery', id] })
+      toast.success('Blog post updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update blog post')
     },
   })
 }
@@ -115,7 +126,13 @@ export function useDeleteBlogPostMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteBlogPostMutation'],
     mutationFn: id => apiFetch(`/blog-posts/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] })
+      toast.success('Blog post deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete blog post')
+    },
   })
 }
 
@@ -125,6 +142,12 @@ export function useToggleBlogPostStatusMutation() {
   return useMutation<IResponse<{ is_published: boolean }>, Error, number>({
     mutationKey: ['useToggleBlogPostStatusMutation'],
     mutationFn: id => apiFetch(`/blog-posts/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetBlogPostsQuery'] })
+      toast.success('Blog post status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update blog post status')
+    },
   })
 }

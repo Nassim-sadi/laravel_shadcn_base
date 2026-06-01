@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -64,6 +65,10 @@ export function useCreateUserMutation() {
     mutationFn: async (data: ICreateUserRequest) => apiFetch<IResponse<IUser>>('/users', { method: 'post', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
+      toast.success('User created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create user')
     },
   })
 }
@@ -78,6 +83,10 @@ export function useUpdateUserMutation(id: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetUserByIdQuery', id] })
+      toast.success('User updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update user')
     },
   })
 }
@@ -91,6 +100,10 @@ export function useDeleteUserMutation() {
     mutationFn: async (id: number) => apiFetch<IResponse<string>>(`/users/${id}`, { method: 'delete' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
+      toast.success('User deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete user')
     },
   })
 }
@@ -104,6 +117,10 @@ export function useInviteUserMutation() {
     mutationFn: async (data: IInviteUserRequest) => apiFetch<IResponse<{ message: string, temporary_password: string }>>('/users/invite', { method: 'post', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
+      toast.success('Invitation sent')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to send invitation')
     },
   })
 }
@@ -117,25 +134,45 @@ export function useAssignRoleMutation() {
     mutationFn: async ({ userId, role }) => apiFetch<IResponse<IUser>>(`/users/${userId}/assign-role`, { method: 'post', body: { role } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
+      toast.success('Role assigned')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to assign role')
     },
   })
 }
 
 export function useGivePermissionMutation() {
   const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
 
   return useMutation<IResponse<IUser>, Error, { userId: number, permission: string }>({
     mutationKey: ['useGivePermissionMutation'],
     mutationFn: async ({ userId, permission }) => apiFetch<IResponse<IUser>>(`/users/${userId}/give-permission`, { method: 'post', body: { permission } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
+      toast.success('Permission added')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to add permission')
+    },
   })
 }
 
 export function useRevokePermissionMutation() {
   const { apiFetch } = useApiFetch()
+  const queryClient = useQueryClient()
 
   return useMutation<IResponse<IUser>, Error, { userId: number, permission: string }>({
     mutationKey: ['useRevokePermissionMutation'],
     mutationFn: async ({ userId, permission }) => apiFetch<IResponse<IUser>>(`/users/${userId}/revoke-permission`, { method: 'post', body: { permission } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetUsersQuery'] })
+      toast.success('Permission revoked')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to revoke permission')
+    },
   })
 }
 
@@ -152,6 +189,10 @@ export function useUploadAvatarMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUserByIdQuery'] })
+      toast.success('Avatar uploaded')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to upload avatar')
     },
   })
 }
@@ -165,6 +206,10 @@ export function useDeleteAvatarMutation() {
     mutationFn: async (id: number) => apiFetch<IResponse<string>>(`/users/${id}/avatar`, { method: 'delete' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetUserByIdQuery'] })
+      toast.success('Avatar deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete avatar')
     },
   })
 }

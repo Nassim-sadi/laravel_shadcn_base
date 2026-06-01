@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -96,7 +97,13 @@ export function useCreateServiceMutation() {
   return useMutation<IResponse<IService>, Error, ICreateServiceRequest>({
     mutationKey: ['useCreateServiceMutation'],
     mutationFn: data => apiFetch('/services', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] })
+      toast.success('Service created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create service')
+    },
   })
 }
 
@@ -114,6 +121,10 @@ export function useUpdateServiceMutation(id?: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetServiceByIdQuery', id] })
+      toast.success('Service updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update service')
     },
   })
 }
@@ -124,7 +135,13 @@ export function useDeleteServiceMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteServiceMutation'],
     mutationFn: id => apiFetch(`/services/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] })
+      toast.success('Service deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete service')
+    },
   })
 }
 
@@ -134,6 +151,12 @@ export function useToggleServiceStatusMutation() {
   return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
     mutationKey: ['useToggleServiceStatusMutation'],
     mutationFn: id => apiFetch(`/services/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetServicesQuery'] })
+      toast.success('Service status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update service status')
+    },
   })
 }

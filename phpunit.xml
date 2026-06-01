@@ -42,7 +42,7 @@
         <env name="MODULE_ACTIVITY_LOGS" value="true" force="true"/>
         <env name="MODULE_TRANSLATIONS" value="true" force="true"/>
         <env name="MODULE_CATALOG" value="false" force="true"/>
-        <env name="MODULE_BOOKING" value="false" force="true"/>
+        <env name="MODULE_BOOKING" value="true" force="true"/>
         <env name="MODULE_BLOG" value="true" force="true"/>
     </php>
 </phpunit>

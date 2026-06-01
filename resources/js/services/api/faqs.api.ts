@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -88,7 +89,13 @@ export function useCreateFaqMutation() {
   return useMutation<IResponse<IFaq>, Error, ICreateFaqRequest>({
     mutationKey: ['useCreateFaqMutation'],
     mutationFn: data => apiFetch('/faqs', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] })
+      toast.success('FAQ created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create FAQ')
+    },
   })
 }
 
@@ -101,6 +108,10 @@ export function useUpdateFaqMutation(id: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetFaqByIdQuery', id] })
+      toast.success('FAQ updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update FAQ')
     },
   })
 }
@@ -111,7 +122,13 @@ export function useDeleteFaqMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteFaqMutation'],
     mutationFn: id => apiFetch(`/faqs/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] })
+      toast.success('FAQ deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete FAQ')
+    },
   })
 }
 
@@ -121,6 +138,12 @@ export function useToggleFaqStatusMutation() {
   return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
     mutationKey: ['useToggleFaqStatusMutation'],
     mutationFn: id => apiFetch(`/faqs/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetFaqsQuery'] })
+      toast.success('FAQ status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update FAQ status')
+    },
   })
 }

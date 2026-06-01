@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -47,7 +48,13 @@ export function useUploadMediaMutation() {
   return useMutation<IResponse<IMedia>, Error, FormData>({
     mutationKey: ['useUploadMediaMutation'],
     mutationFn: formData => apiFetch('/media', { method: 'post', body: formData, headers: {} }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] })
+      toast.success('Media uploaded')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to upload media')
+    },
   })
 }
 
@@ -59,6 +66,10 @@ export function useUpdateMediaMutation(id?: number) {
     mutationFn: data => apiFetch(`/media/${id ?? data.id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] })
+      toast.success('Media updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update media')
     },
   })
 }
@@ -69,7 +80,13 @@ export function useDeleteMediaMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteMediaMutation'],
     mutationFn: id => apiFetch(`/media/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] })
+      toast.success('Media deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete media')
+    },
   })
 }
 
@@ -79,7 +96,13 @@ export function useBulkDeleteMediaMutation() {
   return useMutation<IResponse<any>, Error, number[]>({
     mutationKey: ['useBulkDeleteMediaMutation'],
     mutationFn: ids => apiFetch('/media/bulk-delete', { method: 'post', body: { ids } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetMediaQuery'] })
+      toast.success('Media deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete media')
+    },
   })
 }
 

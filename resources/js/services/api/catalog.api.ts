@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 import { useApiFetch } from '@/composables/use-fetch'
 import type { IResponse } from '../types/response.type'
 
@@ -153,7 +154,13 @@ export function useCreateCatalogCategoryMutation() {
   return useMutation<IResponse<ICatalogCategory>, Error, any>({
     mutationKey: ['useCreateCatalogCategoryMutation'],
     mutationFn: data => apiFetch('/catalog-categories', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] })
+      toast.success('Category created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create category')
+    },
   })
 }
 
@@ -163,7 +170,13 @@ export function useUpdateCatalogCategoryMutation() {
   return useMutation<IResponse<ICatalogCategory>, Error, any>({
     mutationKey: ['useUpdateCatalogCategoryMutation'],
     mutationFn: ({ id, ...data }: { id: number } & any) => apiFetch(`/catalog-categories/${id}`, { method: 'put', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] })
+      toast.success('Category updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update category')
+    },
   })
 }
 
@@ -173,7 +186,13 @@ export function useDeleteCatalogCategoryMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteCatalogCategoryMutation'],
     mutationFn: id => apiFetch(`/catalog-categories/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] })
+      toast.success('Category deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete category')
+    },
   })
 }
 
@@ -183,7 +202,13 @@ export function useToggleCatalogCategoryStatusMutation() {
   return useMutation<IResponse<any>, Error, number>({
     mutationKey: ['useToggleCatalogCategoryStatusMutation'],
     mutationFn: id => apiFetch(`/catalog-categories/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogCategoriesQuery'] })
+      toast.success('Category status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update category status')
+    },
   })
 }
 
@@ -202,7 +227,13 @@ export function useCreateCatalogProductMutation() {
   return useMutation<IResponse<ICatalogProduct>, Error, any>({
     mutationKey: ['useCreateCatalogProductMutation'],
     mutationFn: data => apiFetch('/catalog-products', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] })
+      toast.success('Product created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create product')
+    },
   })
 }
 
@@ -212,7 +243,13 @@ export function useUpdateCatalogProductMutation() {
   return useMutation<IResponse<ICatalogProduct>, Error, any>({
     mutationKey: ['useUpdateCatalogProductMutation'],
     mutationFn: ({ id, ...data }: { id: number } & any) => apiFetch(`/catalog-products/${id}`, { method: 'put', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] })
+      toast.success('Product updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update product')
+    },
   })
 }
 
@@ -222,7 +259,13 @@ export function useDeleteCatalogProductMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteCatalogProductMutation'],
     mutationFn: id => apiFetch(`/catalog-products/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] })
+      toast.success('Product deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete product')
+    },
   })
 }
 
@@ -232,7 +275,13 @@ export function useToggleCatalogProductStatusMutation() {
   return useMutation<IResponse<any>, Error, number>({
     mutationKey: ['useToggleCatalogProductStatusMutation'],
     mutationFn: id => apiFetch(`/catalog-products/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogProductsQuery'] })
+      toast.success('Product status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update product status')
+    },
   })
 }
 
@@ -251,7 +300,13 @@ export function useCreateCatalogTagMutation() {
   return useMutation<IResponse<ICatalogTag>, Error, any>({
     mutationKey: ['useCreateCatalogTagMutation'],
     mutationFn: data => apiFetch('/catalog-tags', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogTagsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogTagsQuery'] })
+      toast.success('Tag created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create tag')
+    },
   })
 }
 
@@ -261,7 +316,13 @@ export function useDeleteCatalogTagMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteCatalogTagMutation'],
     mutationFn: id => apiFetch(`/catalog-tags/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogTagsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogTagsQuery'] })
+      toast.success('Tag deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete tag')
+    },
   })
 }
 
@@ -280,7 +341,13 @@ export function useCreateCatalogMarqueeItemMutation() {
   return useMutation<IResponse<ICatalogMarqueeItem>, Error, any>({
     mutationKey: ['useCreateCatalogMarqueeItemMutation'],
     mutationFn: data => apiFetch('/catalog-marquee', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogMarqueeQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogMarqueeQuery'] })
+      toast.success('Marquee item created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create marquee item')
+    },
   })
 }
 
@@ -290,7 +357,13 @@ export function useUpdateCatalogMarqueeItemMutation() {
   return useMutation<IResponse<ICatalogMarqueeItem>, Error, any>({
     mutationKey: ['useUpdateCatalogMarqueeItemMutation'],
     mutationFn: ({ id, ...data }: { id: number } & any) => apiFetch(`/catalog-marquee/${id}`, { method: 'put', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogMarqueeQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogMarqueeQuery'] })
+      toast.success('Marquee item updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update marquee item')
+    },
   })
 }
 
@@ -300,7 +373,13 @@ export function useDeleteCatalogMarqueeItemMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteCatalogMarqueeItemMutation'],
     mutationFn: id => apiFetch(`/catalog-marquee/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogMarqueeQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogMarqueeQuery'] })
+      toast.success('Marquee item deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete marquee item')
+    },
   })
 }
 
@@ -319,7 +398,13 @@ export function useReplyQuoteRequestMutation() {
   return useMutation<IResponse<IQuoteRequest>, Error, { id: number; reply: string }>({
     mutationKey: ['useReplyQuoteRequestMutation'],
     mutationFn: ({ id, reply }) => apiFetch(`/quote-requests/${id}/reply`, { method: 'post', body: { reply } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetQuoteRequestsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetQuoteRequestsQuery'] })
+      toast.success('Reply sent')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to send reply')
+    },
   })
 }
 
@@ -329,7 +414,13 @@ export function useDeleteQuoteRequestMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteQuoteRequestMutation'],
     mutationFn: id => apiFetch(`/quote-requests/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetQuoteRequestsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetQuoteRequestsQuery'] })
+      toast.success('Quote request deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete quote request')
+    },
   })
 }
 
@@ -339,7 +430,13 @@ export function useBulkDeleteQuoteRequestsMutation() {
   return useMutation<IResponse<any>, Error, number[]>({
     mutationKey: ['useBulkDeleteQuoteRequestsMutation'],
     mutationFn: ids => apiFetch('/quote-requests/bulk-delete', { method: 'post', body: { ids } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetQuoteRequestsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetQuoteRequestsQuery'] })
+      toast.success('Quote requests deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete quote requests')
+    },
   })
 }
 
@@ -381,7 +478,13 @@ export function useCreateCatalogBrandMutation() {
   return useMutation<IResponse<ICatalogBrand>, Error, any>({
     mutationKey: ['useCreateCatalogBrandMutation'],
     mutationFn: data => apiFetch('/catalog-brands', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] })
+      toast.success('Brand created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create brand')
+    },
   })
 }
 
@@ -391,7 +494,13 @@ export function useUpdateCatalogBrandMutation() {
   return useMutation<IResponse<ICatalogBrand>, Error, any>({
     mutationKey: ['useUpdateCatalogBrandMutation'],
     mutationFn: ({ id, ...data }: { id: number } & any) => apiFetch(`/catalog-brands/${id}`, { method: 'put', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] })
+      toast.success('Brand updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update brand')
+    },
   })
 }
 
@@ -401,7 +510,13 @@ export function useDeleteCatalogBrandMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteCatalogBrandMutation'],
     mutationFn: id => apiFetch(`/catalog-brands/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] })
+      toast.success('Brand deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete brand')
+    },
   })
 }
 
@@ -411,6 +526,12 @@ export function useToggleCatalogBrandStatusMutation() {
   return useMutation<IResponse<any>, Error, number>({
     mutationKey: ['useToggleCatalogBrandStatusMutation'],
     mutationFn: id => apiFetch(`/catalog-brands/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetCatalogBrandsQuery'] })
+      toast.success('Brand status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update brand status')
+    },
   })
 }

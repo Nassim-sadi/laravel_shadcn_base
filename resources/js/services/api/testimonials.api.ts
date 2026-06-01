@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -98,7 +99,13 @@ export function useCreateTestimonialMutation() {
   return useMutation<IResponse<ITestimonial>, Error, ICreateTestimonialRequest>({
     mutationKey: ['useCreateTestimonialMutation'],
     mutationFn: data => apiFetch('/testimonials', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] })
+      toast.success('Testimonial created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create testimonial')
+    },
   })
 }
 
@@ -111,6 +118,10 @@ export function useUpdateTestimonialMutation(id: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetTestimonialByIdQuery', id] })
+      toast.success('Testimonial updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update testimonial')
     },
   })
 }
@@ -121,7 +132,13 @@ export function useDeleteTestimonialMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteTestimonialMutation'],
     mutationFn: id => apiFetch(`/testimonials/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] })
+      toast.success('Testimonial deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete testimonial')
+    },
   })
 }
 
@@ -131,6 +148,12 @@ export function useToggleTestimonialStatusMutation() {
   return useMutation<IResponse<{ is_active: boolean }>, Error, number>({
     mutationKey: ['useToggleTestimonialStatusMutation'],
     mutationFn: id => apiFetch(`/testimonials/${id}/toggle-status`, { method: 'post' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetTestimonialsQuery'] })
+      toast.success('Testimonial status updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update testimonial status')
+    },
   })
 }

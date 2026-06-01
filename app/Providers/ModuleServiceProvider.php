@@ -2,30 +2,15 @@
 
 namespace App\Providers;
 
+use App\Support\Modules\ModuleRegistry;
 use Illuminate\Support\ServiceProvider;
 
 class ModuleServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        $modules = $this->getActiveModules();
+        $modules = app(ModuleRegistry::class)->resolve();
 
-        view()->share('activeModules', $modules);
-
-        foreach ($modules as $module) {
-            $routeFile = base_path("routes/modules/{$module}.php");
-            if (file_exists($routeFile)) {
-                $this->loadRoutesFrom($routeFile);
-            }
-        }
-    }
-
-    public function getActiveModules(): array
-    {
-        return collect(config('modules', []))
-            ->filter(fn ($enabled) => $enabled)
-            ->keys()
-            ->values()
-            ->all();
+        view()->share('modules', $modules);
     }
 }

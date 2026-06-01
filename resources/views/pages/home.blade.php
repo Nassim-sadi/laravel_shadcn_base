@@ -17,10 +17,10 @@
                     {{ __('home.hero.subtitle') }}
                 </p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                    @if (config('modules.contact', true))
+                    @if (module_enabled('contact'))
                         <a href="#contact" class="btn btn-primary btn-lg">{{ __('home.hero.startProject') }}</a>
                     @endif
-                    @if (config('modules.projects', true))
+                    @if (module_enabled('projects'))
                         <a href="#projects" class="btn btn-outline btn-lg">{{ __('home.hero.viewWork') }}</a>
                     @endif
                 </div>
@@ -28,7 +28,7 @@
 
             <div class="rounded-box border border-base-300 bg-base-100 p-6 shadow-xl">
                 <div class="stats stats-vertical w-full bg-base-100">
-                    @if (config('modules.services', true))
+                    @if (module_enabled('services'))
                         <div class="stat">
                             <div class="stat-title">{{ __('home.stats.services') }}</div>
                             <div class="stat-value text-primary">{{ $services->count() }}</div>
@@ -36,7 +36,7 @@
                         </div>
                     @endif
 
-                    @if (config('modules.projects', true))
+                    @if (module_enabled('projects'))
                         <div class="stat">
                             <div class="stat-title">{{ __('home.stats.projects') }}</div>
                             <div class="stat-value">{{ $projects->count() }}</div>
@@ -44,7 +44,7 @@
                         </div>
                     @endif
 
-                    @if (config('modules.testimonials', true))
+                    @if (module_enabled('testimonials'))
                         <div class="stat">
                             <div class="stat-title">{{ __('home.stats.testimonials') }}</div>
                             <div class="stat-value">{{ $testimonials->count() }}</div>
@@ -56,7 +56,7 @@
         </div>
     </section>
 
-    @if (config('modules.services', true))
+    @if (module_enabled('services'))
     <section id="services" class="bg-base-100 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl">
@@ -110,7 +110,7 @@
     </section>
     @endif
 
-    @if (config('modules.projects', true))
+    @if (module_enabled('projects'))
     <section id="projects" class="bg-base-200/60 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -176,7 +176,7 @@
     </section>
     @endif
 
-    @if (config('modules.testimonials', true))
+    @if (module_enabled('testimonials'))
     <section id="testimonials" class="bg-base-100 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl">
@@ -238,7 +238,7 @@
     </section>
     @endif
 
-    @if (config('modules.faqs', true))
+    @if (module_enabled('faqs'))
     <section id="faq" class="bg-base-200/60 py-16">
         <div class="mx-auto grid w-full max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
@@ -273,7 +273,7 @@
     </section>
     @endif
 
-    @if (config('modules.contact', true))
+    @if (module_enabled('contact'))
     <section id="contact" class="bg-base-100 py-16">
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-box border border-base-300 bg-base-100 p-8 shadow-sm">

@@ -10,7 +10,7 @@
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/main.ts'])
-        <script>window.activeModules = @json($activeModules ?? []);</script>
+        <script>window.bootstrap = @json(['modules' => $modules ?? []]);</script>
     </head>
     <body>
         <div id="app"></div>

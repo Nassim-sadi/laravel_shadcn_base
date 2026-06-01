@@ -8,14 +8,15 @@ use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Http\Responses\LoginResponse;
 use App\Http\Responses\RegisterResponse;
+use App\Support\Modules\ModuleRegistry;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
+use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -35,28 +36,28 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
         Fortify::loginView(function () {
-            if (! config('modules.client_auth')) {
+            if (! app(ModuleRegistry::class)->isEnabled('client_auth')) {
                 return redirect('/auth/login');
             }
             return view('pages.auth.login');
         });
 
         Fortify::registerView(function () {
-            if (! config('modules.client_auth')) {
+            if (! app(ModuleRegistry::class)->isEnabled('client_auth')) {
                 return redirect('/auth/register');
             }
             return view('pages.auth.register');
         });
 
         Fortify::requestPasswordResetLinkView(function () {
-            if (! config('modules.client_auth')) {
+            if (! app(ModuleRegistry::class)->isEnabled('client_auth')) {
                 return redirect('/auth/login');
             }
             return view('pages.auth.forgot-password');
         });
 
         Fortify::resetPasswordView(function (Request $request) {
-            if (! config('modules.client_auth')) {
+            if (! app(ModuleRegistry::class)->isEnabled('client_auth')) {
                 return redirect('/auth/login');
             }
             return view('pages.auth.reset-password', ['token' => $request->token]);

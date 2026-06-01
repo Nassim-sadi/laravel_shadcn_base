@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'json.response' => \App\Http\Middleware\ForceJsonResponse::class,
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'throttle.api' => \App\Http\Middleware\ThrottleApiRequests::class,
+            'module' => \App\Http\Middleware\EnsureModuleEnabled::class,
         ]);
 
         $middleware->trustProxies(at: '*');
@@ -66,6 +67,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $e, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Method not allowed'], 405);
+            }
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => $e->getMessage() ?: 'This action is unauthorized.'], 403);
+            }
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => $e->getMessage() ?: 'Error'], $e->getStatusCode());
             }
         });
 

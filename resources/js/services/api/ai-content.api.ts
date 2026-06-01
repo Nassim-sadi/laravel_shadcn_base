@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { API_BASE_URL } from '@/constants/app-config'
 import { useApiFetch } from '@/composables/use-fetch'
@@ -99,6 +100,12 @@ export function useGenerateAiContentMutation() {
   return useMutation<IResponse<IGenerateAiContentResponse>, Error, IGenerateAiContentRequest>({
     mutationKey: ['useGenerateAiContentMutation'],
     mutationFn: body => apiFetch('/ai/generate-content', { method: 'post', body }),
+    onSuccess: () => {
+      toast.success('Content generated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to generate content')
+    },
   })
 }
 
@@ -141,6 +148,12 @@ export function usePreviewAiContentImportMutation() {
         xhr.send(formData)
       })
     },
+    onSuccess: () => {
+      toast.success('Import preview ready')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to preview import')
+    },
   })
 }
 
@@ -150,6 +163,12 @@ export function useConfirmAiContentImportMutation() {
   return useMutation<IResponse<IImportConfirmResponse>, Error, { preview_token: string }>({
     mutationKey: ['useConfirmAiContentImportMutation'],
     mutationFn: body => apiFetch('/ai/import-content/confirm', { method: 'post', body }),
+    onSuccess: () => {
+      toast.success('Import confirmed')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to confirm import')
+    },
   })
 }
 
@@ -169,6 +188,12 @@ export function useUpdateAiSettingsMutation() {
   return useMutation<IResponse<IAiSettingsResponse>, Error, IUpdateAiSettingsRequest>({
     mutationKey: ['useUpdateAiSettingsMutation'],
     mutationFn: body => apiFetch('/ai/settings', { method: 'put', body }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetAiSettingsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetAiSettingsQuery'] })
+      toast.success('AI settings updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update AI settings')
+    },
   })
 }

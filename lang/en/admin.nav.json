@@ -10,6 +10,7 @@
     "admin.nav.dashboard": "Dashboard",
     "admin.nav.emailTemplates": "Email Templates",
     "admin.nav.faqs": "FAQs",
+    "admin.nav.group.booking": "Booking",
     "admin.nav.group.communication": "Communication",
     "admin.nav.group.content": "Content",
     "admin.nav.group.catalog": "Catalog",

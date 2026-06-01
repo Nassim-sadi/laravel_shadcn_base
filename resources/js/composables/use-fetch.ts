@@ -17,7 +17,7 @@ function getXSRFToken(): string | undefined {
 export function useApiFetch() {
   const router = useRouter()
 
-  const apiFetch = ofetch.create({
+  const _apiFetch = ofetch.create({
     baseURL: API_BASE_URL,
     timeout: API_TIMEOUT ?? 0,
     credentials: 'include',
@@ -41,6 +41,18 @@ export function useApiFetch() {
       }
     },
   })
+
+  async function apiFetch<T = any>(path: string, opts?: Record<string, any>): Promise<T> {
+    try {
+      return await _apiFetch<T>(path, opts)
+    }
+    catch (error: any) {
+      if (error?.data?.message) {
+        error.message = error.data.message
+      }
+      throw error
+    }
+  }
 
   return {
     apiFetch,

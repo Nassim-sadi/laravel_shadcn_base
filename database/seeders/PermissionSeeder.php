@@ -26,6 +26,8 @@ class PermissionSeeder extends Seeder
             'email-templates' => ['email-templates.view', 'email-templates.create', 'email-templates.edit', 'email-templates.delete'],
             'blog' => ['blogs.view', 'blogs.create', 'blogs.edit', 'blogs.delete'],
             'catalog' => ['catalog.view', 'catalog.create', 'catalog.edit', 'catalog.delete'],
+            'booking' => ['booking.view', 'booking.create', 'booking.edit', 'booking.delete', 'booking.confirm'],
+            'booking_services' => ['booking_services.view', 'booking_services.create', 'booking_services.edit', 'booking_services.delete'],
         ];
 
         $modules = config('modules', []);
@@ -76,6 +78,8 @@ class PermissionSeeder extends Seeder
             'email-templates.view', 'email-templates.create', 'email-templates.edit',
             'blogs.view', 'blogs.create', 'blogs.edit',
             'catalog.view', 'catalog.create', 'catalog.edit',
+            'booking.view', 'booking.create', 'booking.edit',
+            'booking_services.view', 'booking_services.create', 'booking_services.edit',
         ]);
 
         $user = Role::firstOrCreate([

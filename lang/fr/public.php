@@ -14,6 +14,7 @@ return [
         'dashboard' => 'Tableau de bord',
         'startProject' => 'Démarrer un projet',
         'shop' => 'Boutique',
+        'booking' => 'Réserver',
     ],
     'footer' => [
         'rights' => 'Tous droits réservés.',

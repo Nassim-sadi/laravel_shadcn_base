@@ -14,6 +14,7 @@ return [
         'dashboard' => 'لوحة التحكم',
         'startProject' => 'ابدأ مشروعًا',
         'shop' => 'المتجر',
+        'booking' => 'احجز الآن',
     ],
     'footer' => [
         'rights' => 'جميع الحقوق محفوظة.',

@@ -27,6 +27,10 @@ use App\Http\Controllers\Api\CatalogTagController;
 use App\Http\Controllers\Api\CatalogAttributeController;
 use App\Http\Controllers\Api\CatalogMarqueeController;
 use App\Http\Controllers\Api\CatalogBrandController;
+use App\Http\Controllers\Api\BookingServiceController;
+use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\BookingAvailabilityController;
+use App\Http\Controllers\Api\BookingSettingsController;
 use App\Http\Controllers\Api\QuoteRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,85 +70,76 @@ Route::middleware(['json.response', 'throttle.api'])->group(function () {
 
         Route::get('/permissions/all', [PermissionController::class, 'getAllPermissions']);
 
-        // Activity Logs
-        if (config('modules.activity_logs', true)) {
-            Route::get('/activity-logs', [ActivityLogController::class, 'index']);
-            Route::get('/activity-logs/{activity}', [ActivityLogController::class, 'show']);
-            Route::get('/activity-logs/log-names', [ActivityLogController::class, 'getLogNames']);
-            Route::get('/activity-logs/events', [ActivityLogController::class, 'getEvents']);
-        }
-
-        if (config('modules.translations', true)) {
-            Route::get('/admin/translations/{locale}', [AdminTranslationController::class, 'show']);
-            Route::put('/admin/translations/{locale}', [AdminTranslationController::class, 'update']);
-        }
-        
-        // Services
-        if (config('modules.services', true)) {
-            Route::apiResource('services', ServiceController::class);
-            Route::post('services/{service}/toggle-status', [ServiceController::class, 'toggleStatus']);
-        }
-
-        // Projects
-        if (config('modules.projects', true)) {
-            Route::apiResource('projects', ProjectController::class);
-            Route::post('projects/{project}/toggle-status', [ProjectController::class, 'toggleStatus']);
-        }
-
-        // Testimonials
-        if (config('modules.testimonials', true)) {
-            Route::apiResource('testimonials', TestimonialController::class);
-            Route::post('testimonials/{testimonial}/toggle-status', [TestimonialController::class, 'toggleStatus']);
-        }
-
-        // FAQs
-        if (config('modules.faqs', true)) {
-            Route::apiResource('faqs', FaqController::class);
-            Route::post('faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus']);
-        }
-
-        // Settings
+        // Settings & AI — core, no module gating
         Route::apiResource('settings', SettingController::class);
         Route::get('/ai/settings', [AiSettingsController::class, 'show']);
         Route::put('/ai/settings', [AiSettingsController::class, 'update']);
-
         Route::post('/ai/generate-content', [AiContentController::class, 'generate']);
         Route::post('/ai/import-content/preview', [AiImportController::class, 'preview']);
         Route::post('/ai/import-content/confirm', [AiImportController::class, 'confirm']);
 
-        // Email Templates
-        if (config('modules.email_templates', true)) {
+        // ── Module-gated routes ──
+
+        Route::middleware('module:activity_logs')->group(function () {
+            Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+            Route::get('/activity-logs/{activity}', [ActivityLogController::class, 'show']);
+            Route::get('/activity-logs/log-names', [ActivityLogController::class, 'getLogNames']);
+            Route::get('/activity-logs/events', [ActivityLogController::class, 'getEvents']);
+        });
+
+        Route::middleware('module:translations')->group(function () {
+            Route::get('/admin/translations/{locale}', [AdminTranslationController::class, 'show']);
+            Route::put('/admin/translations/{locale}', [AdminTranslationController::class, 'update']);
+        });
+
+        Route::middleware('module:services')->group(function () {
+            Route::apiResource('services', ServiceController::class);
+            Route::post('services/{service}/toggle-status', [ServiceController::class, 'toggleStatus']);
+        });
+
+        Route::middleware('module:projects')->group(function () {
+            Route::apiResource('projects', ProjectController::class);
+            Route::post('projects/{project}/toggle-status', [ProjectController::class, 'toggleStatus']);
+        });
+
+        Route::middleware('module:testimonials')->group(function () {
+            Route::apiResource('testimonials', TestimonialController::class);
+            Route::post('testimonials/{testimonial}/toggle-status', [TestimonialController::class, 'toggleStatus']);
+        });
+
+        Route::middleware('module:faqs')->group(function () {
+            Route::apiResource('faqs', FaqController::class);
+            Route::post('faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus']);
+        });
+
+        Route::middleware('module:email_templates')->group(function () {
             Route::apiResource('email-templates', EmailTemplateController::class);
             Route::post('email-templates/{email_template}/toggle-status', [EmailTemplateController::class, 'toggleStatus']);
-        }
+        });
 
-        // Contact Messages
-        if (config('modules.contact', true)) {
+        Route::middleware('module:contact')->group(function () {
             Route::apiResource('contact-messages', ContactMessageController::class);
             Route::post('contact-messages/bulk-delete', [ContactMessageController::class, 'bulkDestroy']);
             Route::post('contact-messages/{contact_message}/toggle-status', [ContactMessageController::class, 'toggleStatus']);
-        }
+        });
 
-        // Blog Module
-        if (config('modules.blog', true)) {
+        Route::middleware('module:blog')->group(function () {
             Route::apiResource('blog-posts', BlogPostController::class);
             Route::post('blog-posts/{blog_post}/toggle-status', [BlogPostController::class, 'toggleStatus']);
             Route::apiResource('blog-categories', BlogCategoryController::class);
             Route::get('blog-tags', [BlogTagController::class, 'index']);
             Route::post('blog-tags', [BlogTagController::class, 'store']);
             Route::delete('blog-tags/{blogTag}', [BlogTagController::class, 'destroy']);
-        }
+        });
 
-        // Media
-        if (config('modules.media', true)) {
+        Route::middleware('module:media')->group(function () {
             Route::get('media/folders', [MediaController::class, 'folders']);
             Route::get('media/types', [MediaController::class, 'types']);
             Route::post('media/bulk-delete', [MediaController::class, 'bulkDestroy']);
             Route::apiResource('media', MediaController::class);
-        }
+        });
 
-        // Catalog Module
-        if (config('modules.catalog', false)) {
+        Route::middleware('module:catalog')->group(function () {
             Route::get('catalog-categories/all', [CatalogCategoryController::class, 'all']);
             Route::apiResource('catalog-categories', CatalogCategoryController::class);
             Route::post('catalog-categories/{catalogCategory}/toggle-status', [CatalogCategoryController::class, 'toggleStatus']);
@@ -175,14 +170,34 @@ Route::middleware(['json.response', 'throttle.api'])->group(function () {
             Route::post('quote-requests/{quoteRequest}/reply', [QuoteRequestController::class, 'reply']);
             Route::delete('quote-requests/{quoteRequest}', [QuoteRequestController::class, 'destroy']);
             Route::post('quote-requests/bulk-delete', [QuoteRequestController::class, 'bulkDestroy']);
-        }
+        });
+
+        Route::middleware('module:booking')->group(function () {
+            Route::get('booking-services/all', [BookingServiceController::class, 'all']);
+            Route::apiResource('booking-services', BookingServiceController::class);
+            Route::post('booking-services/{bookingService}/toggle-status', [BookingServiceController::class, 'toggleStatus']);
+            Route::post('booking-services/{bookingService}/time-blocks', [BookingServiceController::class, 'storeTimeBlock']);
+            Route::delete('booking-services/{bookingService}/time-blocks/{timeBlock}', [BookingServiceController::class, 'destroyTimeBlock']);
+
+            Route::get('bookings', [BookingController::class, 'index']);
+            Route::get('bookings/{booking}', [BookingController::class, 'show']);
+            Route::post('bookings/{booking}/confirm', [BookingController::class, 'confirm']);
+            Route::post('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+            Route::post('bookings/{booking}/complete', [BookingController::class, 'complete']);
+            Route::post('bookings/{booking}/reschedule', [BookingController::class, 'reschedule']);
+            Route::delete('bookings/{booking}', [BookingController::class, 'destroy']);
+            Route::post('bookings/bulk-delete', [BookingController::class, 'bulkDestroy']);
+
+            Route::get('booking-services/{bookingService}/availability', [BookingAvailabilityController::class, 'index']);
+
+            Route::get('booking-settings', [BookingSettingsController::class, 'index']);
+            Route::put('booking-settings', [BookingSettingsController::class, 'update']);
+        });
     });
 });
 
 // Public catalog routes (no auth required)
-Route::middleware(['json.response', 'throttle.api'])->group(function () {
-    if (config('modules.catalog', false)) {
-        Route::get('catalog-marquee/public', [CatalogMarqueeController::class, 'publicIndex']);
-        Route::post('quote-requests', [QuoteRequestController::class, 'store']);
-    }
+Route::middleware(['json.response', 'throttle.api', 'module:catalog'])->group(function () {
+    Route::get('catalog-marquee/public', [CatalogMarqueeController::class, 'publicIndex']);
+    Route::post('quote-requests', [QuoteRequestController::class, 'store']);
 });

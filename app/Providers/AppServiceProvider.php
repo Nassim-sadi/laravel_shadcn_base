@@ -12,6 +12,8 @@ use App\Models\CatalogProduct;
 use App\Models\CatalogTag;
 use App\Models\CatalogMarqueeItem;
 use App\Models\CatalogAttribute;
+use App\Models\Booking;
+use App\Models\BookingService;
 use App\Models\ContactMessage;
 use App\Models\EmailTemplate;
 use App\Models\Faq;
@@ -31,6 +33,8 @@ use App\Policies\CatalogProductPolicy;
 use App\Policies\CatalogTagPolicy;
 use App\Policies\CatalogMarqueeItemPolicy;
 use App\Policies\CatalogAttributePolicy;
+use App\Policies\BookingPolicy;
+use App\Policies\BookingServicePolicy;
 use App\Policies\ContactMessagePolicy;
 use App\Policies\EmailTemplatePolicy;
 use App\Policies\FaqPolicy;
@@ -84,5 +88,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(CatalogTag::class, CatalogTagPolicy::class);
         Gate::policy(CatalogMarqueeItem::class, CatalogMarqueeItemPolicy::class);
         Gate::policy(CatalogAttribute::class, CatalogAttributePolicy::class);
+
+        Gate::policy(BookingService::class, BookingServicePolicy::class);
+        Gate::policy(Booking::class, BookingPolicy::class);
     }
 }

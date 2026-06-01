@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -59,7 +60,13 @@ export function useCreateSettingMutation() {
   return useMutation<IResponse<ISetting>, Error, ICreateSettingRequest>({
     mutationKey: ['useCreateSettingMutation'],
     mutationFn: data => apiFetch('/settings', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] })
+      toast.success('Setting created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create setting')
+    },
   })
 }
 
@@ -71,6 +78,10 @@ export function useUpdateSettingMutation(id: number) {
     mutationFn: data => apiFetch(`/settings/${id}`, { method: 'put', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] })
+      toast.success('Setting updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update setting')
     },
   })
 }
@@ -81,6 +92,12 @@ export function useDeleteSettingMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteSettingMutation'],
     mutationFn: id => apiFetch(`/settings/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetSettingsQuery'] })
+      toast.success('Setting deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete setting')
+    },
   })
 }

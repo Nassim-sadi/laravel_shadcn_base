@@ -1,14 +1,11 @@
-import { BriefcaseIcon, FileTextIcon, FolderKanbanIcon, HelpCircleIcon, ImageIcon, LanguagesIcon, LayoutDashboardIcon, MailIcon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, ShoppingBagIcon, SparklesIcon, StarIcon, UserIcon, UsersIcon, TagIcon, LayoutGridIcon, GalleryHorizontalIcon } from '@lucide/vue'
+import { BriefcaseIcon, FileTextIcon, FolderKanbanIcon, HelpCircleIcon, ImageIcon, LanguagesIcon, LayoutDashboardIcon, MailIcon, ScrollTextIcon, SettingsIcon, ShieldCheckIcon, ShoppingBagIcon, SparklesIcon, StarIcon, UserIcon, UsersIcon, TagIcon, LayoutGridIcon, GalleryHorizontalIcon, CalendarIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 
 import { hasPermission, isSuperAdmin } from '@/composables/use-role'
+import { useModules } from '@/composables/use-modules'
 import type { NavGroup } from '@/components/app-sidebar/types'
 
-const activeModules: string[] = (window as any).activeModules ?? []
-
-function isEnabled(module: string): boolean {
-  return activeModules.includes(module)
-}
+const { isEnabled } = useModules()
 
 function isVisible(module: string | null, permission: string): boolean {
   if (module && !isEnabled(module)) return false
@@ -49,6 +46,15 @@ export function useSidebar() {
         navItem('admin.catalog.brands', '/admin/catalog/brands', GalleryHorizontalIcon),
         navItem('admin.catalog.marquee', '/admin/catalog/marquee', ImageIcon),
         navItem('admin.catalog.quotes', '/admin/catalog/quotes', MailIcon),
+      ],
+    }] : []),
+    ...(isVisible('booking', 'booking.view') ? [{
+      title: 'admin.nav.group.booking',
+      items: [
+        navItem('admin.booking.services', '/admin/booking-services', BriefcaseIcon),
+        navItem('admin.nav.bookings', '/admin/bookings', CalendarIcon),
+        navItem('admin.booking.calendar', '/admin/bookings/calendar', CalendarIcon),
+        navItem('admin.booking.settings', '/admin/bookings/settings', SettingsIcon),
       ],
     }] : []),
     {

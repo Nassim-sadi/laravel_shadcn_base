@@ -13,6 +13,8 @@ export interface FilterParams {
   client?: string
   from_date?: string
   to_date?: string
+  date?: string
+  status?: string
   page?: number
   per_page?: number
 }
@@ -31,6 +33,8 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
   const client = ref<string | undefined>(defaults.client)
   const from_date = ref<string | undefined>(defaults.from_date)
   const to_date = ref<string | undefined>(defaults.to_date)
+  const date = ref<string | undefined>(defaults.date)
+  const status = ref<string | undefined>(defaults.status)
   const page = ref(1)
   const pageSize = ref(15)
 
@@ -58,11 +62,13 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
     client.value = undefined
     from_date.value = undefined
     to_date.value = undefined
+    date.value = undefined
+    status.value = undefined
     page.value = 1
   }
 
   function hasFilters() {
-    return !!(search.value || is_active.value || is_read.value || is_published.value || category.value || category_id.value || brand_id.value || rating.value || icon.value || client.value || from_date.value || to_date.value)
+    return !!(search.value || is_active.value || is_read.value || is_published.value || category.value || category_id.value || brand_id.value || rating.value || icon.value || client.value || from_date.value || to_date.value || date.value || status.value)
   }
 
   const params = computed<FilterParams>(() => {
@@ -79,6 +85,8 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
     if (client.value) p.client = client.value
     if (from_date.value) p.from_date = from_date.value
     if (to_date.value) p.to_date = to_date.value
+    if (date.value) p.date = date.value
+    if (status.value) p.status = status.value
     p.page = page.value
     p.per_page = pageSize.value
     return p
@@ -98,6 +106,8 @@ export function useTableFilters(defaults: Partial<FilterParams> = {}, debounceMs
     client,
     from_date,
     to_date,
+    date,
+    status,
     page,
     pageSize,
     params,

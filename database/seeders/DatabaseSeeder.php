@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             ContentSeeder::class,
             SuperAdminSeeder::class,
+            BookingServiceSeeder::class,
+            BookingSeeder::class,
+            BookingSettingsSeeder::class,
         ]);
     }
 }

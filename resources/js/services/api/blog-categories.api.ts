@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 import { useApiFetch } from '@/composables/use-fetch'
 import type { IResponse } from '../types/response.type'
 
@@ -42,7 +43,13 @@ export function useCreateBlogCategoryMutation() {
   return useMutation<IResponse<IBlogCategory>, Error, ICreateBlogCategoryRequest>({
     mutationKey: ['useCreateBlogCategoryMutation'],
     mutationFn: data => apiFetch('/blog-categories', { method: 'post', body: data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogCategoriesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetBlogCategoriesQuery'] })
+      toast.success('Blog category created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create blog category')
+    },
   })
 }
 
@@ -56,7 +63,13 @@ export function useUpdateBlogCategoryMutation(id?: number) {
       const { id: _id, ...body } = data
       return apiFetch(`/blog-categories/${catId}`, { method: 'put', body })
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogCategoriesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetBlogCategoriesQuery'] })
+      toast.success('Blog category updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update blog category')
+    },
   })
 }
 
@@ -66,6 +79,12 @@ export function useDeleteBlogCategoryMutation() {
   return useMutation<IResponse<string>, Error, number>({
     mutationKey: ['useDeleteBlogCategoryMutation'],
     mutationFn: id => apiFetch(`/blog-categories/${id}`, { method: 'delete' }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['useGetBlogCategoriesQuery'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['useGetBlogCategoriesQuery'] })
+      toast.success('Blog category deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete blog category')
+    },
   })
 }

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -48,6 +49,10 @@ export function useCreateRoleMutation() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetRolesQuery'] })
+      toast.success('Role created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create role')
     },
   })
 }
@@ -70,6 +75,10 @@ export function useUpdateRoleMutation(id?: number) {
       const roleId = data.id ?? id
       queryClient.invalidateQueries({ queryKey: ['useGetRolesQuery'] })
       queryClient.invalidateQueries({ queryKey: ['useGetRoleByIdQuery', roleId] })
+      toast.success('Role updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update role')
     },
   })
 }
@@ -85,6 +94,10 @@ export function useDeleteRoleMutation() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetRolesQuery'] })
+      toast.success('Role deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete role')
     },
   })
 }

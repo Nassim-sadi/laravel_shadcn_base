@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { useApiFetch } from '@/composables/use-fetch'
 
@@ -45,6 +46,10 @@ export function useUpdateTaskMutation(id: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetTaskQuery', id] })
       queryClient.invalidateQueries({ queryKey: ['useGetTasksQuery'] })
+      toast.success('Task updated')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to update task')
     },
   })
 }
@@ -61,6 +66,10 @@ export function useCreateTaskMutation() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetTasksQuery'] })
+      toast.success('Task created')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to create task')
     },
   })
 }
@@ -76,6 +85,10 @@ export function useDeleteTaskMutation() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['useGetTasksQuery'] })
+      toast.success('Task deleted')
+    },
+    onError: (error) => {
+      toast.error(error?.message ?? 'Failed to delete task')
     },
   })
 }
